@@ -1,0 +1,61 @@
+body {
+    background-color: #f8f9fa;
+}
+
+.navbar {
+    background-color: #343a40;
+}
+
+.logo {
+    font-size: 28px;
+    font-weight: bold;
+    color: white;
+}
+
+.nav-link {
+    color: rgba(255, 255, 255, 0.85) !important;
+}
+
+.nav-link:hover {
+    color: #ffffff !important;
+}
+
+.error-message {
+    color: #dc3545;
+    margin-bottom: 15px;
+}
+
+.success-message {
+    color: #28a745;
+    margin-bottom: 15px;
+}
+
+.form-label {
+    font-weight: 500;
+}
+
+.btn-primary {
+    background-color: #4dabf7;
+    border-color: #339af0;
+}
+
+.btn-primary:hover {
+    background-color: #3c99e0;
+    border-color: #2a8bd9;
+}
+
+.form-text {
+    color: #adb5bd;
+}
+
+.form-check-label {
+    font-size: 14px;
+}
+
+footer {
+    background-color: #e9ecef;
+    padding: 15px 0;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+} 

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.parking_hub.mapper.ParkingPriceInfoMapper">
+
+    <resultMap id="ParkingPriceInfoResultMap" type="com.example.parking_hub.model.ParkingPriceInfo">
+        <id property="prkCenterId" column="prk_center_id"/>
+        <result property="parkingChrgeBsTime" column="parking_chrge_bs_time"/>
+        <result property="parkingChrgeBsChrge" column="parking_chrge_bs_chrge"/>
+        <result property="parkingChrgeAditUnitTime" column="parking_chrge_adit_unit_time"/>
+        <result property="parkingChrgeAditUnitChrge" column="parking_chrge_adit_unit_chrge"/>
+        <result property="parkingChrgeOneDayChrge" column="parking_chrge_one_day_chrge"/>
+        <result property="parkingChrgeMonUnitChrge" column="parking_chrge_mon_unit_chrge"/>
+    </resultMap>
+
+    <select id="selectAllParkingPriceInfos" resultMap="ParkingPriceInfoResultMap">
+        SELECT * FROM PARKING_PRICE_INFO
+    </select>
+
+    <select id="selectParkingPriceInfoById" resultMap="ParkingPriceInfoResultMap">
+        SELECT * FROM PARKING_PRICE_INFO WHERE prk_center_id = #{prkCenterId}
+    </select>
+
+    <insert id="insertParkingPriceInfo">
+        INSERT INTO PARKING_PRICE_INFO (
+            prk_center_id,
+            parking_chrge_bs_time,
+            parking_chrge_bs_chrge,
+            parking_chrge_adit_unit_time,
+            parking_chrge_adit_unit_chrge,
+            parking_chrge_one_day_chrge,
+            parking_chrge_mon_unit_chrge
+        )
+        VALUES (
+                   #{prkCenterId},
+                   #{parkingChrgeBsTime},
+                   #{parkingChrgeBsChrge},
+                   #{parkingChrgeAditUnitTime},
+                   #{parkingChrgeAditUnitChrge},
+                   #{parkingChrgeOneDayChrge},
+                   #{parkingChrgeMonUnitChrge}
+               )
+    </insert>
+
+    <update id="updateParkingPriceInfo">
+        UPDATE PARKING_PRICE_INFO
+        SET parking_chrge_bs_time = #{parkingChrgeBsTime},
+            parking_chrge_bs_chrge = #{parkingChrgeBsChrge},
+            parking_chrge_adit_unit_time = #{parkingChrgeAditUnitTime},
+            parking_chrge_adit_unit_chrge = #{parkingChrgeAditUnitChrge},
+            parking_chrge_one_day_chrge = #{parkingChrgeOneDayChrge},
+            parking_chrge_mon_unit_chrge = #{parkingChrgeMonUnitChrge}
+        WHERE prk_center_id = #{prkCenterId}
+    </update>
+
+    <insert id="insertOrUpdateParkingPriceInfo">
+        INSERT INTO PARKING_PRICE_INFO (
+            prk_center_id,
+            parking_chrge_bs_time,
+            parking_chrge_bs_chrge,
+            parking_chrge_adit_unit_time,
+            parking_chrge_adit_unit_chrge,
+            parking_chrge_one_day_chrge,
+            parking_chrge_mon_unit_chrge
+        )
+        VALUES (
+                   #{prkCenterId},
+                   #{parkingChrgeBsTime},
+                   #{parkingChrgeBsChrge},
+                   #{parkingChrgeAditUnitTime},
+                   #{parkingChrgeAditUnitChrge},
+                   #{parkingChrgeOneDayChrge},
+                   #{parkingChrgeMonUnitChrge}
+               )
+            ON DUPLICATE KEY UPDATE
+                                 parking_chrge_bs_time = VALUES(parking_chrge_bs_time),
+                                 parking_chrge_bs_chrge = VALUES(parking_chrge_bs_chrge),
+                                 parking_chrge_adit_unit_time = VALUES(parking_chrge_adit_unit_time),
+                                 parking_chrge_adit_unit_chrge = VALUES(parking_chrge_adit_unit_chrge),
+                                 parking_chrge_one_day_chrge = VALUES(parking_chrge_one_day_chrge),
+                                 parking_chrge_mon_unit_chrge = VALUES(parking_chrge_mon_unit_chrge)
+    </insert>
+
+    <delete id="deleteParkingPriceInfo">
+        DELETE FROM PARKING_PRICE_INFO WHERE prk_center_id = #{prkCenterId}
+    </delete>
+</mapper>

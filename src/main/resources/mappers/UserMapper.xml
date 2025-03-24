@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.parking_hub.mapper.UserMapper">
+
+    <resultMap id="UserResultMap" type="com.example.parking_hub.dto.UserDto">
+        <id property="id" column="id"/>
+        <result property="email" column="email"/>
+        <result property="username" column="username"/>
+        <result property="password" column="password"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+
+    <select id="selectAllUsers" resultMap="UserResultMap">
+        SELECT * FROM `USER`
+    </select>
+
+    <select id="selectUserById" resultMap="UserResultMap">
+        SELECT * FROM `USER` WHERE id = #{id}
+    </select>
+
+    <select id="selectUserByEmail" resultMap="UserResultMap">
+        SELECT * FROM `USER` WHERE email = #{email}
+    </select>
+
+    <select id="findByUsername" resultMap="UserResultMap">
+        SELECT * FROM `USER` WHERE username = #{username}
+    </select>
+
+    <insert id="insertUser" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO `USER` (email, username, password)
+        VALUES (#{email}, #{username}, #{password})
+    </insert>
+
+    <update id="updateUser">
+        UPDATE `USER`
+        SET email = #{email},
+            username = #{username}
+            <if test="password != null and password != ''">
+        , password = #{password}
+        </if>
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteUser">
+        DELETE FROM `USER` WHERE id = #{id}
+    </delete>
+
+</mapper>

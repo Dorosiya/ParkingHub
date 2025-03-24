@@ -1,0 +1,32 @@
+.login-container {
+    max-width: 500px;
+    margin: 50px auto;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    background-color: #ffffff;
+}
+
+.login-help {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.login-help a {
+    color: #4dabf7;
+    text-decoration: none;
+    margin: 0 10px;
+}
+
+.login-help a:hover {
+    text-decoration: underline;
+}
+
+.divider {
+    display: inline-block;
+    width: 1px;
+    height: 12px;
+    background-color: #dee2e6;
+    margin: 0 5px;
+    vertical-align: middle;
+} 

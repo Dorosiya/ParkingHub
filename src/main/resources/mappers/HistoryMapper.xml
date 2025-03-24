@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.parking_hub.mapper.HistoryMapper">
+
+    <resultMap id="HistoryResultMap" type="com.example.parking_hub.model.UserHistory">
+        <id property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="parkingCode" column="parking_code"/>
+        <result property="visitedAt" column="visited_at"/>
+    </resultMap>
+
+    <select id="selectHistoriesByUserId" resultMap="HistoryResultMap">
+        SELECT * FROM USER_HISTORY
+        WHERE user_id = #{userId}
+        ORDER BY visited_at DESC
+    </select>
+
+    <select id="selectRecentHistoriesByUserId" resultMap="HistoryResultMap">
+        SELECT * FROM USER_HISTORY
+        WHERE user_id = #{userId}
+        ORDER BY visited_at DESC
+            LIMIT #{limit}
+    </select>
+
+    <insert id="insertHistory" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO USER_HISTORY (user_id, parking_code)
+        VALUES (#{userId}, #{parkingCode})
+    </insert>
+
+    <delete id="deleteHistory">
+        DELETE FROM USER_HISTORY WHERE id = #{id}
+    </delete>
+
+    <delete id="deleteAllHistoriesByUserId">
+        DELETE FROM USER_HISTORY WHERE user_id = #{userId}
+    </delete>
+</mapper>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.parking_hub.mapper.ReviewMapper">
+
+    <resultMap id="ReviewResultMap" type="com.example.parking_hub.model.Review">
+        <id property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="parkingCode" column="parking_code"/>
+        <result property="rating" column="rating"/>
+        <result property="comment" column="comment"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+
+    <select id="selectReviewsByParkingCode" resultMap="ReviewResultMap">
+        SELECT * FROM REVIEW WHERE parking_code = #{parkingCode}
+    </select>
+
+    <select id="selectReviewsByUserId" resultMap="ReviewResultMap">
+        SELECT * FROM REVIEW WHERE user_id = #{userId}
+    </select>
+
+    <select id="selectReviewById" resultMap="ReviewResultMap">
+        SELECT * FROM REVIEW WHERE id = #{id}
+    </select>
+
+    <select id="selectReviewByUserIdAndParkingCode" resultMap="ReviewResultMap">
+        SELECT * FROM REVIEW
+        WHERE user_id = #{userId} AND parking_code = #{parkingCode}
+    </select>
+
+    <insert id="insertReview" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO REVIEW (user_id, parking_code, rating, comment)
+        VALUES (#{userId}, #{parkingCode}, #{rating}, #{comment})
+    </insert>
+
+    <update id="updateReview">
+        UPDATE REVIEW
+        SET rating = #{rating},
+            comment = #{comment}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteReview">
+        DELETE FROM REVIEW WHERE id = #{id}
+    </delete>
+
+    <select id="selectAverageRatingByParkingCode" resultType="double">
+        SELECT AVG(rating) FROM REVIEW WHERE parking_code = #{parkingCode}
+    </select>
+</mapper>

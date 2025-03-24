@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.parking_hub.mapper.AdminMapper">
+
+    <resultMap id="AdminResultMap" type="com.example.parking_hub.model.Admin">
+        <id property="adminId" column="admin_id"/>
+        <result property="adminEmail" column="admin_email"/>
+        <result property="password" column="password"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+
+    <select id="selectAllAdmins" resultMap="AdminResultMap">
+        SELECT * FROM ADMIN
+    </select>
+
+    <select id="selectAdminById" resultMap="AdminResultMap">
+        SELECT * FROM ADMIN WHERE admin_id = #{adminId}
+    </select>
+
+    <select id="selectAdminByEmail" resultMap="AdminResultMap">
+        SELECT * FROM ADMIN WHERE admin_email = #{adminEmail}
+    </select>
+
+    <insert id="insertAdmin" useGeneratedKeys="true" keyProperty="adminId">
+        INSERT INTO ADMIN (admin_email, password)
+        VALUES (#{adminEmail}, #{password})
+    </insert>
+
+    <update id="updateAdmin">
+        UPDATE ADMIN
+        SET admin_email = #{adminEmail}
+        <if test="password != null and password != ''">
+            , password = #{password}
+        </if>
+        WHERE admin_id = #{adminId}
+    </update>
+
+    <delete id="deleteAdmin">
+        DELETE FROM ADMIN WHERE admin_id = #{adminId}
+    </delete>
+</mapper>

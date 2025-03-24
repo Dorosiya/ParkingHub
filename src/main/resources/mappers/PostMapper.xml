@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.parking_hub.mapper.PostMapper">
+
+    <resultMap id="PostResultMap" type="com.example.parking_hub.model.Post">
+        <id property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="title" column="title"/>
+        <result property="content" column="content"/>
+        <result property="views" column="views"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+
+    <select id="selectAllPosts" resultMap="PostResultMap">
+        SELECT * FROM POST ORDER BY created_at DESC
+    </select>
+
+    <select id="selectPostsWithPaging" resultMap="PostResultMap">
+        SELECT * FROM POST
+        ORDER BY created_at DESC
+            LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="selectPostById" resultMap="PostResultMap">
+        SELECT * FROM POST WHERE id = #{id}
+    </select>
+
+    <select id="selectPostsByUserId" resultMap="PostResultMap">
+        SELECT * FROM POST WHERE user_id = #{userId} ORDER BY created_at DESC
+    </select>
+
+    <select id="searchPostsByTitle" resultMap="PostResultMap">
+        SELECT * FROM POST
+        WHERE title LIKE CONCAT('%', #{keyword}, '%')
+        ORDER BY created_at DESC
+    </select>
+
+    <insert id="insertPost" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO POST (user_id, title, content, views)
+        VALUES (#{userId}, #{title}, #{content}, 0)
+    </insert>
+
+    <update id="updatePost">
+        UPDATE POST
+        SET title = #{title},
+            content = #{content}
+        WHERE id = #{id}
+    </update>
+
+    <update id="increaseViewCount">
+        UPDATE POST SET views = views + 1 WHERE id = #{id}
+    </update>
+
+    <delete id="deletePost">
+        DELETE FROM POST WHERE id = #{id}
+    </delete>
+</mapper>

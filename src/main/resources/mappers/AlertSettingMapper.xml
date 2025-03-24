@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.parking_hub.mapper.AlertSettingMapper">
+
+    <resultMap id="AlertSettingResultMap" type="com.example.parking_hub.model.AlertSetting">
+        <id property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="parkingCode" column="parking_code"/>
+        <result property="dayOfWeek" column="day_of_week"/>
+        <result property="hour" column="hour"/>
+        <result property="minFreeSlots" column="min_free_slots"/>
+    </resultMap>
+
+    <select id="selectAlertSettingsByUserId" resultMap="AlertSettingResultMap">
+        SELECT * FROM ALERT_SETTING WHERE user_id = #{userId}
+    </select>
+
+    <select id="selectAlertSettingsByDayAndHour" resultMap="AlertSettingResultMap">
+        SELECT * FROM ALERT_SETTING
+        WHERE day_of_week = #{dayOfWeek} AND hour = #{hour}
+    </select>
+
+    <insert id="insertAlertSetting" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO ALERT_SETTING (user_id, parking_code, day_of_week, hour, min_free_slots)
+        VALUES (#{userId}, #{parkingCode}, #{dayOfWeek}, #{hour}, #{minFreeSlots})
+    </insert>
+
+    <update id="updateAlertSetting">
+        UPDATE ALERT_SETTING
+        SET day_of_week = #{dayOfWeek},
+            hour = #{hour},
+            min_free_slots = #{minFreeSlots}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteAlertSetting">
+        DELETE FROM ALERT_SETTING WHERE id = #{id}
+    </delete>
+
+    <delete id="deleteAllAlertSettingsByUserId">
+        DELETE FROM ALERT_SETTING WHERE user_id = #{userId}
+    </delete>
+</mapper>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.parking_hub.mapper.ParkingRealtimeMapper">
+
+    <resultMap id="ParkingRealtimeResultMap" type="com.example.parking_hub.model.ParkingRealtime">
+        <id property="prkCenterId" column="prk_center_id"/>
+        <result property="pkfcParkingLotsTotal" column="pkfc_ParkingLots_total"/>
+        <result property="pkfcAvailableParkingLotsTotal" column="pkfc_Available_ParkingLots_total"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <select id="selectAllParkingRealtimes" resultMap="ParkingRealtimeResultMap">
+        SELECT * FROM PARKING_REALTIME
+    </select>
+
+    <select id="selectParkingRealtimeById" resultMap="ParkingRealtimeResultMap">
+        SELECT * FROM PARKING_REALTIME WHERE prk_center_id = #{prkCenterId}
+    </select>
+
+    <select id="selectParkingRealtimesByAvailableSlots" resultMap="ParkingRealtimeResultMap">
+        SELECT * FROM PARKING_REALTIME
+        WHERE pkfc_Available_ParkingLots_total >= #{minSlots}
+    </select>
+
+    <insert id="insertParkingRealtime">
+        INSERT INTO PARKING_REALTIME (prk_center_id, pkfc_ParkingLots_total, pkfc_Available_ParkingLots_total)
+        VALUES (#{prkCenterId}, #{pkfcParkingLotsTotal}, #{pkfcAvailableParkingLotsTotal})
+    </insert>
+
+    <update id="updateParkingRealtime">
+        UPDATE PARKING_REALTIME
+        SET pkfc_ParkingLots_total = #{pkfcParkingLotsTotal},
+            pkfc_Available_ParkingLots_total = #{pkfcAvailableParkingLotsTotal},
+            updated_at = CURRENT_TIMESTAMP
+        WHERE prk_center_id = #{prkCenterId}
+    </update>
+
+    <insert id="insertOrUpdateParkingRealtime">
+        INSERT INTO PARKING_REALTIME (prk_center_id, pkfc_ParkingLots_total, pkfc_Available_ParkingLots_total)
+        VALUES (#{prkCenterId}, #{pkfcParkingLotsTotal}, #{pkfcAvailableParkingLotsTotal})
+            ON DUPLICATE KEY UPDATE
+                                 pkfc_ParkingLots_total = VALUES(pkfc_ParkingLots_total),
+                                 pkfc_Available_ParkingLots_total = VALUES(pkfc_Available_ParkingLots_total),
+                                 updated_at = CURRENT_TIMESTAMP
+    </insert>
+
+    <delete id="deleteParkingRealtime">
+        DELETE FROM PARKING_REALTIME WHERE prk_center_id = #{prkCenterId}
+    </delete>
+</mapper>

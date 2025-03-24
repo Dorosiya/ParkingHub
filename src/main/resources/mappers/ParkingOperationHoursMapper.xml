@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.parking_hub.mapper.ParkingOperationHoursMapper">
+
+    <resultMap id="ParkingOperationHoursResultMap" type="com.example.parking_hub.model.ParkingOperationHours">
+        <id property="id" column="id"/>
+        <result property="prkCenterId" column="prk_center_id"/>
+        <result property="dayOfWeek" column="day_of_week"/>
+        <result property="startTime" column="start_time"/>
+        <result property="endTime" column="end_time"/>
+    </resultMap>
+
+    <select id="selectOperationHoursByParkingId" resultMap="ParkingOperationHoursResultMap">
+        SELECT * FROM PARKING_OPERATION_HOURS WHERE prk_center_id = #{prkCenterId}
+    </select>
+
+    <select id="selectOperationHoursByParkingIdAndDay" resultMap="ParkingOperationHoursResultMap">
+        SELECT * FROM PARKING_OPERATION_HOURS
+        WHERE prk_center_id = #{prkCenterId} AND day_of_week = #{dayOfWeek}
+    </select>
+
+    <insert id="insertOperationHours" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO PARKING_OPERATION_HOURS (prk_center_id, day_of_week, start_time, end_time)
+        VALUES (#{prkCenterId}, #{dayOfWeek}, #{startTime}, #{endTime})
+    </insert>
+
+    <update id="updateOperationHours">
+        UPDATE PARKING_OPERATION_HOURS
+        SET start_time = #{startTime},
+            end_time = #{endTime}
+        WHERE id = #{id}
+    </update>
+
+    <insert id="insertOrUpdateParkingOperationHours">
+        INSERT INTO PARKING_OPERATION_HOURS (prk_center_id, day_of_week, start_time, end_time)
+        VALUES (#{prkCenterId}, #{dayOfWeek}, #{startTime}, #{endTime})
+            ON DUPLICATE KEY UPDATE
+                                 start_time = VALUES(start_time),
+                                 end_time = VALUES(end_time)
+    </insert>
+
+    <delete id="deleteOperationHours">
+        DELETE FROM PARKING_OPERATION_HOURS WHERE id = #{id}
+    </delete>
+
+    <delete id="deleteAllOperationHoursByParkingId">
+        DELETE FROM PARKING_OPERATION_HOURS WHERE prk_center_id = #{prkCenterId}
+    </delete>
+</mapper>

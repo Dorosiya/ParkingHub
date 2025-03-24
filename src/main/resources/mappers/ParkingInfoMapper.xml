@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.parking_hub.mapper.ParkingInfoMapper">
+
+    <resultMap id="ParkingInfoResultMap" type="com.example.parking_hub.model.ParkingInfo">
+        <id property="prkCenterId" column="prk_center_id"/>
+        <result property="prkPlceNm" column="prk_plce_nm"/>
+        <result property="prkPlceAdres" column="prk_plce_adres"/>
+        <result property="prkPlceEntrcLa" column="prk_plce_entrc_la"/>
+        <result property="prkPlceEntrcLo" column="prk_plce_entrc_lo"/>
+        <result property="prkCmprtCo" column="prk_cmprt_co"/>
+    </resultMap>
+
+    <select id="selectAllParkingInfos" resultMap="ParkingInfoResultMap">
+        SELECT * FROM PARKING_INFO
+    </select>
+
+    <select id="selectParkingInfoById" resultMap="ParkingInfoResultMap">
+        SELECT * FROM PARKING_INFO WHERE prk_center_id = #{prkCenterId}
+    </select>
+
+    <!-- 위치 기반 주차장 검색 (Haversine 공식 사용) -->
+    <select id="selectParkingInfosByLocation" resultMap="ParkingInfoResultMap">
+        SELECT *,
+               (6371 * acos(cos(radians(#{latitude})) * cos(radians(prk_plce_entrc_la)) * cos(radians(prk_plce_entrc_lo) - radians(#{longitude})) + sin(radians(#{latitude})) * sin(radians(prk_plce_entrc_la)))) AS distance
+        FROM PARKING_INFO
+        HAVING distance &lt;= #{radius}
+        ORDER BY distance
+    </select>
+
+    <insert id="insertParkingInfo">
+        INSERT INTO PARKING_INFO (prk_center_id, prk_plce_nm, prk_plce_adres, prk_plce_entrc_la, prk_plce_entrc_lo, prk_cmprt_co)
+        VALUES (#{prkCenterId}, #{prkPlceNm}, #{prkPlceAdres}, #{prkPlceEntrcLa}, #{prkPlceEntrcLo}, #{prkCmprtCo})
+    </insert>
+
+    <update id="updateParkingInfo">
+        UPDATE PARKING_INFO
+        SET prk_plce_nm = #{prkPlceNm},
+            prk_plce_adres = #{prkPlceAdres},
+            prk_plce_entrc_la = #{prkPlceEntrcLa},
+            prk_plce_entrc_lo = #{prkPlceEntrcLo},
+            prk_cmprt_co = #{prkCmprtCo}
+        WHERE prk_center_id = #{prkCenterId}
+    </update>
+
+    <insert id="insertOrUpdateParkingInfo">
+        INSERT INTO PARKING_INFO (prk_center_id, prk_plce_nm, prk_plce_adres, prk_plce_entrc_la, prk_plce_entrc_lo, prk_cmprt_co)
+        VALUES (#{prkCenterId}, #{prkPlceNm}, #{prkPlceAdres}, #{prkPlceEntrcLa}, #{prkPlceEntrcLo}, #{prkCmprtCo})
+            ON DUPLICATE KEY UPDATE
+                                 prk_plce_nm = VALUES(prk_plce_nm),
+                                 prk_plce_adres = VALUES(prk_plce_adres),
+                                 prk_plce_entrc_la = VALUES(prk_plce_entrc_la),
+                                 prk_plce_entrc_lo = VALUES(prk_plce_entrc_lo),
+                                 prk_cmprt_co = VALUES(prk_cmprt_co)
+    </insert>
+
+    <delete id="deleteParkingInfo">
+        DELETE FROM PARKING_INFO WHERE prk_center_id = #{prkCenterId}
+    </delete>
+</mapper>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.parking_hub.mapper.ParkingOperationMapper">
+
+    <resultMap id="ParkingOperationResultMap" type="com.example.parking_hub.model.ParkingOperation">
+        <id property="prkCenterId" column="prk_center_id"/>
+        <result property="opertnBsFreeTime" column="opertn_bs_free_time"/>
+    </resultMap>
+
+    <select id="selectAllParkingOperations" resultMap="ParkingOperationResultMap">
+        SELECT * FROM PARKING_OPERATION
+    </select>
+
+    <select id="selectParkingOperationById" resultMap="ParkingOperationResultMap">
+        SELECT * FROM PARKING_OPERATION WHERE prk_center_id = #{prkCenterId}
+    </select>
+
+    <insert id="insertParkingOperation">
+        INSERT INTO PARKING_OPERATION (prk_center_id, opertn_bs_free_time)
+        VALUES (#{prkCenterId}, #{opertnBsFreeTime})
+    </insert>
+
+    <update id="updateParkingOperation">
+        UPDATE PARKING_OPERATION
+        SET opertn_bs_free_time = #{opertnBsFreeTime}
+        WHERE prk_center_id = #{prkCenterId}
+    </update>
+
+    <insert id="insertOrUpdateParkingOperation">
+        INSERT INTO PARKING_OPERATION (prk_center_id, opertn_bs_free_time)
+        VALUES (#{prkCenterId}, #{opertnBsFreeTime})
+            ON DUPLICATE KEY UPDATE
+                                 opertn_bs_free_time = VALUES(opertn_bs_free_time)
+    </insert>
+
+    <delete id="deleteParkingOperation">
+        DELETE FROM PARKING_OPERATION WHERE prk_center_id = #{prkCenterId}
+    </delete>
+</mapper>
