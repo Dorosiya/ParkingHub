@@ -1,48 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.parking_hub.mapper.UserMapper">
-
-    <resultMap id="UserResultMap" type="com.example.parking_hub.dto.UserDto">
+    
+    <resultMap id="userResultMap" type="com.example.parking_hub.model.User">
         <id property="id" column="id"/>
         <result property="email" column="email"/>
         <result property="username" column="username"/>
         <result property="password" column="password"/>
+        <result property="phoneNumber" column="phone_number"/>
+        <result property="roleId" column="role_id"/>
         <result property="createdAt" column="created_at"/>
     </resultMap>
 
-    <select id="selectAllUsers" resultMap="UserResultMap">
-        SELECT * FROM `USER`
+    <select id="selectAllUsers" resultMap="userResultMap">
+        SELECT * FROM USER ORDER BY id
     </select>
 
-    <select id="selectUserById" resultMap="UserResultMap">
-        SELECT * FROM `USER` WHERE id = #{id}
+    <select id="selectUserById" resultMap="userResultMap">
+        SELECT * FROM USER WHERE id = #{id}
     </select>
 
-    <select id="selectUserByEmail" resultMap="UserResultMap">
-        SELECT * FROM `USER` WHERE email = #{email}
+    <select id="findByUsername" resultMap="userResultMap">
+        SELECT * FROM USER WHERE username = #{username}
     </select>
 
-    <select id="findByUsername" resultMap="UserResultMap">
-        SELECT * FROM `USER` WHERE username = #{username}
+    <select id="selectUserByEmail" resultMap="userResultMap">
+        SELECT * FROM USER WHERE email = #{email}
     </select>
 
-    <insert id="insertUser" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO `USER` (email, username, password)
-        VALUES (#{email}, #{username}, #{password})
+    <insert id="insertUser" parameterType="com.example.parking_hub.model.User" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO USER (email, username, password, phone_number, role_id)
+        VALUES (#{email}, #{username}, #{password}, #{phoneNumber}, #{roleId})
     </insert>
 
-    <update id="updateUser">
-        UPDATE `USER`
+    <select id="findById" resultMap="userResultMap">
+        SELECT * FROM USER WHERE id = #{id}
+    </select>
+
+    <update id="updateUser" parameterType="com.example.parking_hub.model.User">
+        UPDATE USER
         SET email = #{email},
-            username = #{username}
-            <if test="password != null and password != ''">
-        , password = #{password}
-        </if>
+            username = #{username},
+            password = #{password},
+            phone_number = #{phoneNumber},
+            role_id = #{roleId}
         WHERE id = #{id}
     </update>
 
     <delete id="deleteUser">
-        DELETE FROM `USER` WHERE id = #{id}
+        DELETE FROM USER WHERE id = #{id}
     </delete>
-
-</mapper>
+</mapper> 
