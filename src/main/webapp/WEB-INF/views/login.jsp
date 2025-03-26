@@ -63,8 +63,8 @@
             
             <form action="/perform-login" method="post">
                 <div class="mb-3">
-                    <label for="username" class="form-label">이메일</label>
-                    <input type="text" class="form-control" id="username" name="username" placeholder="name@example.com" required>
+                    <label for="username" class="form-label">아이디</label>
+                    <input type="text" class="form-control" id="username" name="username" placeholder="아이디를 입력하세요" required>
                 </div>
                 <div class="mb-3">
                     <label for="password" class="form-label">비밀번호</label>
