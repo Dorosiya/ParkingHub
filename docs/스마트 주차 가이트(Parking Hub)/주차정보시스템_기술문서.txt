@@ -1,0 +1,442 @@
+
+
+
+
+
+공공데이터 오픈API 활용가이드
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+1. 서비스 명세	3
+1.1 공공데이터 오픈API 조회 서비스	3
+가. API 서비스 개요	3
+나. 상세기능 목록	4
+다. 상세기능내역	4
+1) [주차장 시설 정보] 상세기능명세	4
+2) [주차장 운영 정보] 상세기능명세	7
+3) [주차장 실시간 정보] 상세기능명세	15
+2. OpenAPI 에러 코드정리	18
+2-1 공공데이터 포털 에러코드	18
+2-2 제공기관 에러코드	18
+
+
+
+1. 서비스 명세
+1.1 공공데이터 오픈API 조회 서비스
+가. API 서비스 개요
+API 서비스 정보API명(영문)ParkingAPI명(국문)주차정보 제공 APIAPI 설명전국의 노상, 노외, 부설 주차장의 주차장 상태정보, 운영정보, 실시간 주차면 정보를 API로 제공API 서비스
+보안적용
+기술 수준서비스 인증/권한[O] serviceKey    [ ] 인증서 (GPKI/NPKI)
+[ ] Basic (ID/PW)  [ ] 없음메시지 레벨
+암호화[ ] 전자서명   [ ] 암호화   [O] 없음전송 레벨 암호화[O]HTTPS   [O]HTTP인터페이스 표준[ ] SOAP 1.2
+(RPC-Encoded, Document Literal, Document Literal Wrapped)
+[O] REST (GET)
+[ ] RSS 1.0   [ ] RSS 2.0   [ ] Atom 1.0   [ ] 기타교환 데이터 표준
+(중복선택가능)[O] XML   [O] JSON   [ ] MIME   [ ] MTOMAPI 서비스
+배포정보서비스 URLhttp://apis.data.go.kr/B553881/Parking
+서비스 명세 URL
+(WSDL 또는 WADL)N/A서비스 버전1.0서비스 시작일2022-01-03서비스 배포일2022-01-03서비스 이력2022-01-03 : 서비스 시작메시지 교환유형[O] Request-Response   [ ] Publish-Subscribe
+[ ] Fire-and-Forgot   [ ] Notification서비스 제공자오균빈 / 한국교통안전공단 / 054-440-3076 / hoowa333@kotsa.or.kr데이터 갱신주기일 1회
+
+나. 상세기능 목록
+번호API명(국문)상세기능명(영문)상세기능명(국문)1주차정보 제공 APIPrkSttusInfo주차장 시설정보2PrkOprInfo주차장 운영정보3PrkRealtimeInfo주차장 실시간 정보
+다. 상세기능내역
+1) [주차장 시설 정보] 상세기능명세
+a) 상세기능정보
+상세기능 번호1상세기능 유형조회 (목록)상세기능명(국문)주차장 시설정보상세기능 설명주차정보시스템에 수집된 전국 주차장 정보의 시설정보를 조회하는 기능Call Back URLhttp://apis.data.go.kr/B553881/Parking/PrkSttusInfo최대 메시지 사이즈[4000] byte평균 응답 시간[3000] ms초당 최대 트랙잭션[30] tpsb) 요청 메시지 명세 
+항목명(영문)항목명(국문)항목크기항목구분샘플데이터항목설명serviceKey인증키1001인증키
+(URL Encode)공공데이터포털에서 발급받은 인증키numOfRows한 페이지 결과 수4110한 페이지 결과 수pageNo페이지 번호411페이지 번호format응답 데이터 형식111XML : 1,
+JSON : 2※ 항목구분 : 필수(1), 옵션(0) 
+c) 응답 메시지 명세
+항목명(영문)항목명(국문)항목크기항목구분샘플데이터항목설명resultCode결과코드2100결과코드resultMsg결과메세지501SUCCESS결과메시지numOfRows한 페이지 결과 수4110한 페이지 결과 수pageNo페이지 수411페이지 수totalCount데이터 총 개수41100데이터 총 개수PrkSttusInfo주차장시설정보 리스트(1..n)주차장정보 리스트prk_center_id주차장 관리 ID
+(또는 확장ID)22112345-67890-12345-12-1주차장 관리 ID
+(또는 확장ID)prk_plce_nm주차장명501서울시 망원동 주차장주차장명prk_plce_adres주차장 도로명 주소
+(도로명주소 공백 시 지번주소)1001서울시 망원동 월드컵로 1길주차장 도로명 주소
+(도로명주소 공백 시 지번주소)prk_plce_entrc_la위도20135.879337위도prk_plce_entrc_lo경도201128.628764경도prk_cmprt_co주차장의 총 주차 구획 수41100주차장의 총 주차 구획 수※ 항목구분 : 필수(1), 옵션(0), 1건 이상 복수건(1..n), 0건 또는 복수건(0..n)
+d) 요청/응답 메시지 예제
+요청메시지http://apis.data.go.kr/B553881/Parking/PrkSttusInfo?serviceKey=인증키(URL_Encode)&numOfRows=10&pageNo=1&format=1응답메시지json 응답 메시지 예제
+{
+"resultCode": "0",
+"resultMsg" : "SUCCESS“, 
+"numOfRows" : "10", 
+"pageNo" : "1",
+"totalCount" : "100",
+"PrkSttusInfo": [
+{
+"prk_center_id" : "12345-67890-12345-12-1", 
+"prk_plce_nm" : "서울시 망원동 주차장1", 
+"prk_plce_adres" : "서울시 망원동 월드컵로 1길", 
+"prk_plce_entrc_la" : "35.879337", 
+"prk_plce_entrc_lo" : "128.628764", 
+"prk_cmprt_co" : "100"
+},
+{
+"prk_center_id" : "12345-67890-12345-12-2", 
+"prk_plce_nm" : "서울시 망원동 주차장2", 
+"prk_plce_adres" : "서울시 망원동 월드컵로 2길", 
+"prk_plce_entrc_la" : "35.879337", 
+"prk_plce_entrc_lo" : "128.628764", 
+"prk_cmprt_co" : "200"
+}
+]
+}
+xml 응답 메시지 예제
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<response>
+<resultCode>0<resultCode>
+<resultMsg>SUCCESS</resultMsg>
+<numOfRows>10</numOfRows>
+<pageNo>1</pageNo>
+<totalCount>100</totalCount>
+<PrkSttusInfo>
+<Prk>
+<prk_center_id>12345-67890-12345-12-1</prk_center_id>
+<prk_plce_nm>서울시 망원동 주차장1</prk_plce_nm>
+<prk_plce_adres>서울시 망원동 월드컵로 1길</prk_plce_adres>
+<prk_plce_entrc_la>35.879337</prk_plce_entrc_la>
+<prk_plce_entrc_lo>128.628764</prk_plce_entrc_lo>
+<prk_cmprt_co>100</prk_cmprt_co>
+</Prk>
+<Prk>
+<prk_center_id>12345-67890-12345-12-1</prk_center_id>
+<prk_plce_nm>서울시 망원동 주차장1</prk_plce_nm>
+<prk_plce_adres>서울시 망원동 월드컵로 1길</prk_plce_adres>
+<prk_plce_entrc_la>35.879337</prk_plce_entrc_la>
+<prk_plce_entrc_lo>128.628764</prk_plce_entrc_lo>
+<prk_cmprt_co>100</prk_cmprt_co>
+</Prk>
+</PrkSttusInfo>
+</response> 
+
+
+
+2) [주차장 운영 정보] 상세기능명세
+a) 상세기능정보
+상세기능 번호2상세기능 유형조회 (목록)상세기능명(국문)주차장 운영정보상세기능 설명주차정보시스템에 수집된 전국 주차장 정보의 시설정보를 조회하는 기능.Call Back URLhttp://apis.data.go.kr/B553881/Parking/PrkOprInfo최대 메시지 사이즈[4000] byte평균 응답 시간[3000] ms초당 최대 트랙잭션[30] tpsb) 요청 메시지 명세
+항목명(영문)항목명(국문)항목크기항목구분샘플데이터항목설명serviceKey인증키1001인증키
+(URL Encode)공공데이터포털에서 발급받은 인증키numOfRows한 페이지 결과 수4110한 페이지 결과 수pageNo페이지 번호411페이지 번호format응답 데이터 형식111XML : 1,
+JSON : 2※ 항목구분 : 필수(1), 옵션(0), 1건 이상 복수건(1..n), 0건 또는 복수건(0..n)
+c) 응답 메시지 명세
+항목명(영문)항목명(국문)항목크기항목구분샘플데이터항목설명resultCode결과코드2100결과코드resultMsg결과메세지501SUCCESS결과메시지numOfRows한 페이지 결과 수4110한 페이지 결과 수pageNo페이지 수411페이지 수totalCount데이터 총 개수41100데이터 총 개수PrkOprInfo주차장운영정보
+리스트 (1..n)주차장 운영정보리스트prk_center_id주차장 관리 ID
+(또는 확장ID)22112345-67890-12345-12-1주차장 관리 ID
+(또는 확장ID)Sunday일요일 주차장 운영시간 (1..2)일요일 주차장 운영시간opertn_start_time일요일 주차장 운영시작시간61080000
+일요일 주차장 운영시작시간opertn_end_time일요일 주차장 운영종료시간61200000
+일요일 주차장 운영종료시간Monday월요일 주차장 운영시간(1..2)월요일 주차장 운영시간opertn_start_time월요일 주차장 운영시작시간61080000
+월요일 주차장 운영시작시간opertn_end_time월요일 주차장 운영종료시간61200000
+월요일 주차장 운영종료시간Tuesday화요일 주차장 운영시간(1..2)화요일 주차장 운영시간opertn_start_time화요일 주차장 운영시작시간61080000
+화요일 주차장 운영시작시간opertn_end_time화요일 주차장 운영종료시간61200000
+화요일 주차장 운영종료시간Wednesday수요일 주차장 운영시간(1..2)수요일 주차장 운영시간opertn_start_time수요일 주차장 운영시작시간61080000
+수요일 주차장 운영시작시간opertn_end_time수요일 주차장 운영종료시간61200000
+수요일 주차장 운영종료시간Thursday목요일 주차장 운영시간(1..2)목요일 주차장 운영시간opertn_start_time목요일 주차장 운영시작시간61080000
+목요일 주차장 운영시작시간opertn_end_time목요일 주차장 운영종료시간61200000
+목요일 주차장 운영종료시간Friday금요일 주차장 운영시간(1..2)금요일 주차장 운영시간opertn_start_time금요일 주차장 운영시작시간61080000
+금요일 주차장 운영시작시간opertn_end_time금요일 주차장 운영종료시간61200000
+금요일 주차장 운영종료시간Saturday토요일 주차장 운영시간(1..2)토요일 주차장 운영시간opertn_start_time토요일 주차장 운영시작시간61080000
+토요일 주차장 운영시작시간opertn_end_time토요일 주차장 운영종료시간61200000
+토요일 주차장 운영종료시간Holiday휴일 주차장 운영시간(1..2)휴일 주차장 운영시간opertn_start_time휴일 주차장 운영시작시간61080000
+휴일 주차장 운영시작시간opertn_end_time휴일 주차장 운영종료시간61200000
+휴일 주차장 운영종료시간opertn_bs_free_time주차장 기본회차(기본무료)시간4130주차장 기본회차(기본무료)시간basic_info주차요금 정보(1..4)주차요금 정보parking_chrge_bs_time기본시간4110기본시간parking_chrge_bs_chrg기본요금411000기본요금parking_chrge_adit_unit_time추가단위시간4120추가단위시간parking_chrge_adit_unit_chrge추가단위요금411000추가단위요금fxamt_info정액요금(1..2)정액요금parking_chrge_one_day_chrge1일 요금(전일)
+41100001일 요금(전일)
+parking_chrge_mon_unit_chrge월정액
+4150000월정액
+※ 항목구분 : 필수(1), 옵션(0), 1건 이상 복수건(1..n), 0건 또는 복수건(0..n)
+d) 요청/응답 메시지 예제
+요청메시지http://apis.data.go.kr/B553881/Parking/PrkOprInfo?serviceKey=인증키(URL_Encode)&numOfRows=10&pageNo=1&format=1응답메시지Json 응답 메시지 예제
+{
+"resultCode": "0",
+"resultMsg" : "SUCCESS “, 
+"numOfRows" : "10", 
+"pageNo" : "1",
+"totalCount" : "100",
+"PrkOprInfo": [
+{
+"prk_center_id" : "12345-67890-12345-12-1", 
+"Sunday" : {
+		 "opertn_start_time": "080000",
+                 "opertn_end_time": "200000"
+		},
+"Monday" : {
+		 "opertn_start_time": "080000",
+                 "opertn_end_time": "200000"
+		},
+"Tuesday" : {
+		 "opertn_start_time": "080000",
+                 "opertn_end_time": "200000"
+		},
+"Wednesday" : {
+		 "opertn_start_time": "080000",
+                 "opertn_end_time": "200000"
+		},
+"Thursday" : {
+		 "opertn_start_time": "080000",
+                 "opertn_end_time": "200000"
+		},
+"Friday" : {
+		 "opertn_start_time": "080000",
+                 "opertn_end_time": "200000"
+		},
+"Saturday" : {
+		 "opertn_start_time": "080000",
+　　　　　　　　　"opertn_end_time": "200000"
+		},
+"Holiday" : {
+		 "opertn_start_time": "080000",
+                 "opertn_end_time": "200000"
+		},
+"opertn_bs_free_time" : "30", 
+"basic_info" : {
+"parking_chrge_bs_time": "10",
+"parking_chrge_bs_chrge": "1000",
+"parking_chrge_adit_unit_time": "20",
+"parking_chrge_adit_unit_chrge": "1000"
+},
+"fxamt_info" : {
+"parking_chrge_one_day_chrge": "10000",
+"parking_chrge_mon_unit_chrge": "50000"
+},
+},
+{
+"prk_center_id" : "12345-67890-12345-12-2", 
+"Sunday" : {
+		 "opertn_start_time": "080000",
+                 "opertn_end_time": "200000"
+		},
+"Monday" : {
+		 "opertn_start_time": "080000",
+                 "opertn_end_time": "200000"
+		},
+"Tuesday" : {
+		 "opertn_start_time": "080000",
+                 "opertn_end_time": "200000"
+		},
+"Wednesday" : {
+		 "opertn_start_time": "080000",
+                 "opertn_end_time": "200000"
+		},
+"Thursday" : {
+		 "opertn_start_time": "080000",
+                 "opertn_end_time": "200000"
+},
+"Friday" : {
+		 "opertn_start_time": "080000",
+　　　　　　　　"opertn_end_time": "200000"
+},
+"Saturday" : {
+		 "opertn_start_time": "080000",
+                 "opertn_end_time": "200000"
+		},
+"Holiday" : {
+		 "opertn_start_time": "080000",
+                 "opertn_end_time": "200000"		
+},
+"opertn_bs_free_time" : "30", 
+"basic_info" : {
+"parking_chrge_bs_time": "10",
+"parking_chrge_bs_chrge": "1000",
+"parking_chrge_adit_unit_time": "20",
+"parking_chrge_adit_unit_chrge": "1000"
+},
+"fxamt_info" : {
+"parking_chrge_one_day_chrge": "10000",
+"parking_chrge_mon_unit_chrge": "50000"
+},
+}
+]
+}xml 응답 메시지 예제
+<?xml version =“1.0” encoding=“utf-8”?>
+<response>
+<resultCode>0</resultCode>
+<resultMsg>SUCCESS</resultMsg>
+<numOfRows>10</numOfRows>
+<pageNo>1</pageNo>
+<totalCount>100</totalCount>
+<PrkOprInfo>
+<Prk>
+<prk_center_id>12345-67890-12345-12-1</prk_center_id>
+<Sunday>
+<opertn_start_time>080000</opertn_start_time>
+<opertn_end_time>200000</opertn_end_time>
+</Sunday>
+<Monday>
+<opertn_start_time>080000</opertn_start_time>
+<opertn_end_time>200000</opertn_end_time>
+</Monday>
+<Tuesday>
+<opertn_start_time>080000</opertn_start_time>
+<opertn_end_time>200000</opertn_end_time>
+</Tuesday>
+<Wednesday>
+<opertn_start_time>080000</opertn_start_time>
+<opertn_end_time>200000</opertn_end_time>
+</Wednesday>
+<Thursday>
+<opertn_start_time>080000</opertn_start_time>
+<opertn_end_time>200000</opertn_end_time>
+</Thursday>
+<Friday>
+<opertn_start_time>080000</opertn_start_time>
+<opertn_end_time>200000</opertn_end_time>
+</Friday>
+<Saturday>
+<opertn_start_time>080000</opertn_start_time>
+<opertn_end_time>200000</opertn_end_time>
+</Saturday>
+<Holiday>
+<opertn_start_time>080000</opertn_start_time>
+<opertn_end_time>200000</opertn_end_time>
+</Holiday>
+<opertn_bs_free_time>30</opertn_bs_free_time>
+<basic_info>
+<parking_chrge_bs_time>10</parking_chrge_bs_time>
+<parking_chrge_bs_chrge>1000</parking_chrge_bs_chrge>
+<parking_chrge_adit_unit_time>20</parking_chrge_adit_unit_time>
+<parking_chrge_adit_unit_chrge>1000</parking_chrge_adit_unit_chrge>
+</basic_info>
+<fxamt_info>
+<parking_chrge_one_day_chrge>10000</parking_chrge_one_day_chrge>
+<parking_chrge_mon_unit_chrge>50000</parking_chrge_mon_unit_chrge>
+</fxamt_info>
+</Prk>
+<Prk>
+<prk_center_id>12345-67890-12345-12-2</prk_center_id>
+<Sunday>
+<opertn_start_time>080000</opertn_start_time>
+<opertn_end_time>200000</opertn_end_time>
+</Sunday>
+<Monday>
+<opertn_start_time>080000</opertn_start_time>
+<opertn_end_time>200000</opertn_end_time>
+</Monday>
+<Tuesday>
+<opertn_start_time>080000</opertn_start_time>
+<opertn_end_time>200000</opertn_end_time>
+</Tuesday>
+<Wednesday>
+<opertn_start_time>080000</opertn_start_time>
+<opertn_end_time>200000</opertn_end_time>
+</Wednesday>
+<Thursday>
+<opertn_start_time>080000</opertn_start_time>
+<opertn_end_time>200000</opertn_end_time>
+</Thursday>
+<Friday>
+<opertn_start_time>080000</opertn_start_time>
+<opertn_end_time>200000</opertn_end_time>
+</Friday>
+<Saturday>
+<opertn_start_time>080000</opertn_start_time>
+<opertn_end_time>200000</opertn_end_time>
+</Saturday>
+<Holiday>
+<opertn_start_time>080000</opertn_start_time>
+<opertn_end_time>200000</opertn_end_time>
+</Holiday>
+<opertn_bs_free_time>30</opertn_bs_free_time>
+<basic_info>
+<parking_chrge_bs_time>10</parking_chrge_bs_time>
+<parking_chrge_bs_chrge>1000</parking_chrge_bs_chrge>
+<parking_chrge_adit_unit_time>20</parking_chrge_adit_unit_time>
+<parking_chrge_adit_unit_chrge>1000</parking_chrge_adit_unit_chrge>
+</basic_info>
+<fxamt_info>
+<parking_chrge_one_day_chrge>10000</parking_chrge_one_day_chrge>
+<parking_chrge_mon_unit_chrge>50000</parking_chrge_mon_unit_chrge>
+</fxamt_info>
+</Prk>
+</PrkOprInfo>
+</response>
+
+3) [주차장 실시간 정보] 상세기능명세
+a) 상세기능정보
+상세기능 번호3상세기능 유형조회 (목록)상세기능명(국문)주차장 실시간 정보상세기능 설명주차정보시스템에 수집된 전국 주차장 정보의 실시간 주차면수 정보를 조회하는 기능Call Back URLhttp://apis.data.go.kr/B553881/Parking/PrkRealtimeInfo최대 메시지 사이즈[4000] byte평균 응답 시간[3000] ms초당 최대 트랙잭션[30] tpsb) 요청 메시지 명세 
+항목명(영문)항목명(국문)항목크기항목구분샘플데이터항목설명serviceKey인증키1001인증키
+(URL Encode)공공데이터포털에서 발급받은 인증키numOfRows한 페이지 결과 수4110한 페이지 결과 수pageNo페이지 번호411페이지 번호format응답 데이터 형식111XML : 1,
+JSON : 2※ 항목구분 : 필수(1), 옵션(0) 
+c) 응답 메시지 명세
+항목명(영문)항목명(국문)항목크기항목구분샘플데이터항목설명resultCode결과코드2100결과코드resultMsg결과메세지501정상결과메시지numOfRows한 페이지 결과 수4110한 페이지 결과 수pageNo페이지 수411페이지 수totalCount데이터 총 개수41100데이터 총 개수PrkRealtimeInfo주차장실시간정보 리스트(1..n)주차장실시간정보 리스트prk_center_id주차장 관리 ID
+(또는 확장ID)22112345-67890-12345-12-1주차장 관리 ID
+(또는 확장ID)pkfc_ParkingLots_total주차장의 총 주차 구획 수4110주차장의 총 주차 구획 수pkfc_Available_ParkingLots_total주차장의 총 주차가능 구획 수
+415주차장의 총 주차가능 구획 수
+※ 항목구분 : 필수(1), 옵션(0), 1건 이상 복수건(1..n), 0건 또는 복수건(0..n)
+d) 요청/응답 메시지 예제
+요청메시지http://apis.data.go.kr/B553881/Parking/PrkRealtimeInfo?serviceKey=인증키(URL_Encode)&numOfRows=10&pageNo=1&format=1응답메시지Json 응답 메시지 예제
+{
+"resultCode": "0",
+"resultMsg" : "SUCCESS “, 
+"numOfRows" : "10", 
+"pageNo" : "1",
+"totalCount" : "100",
+"PrkRealtimeInfo": [
+{
+     "prk_center_id" : "12345-67890-12345-12-1", 
+     "pkfc_ParkingLots_total" : "10", 
+     "pkfc_Available_ParkingLots_total" : "5"
+},
+{
+     "prk_center_id" : "12345-67890-12345-12-2", 
+     "pkfc-ParkingLots-total" : "10", 
+     "pkfc_Available_ParkingLots_total" : "5"
+}
+]
+}
+ }
+xml 응답 메시지 예제
+<?xml version =“1.0” encoding=“utf-8”?>
+<response>
+<resultCode>0</resultCode>
+<resultMsg> SUCCESS </resultMsg>
+<numOfRows>10</numOfRows>
+<pageNo>1</pageNo>
+<totalCount>100</totalCount>
+<PrkRealtimeInfo>
+<Prk>
+<prk_center_id>12345-67890-12345-12-1</prk_center_id>
+<pkfc_ParkingLots_total>10</pkfc_ParkingLots_total>
+<pkfc_Available_ParkingLots_total>5</pkfc_Available_ParkingLots_total>
+</Prk>
+<Prk>
+<prk_center_id>12345-67890-12345-12-2</prk_center_id>
+<pkfc_ParkingLots_total>10</pkfc_ParkingLots_total>
+<pkfc_Available_ParkingLots_total>5</pkfc_Available_ParkingLots_total>
+</Prk>
+</PrkRealtimeInfo>
+</response>
+
+
+
+2. OpenAPI 에러 코드정리
+2-1 공공데이터 포털 에러코드
+에러코드에러메시지설명4HTTP에러HTTP에러12NO_OPENAPI_SERVICE_ERROR해당 오픈API서비스가 없거나 폐기됨20SERVICE_ACCESS_DENIED_ERROR서비스 접근거부22LIMITED_NUMBER_OF_SERVICE_REQUESTS_EXCEEDS_ERROR서비스 요청제한횟수 초과에러30SERVICE_KEY_IS_NOT_REGISTERED_ERROR등록되지 않은 서비스키31DEADLINE_HAS_EXPIRED_ERROR활용기간만료32UNREGISTERED_IP_ERROR등록되지 않은 IP99UNKNOWN_ERROR기타에러※ 공공데이터포털에서 출력되는 오류메세지는 XML로만 출력되며, 형태는 아래와 같습니다.
+<OpenAPI_ServiceResponse>
+<cmmMsgHeader>
+<errMsg>SERVICE ERROR</errMsg>
+<returnAuthMsg>SERVICE_KEY_IS_NOT_REGISTERED_ERROR</returnAuthMsg>
+<returnReasonCode>30</returnReasonCode>
+</cmmMsgHeader>
+</OpenAPI_ServiceResponse>
+
+
+
+2-2 제공기관 에러코드
+에러코드에러메시지설명12NO_OPENAPI_SERVICE_ERROR해당 오픈API서비스가 없거나 폐기됨99UNKNOWN_ERROR기타에러
+
+
+- 19 -
+
+
+
+

@@ -1,0 +1,123 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800">
+  <!-- 스타일 정의 -->
+  <style>
+    .frame { fill: #f8f9fa; stroke: #333; stroke-width: 2; }
+    .header { fill: #e9ecef; stroke: #333; stroke-width: 1; }
+    .footer { fill: #e9ecef; stroke: #333; stroke-width: 1; }
+    .section { fill: #ffffff; stroke: #ddd; stroke-width: 1; }
+    .button { fill: #4dabf7; stroke: #339af0; stroke-width: 1; rx: 5; ry: 5; }
+    .search { fill: #ffffff; stroke: #333; stroke-width: 1; rx: 5; ry: 5; }
+    .marker { fill: #ff6b6b; stroke: #fa5252; stroke-width: 1; }
+    .list-item { fill: #ffffff; stroke: #ddd; stroke-width: 1; }
+    .text { font-family: Arial, sans-serif; }
+    .title { font-size: 24px; font-weight: bold; }
+    .subtitle { font-size: 18px; }
+    .label { font-size: 14px; }
+    .small { font-size: 12px; }
+    .icon { font-size: 18px; font-family: "FontAwesome", Arial; }
+    .map { fill: #e9ecef; stroke: #ced4da; stroke-width: 1; }
+    .rating { fill: #ffd43b; stroke: #fab005; stroke-width: 1; }
+    .gray-bg { fill: #f1f3f5; }
+    .highlight { fill: #d0ebff; }
+    .chart { fill: #4dabf7; stroke: #339af0; stroke-width: 1; }
+    .navbar { fill: #343a40; stroke: none; }
+    .navbar-text { fill: #ffffff; }
+    .sidebar { fill: #f8f9fa; stroke: #dee2e6; stroke-width: 1; }
+  </style>
+
+  <!-- 페이지 제목 -->
+  <text x="600" y="40" text-anchor="middle" class="text title">3. 주차장 상세 정보 (detail.jsp)</text>
+    
+  <!-- 프레임 -->
+  <rect x="50" y="70" width="1100" height="670" class="frame" />
+    
+  <!-- 상단 네비게이션 바 -->
+  <rect x="50" y="70" width="1100" height="60" class="navbar" />
+  <text x="120" y="110" class="text subtitle navbar-text">스마트 주차 가이드</text>
+  
+  <!-- 네비게이션 메뉴 -->
+  <text x="500" y="110" class="text label navbar-text">홈</text>
+  <text x="600" y="110" class="text label navbar-text">검색</text>
+  <text x="700" y="110" class="text label navbar-text">대시보드</text>
+  <text x="830" y="110" class="text label navbar-text">커뮤니티</text>
+  
+  <!-- 로그인/회원가입 영역 -->
+  <text x="1000" y="110" class="text label navbar-text">로그인</text>
+  <text x="1080" y="110" class="text label navbar-text">회원가입</text>
+  
+  <!-- 주차장 기본 정보 헤더 -->
+  <rect x="50" y="130" width="1100" height="100" class="section" />
+  <text x="100" y="165" class="text title">서울시청 지하 주차장</text>
+  <text x="100" y="195" class="text small">서울특별시 중구 세종대로 110 | 📞 02-123-4567</text>
+  <text x="100" y="220" class="text small">🌟 4.5/5 (48건의 리뷰)</text>
+  
+  <!-- 액션 버튼 영역 -->
+  <rect x="700" y="150" width="120" height="40" class="button" />
+  <text x="760" y="175" text-anchor="middle" class="text label" fill="white">길 안내</text>
+  
+  <rect x="840" y="150" width="120" height="40" class="button" />
+  <text x="900" y="175" text-anchor="middle" class="text label" fill="white">즐겨찾기</text>
+  
+  <rect x="980" y="150" width="120" height="40" class="button" />
+  <text x="1040" y="175" text-anchor="middle" class="text label" fill="white">리뷰 작성</text>
+  
+  <!-- 콘텐츠 탭 메뉴 -->
+  <rect x="50" y="230" width="275" height="50" class="section highlight" />
+  <text x="187" y="260" text-anchor="middle" class="text label">기본 정보</text>
+  
+  <rect x="325" y="230" width="275" height="50" class="section" />
+  <text x="462" y="260" text-anchor="middle" class="text label">리뷰 (48)</text>
+  
+  <rect x="600" y="230" width="275" height="50" class="section" />
+  <text x="737" y="260" text-anchor="middle" class="text label">시설 안내</text>
+  
+  <rect x="875" y="230" width="275" height="50" class="section" />
+  <text x="1012" y="260" text-anchor="middle" class="text label">주변 정보</text>
+  
+  <!-- 좌측 주차장 정보 영역 -->
+  <rect x="50" y="280" width="650" height="410" class="section" />
+  <text x="80" y="315" class="text subtitle">운영 정보</text>
+  <text x="80" y="345" class="text small">• 운영시간: 24시간</text>
+  <text x="80" y="370" class="text small">• 요금: 시간당 4,000원 (최대 30,000원)</text>
+  <text x="80" y="395" class="text small">• 총 주차 가능 대수: 120대</text>
+  <text x="80" y="420" class="text small">• 현재 남은 자리: 35대</text>
+  <text x="80" y="445" class="text small">• 결제 방법: 현금, 신용카드, 교통카드</text>
+  <text x="80" y="470" class="text small">• 최대 주차 가능 높이: 2.3m</text>
+  <text x="80" y="495" class="text small">• 장애인 주차구역: 8대</text>
+  
+  <text x="80" y="535" class="text subtitle">혼잡도 정보</text>
+  
+  <!-- 간단한 차트 표현 -->
+  <rect x="80" y="555" width="580" height="70" fill="none" stroke="#ddd" />
+  <rect x="90" y="565" width="83" height="50" fill="#74c0fc" />
+  <rect x="173" y="565" width="83" height="50" fill="#4dabf7" />
+  <rect x="256" y="565" width="83" height="50" fill="#339af0" />
+  <rect x="339" y="565" width="83" height="50" fill="#4dabf7" />
+  <rect x="422" y="565" width="83" height="50" fill="#74c0fc" />
+  <rect x="505" y="565" width="83" height="50" fill="#a5d8ff" />
+  <rect x="588" y="565" width="60" height="50" fill="#a5d8ff" />
+  
+  <text x="131" y="640" class="text small" text-anchor="middle">오전</text>
+  <text x="214" y="640" class="text small" text-anchor="middle">오후</text>
+  <text x="297" y="640" class="text small" text-anchor="middle">저녁</text>
+  <text x="380" y="640" class="text small" text-anchor="middle">밤</text>
+  <text x="463" y="640" class="text small" text-anchor="middle">심야</text>
+  <text x="546" y="640" class="text small" text-anchor="middle">새벽</text>
+  <text x="618" y="640" class="text small" text-anchor="middle">현재</text>
+  
+  <!-- 우측 지도 및 위치 정보 -->
+  <rect x="720" y="280" width="430" height="410" class="section" />
+  <rect x="740" y="300" width="390" height="240" class="map" />
+  <circle cx="935" cy="420" r="10" class="marker" />
+  
+  <!-- 위치 정보 -->
+  <text x="760" y="570" class="text small">• 주소: 서울특별시 중구 세종대로 110</text>
+  <text x="760" y="595" class="text small">• 인근 지하철: 시청역 (1호선, 2호선) 도보 3분</text>
+  <text x="760" y="620" class="text small">• 인근 버스: 101, 150, 402, 501, 506번</text>
+  <text x="760" y="645" class="text small">• 주변 시설: 서울시청, 덕수궁, 서울 시립 도서관</text>
+  
+  <!-- 하단 푸터 -->
+  <rect x="50" y="690" width="1100" height="50" class="footer" />
+  <text x="120" y="720" class="text small">© 2023 스마트 주차 가이드. All rights reserved.</text>
+  <text x="950" y="720" class="text small">이용약관 | 개인정보처리방침 | 문의하기</text>
+</svg>

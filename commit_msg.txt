@@ -1,5 +1,0 @@
-refactor: 컨트롤러 구조 개선
-
-- PageController 생성하여 모든 페이지 뷰 반환 로직 통합
-- UserController에서 페이지 반환 로직 제거하고 비즈니스 로직만 남김
-- HomeController 삭제 및 기능을 PageController로 통합 

@@ -1,0 +1,146 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800">
+  <!-- 스타일 정의 -->
+  <style>
+    .frame { fill: #f8f9fa; stroke: #333; stroke-width: 2; }
+    .header { fill: #e9ecef; stroke: #333; stroke-width: 1; }
+    .footer { fill: #e9ecef; stroke: #333; stroke-width: 1; }
+    .section { fill: #ffffff; stroke: #ddd; stroke-width: 1; }
+    .button { fill: #4dabf7; stroke: #339af0; stroke-width: 1; rx: 5; ry: 5; }
+    .cancel-button { fill: #f1f3f5; stroke: #adb5bd; stroke-width: 1; rx: 5; ry: 5; }
+    .search { fill: #ffffff; stroke: #333; stroke-width: 1; rx: 5; ry: 5; }
+    .marker { fill: #ff6b6b; stroke: #fa5252; stroke-width: 1; }
+    .list-item { fill: #ffffff; stroke: #ddd; stroke-width: 1; }
+    .text { font-family: Arial, sans-serif; }
+    .title { font-size: 24px; font-weight: bold; }
+    .subtitle { font-size: 18px; }
+    .label { font-size: 14px; }
+    .small { font-size: 12px; }
+    .icon { font-size: 18px; font-family: "FontAwesome", Arial; }
+    .map { fill: #e9ecef; stroke: #ced4da; stroke-width: 1; }
+    .rating { fill: #ffd43b; stroke: #fab005; stroke-width: 1; }
+    .gray-bg { fill: #f1f3f5; }
+    .highlight { fill: #d0ebff; }
+    .chart { fill: #4dabf7; stroke: #339af0; stroke-width: 1; }
+    .chart-low { fill: #74c0fc; }
+    .chart-medium { fill: #4dabf7; }
+    .chart-high { fill: #228be6; }
+    .chart-very-high { fill: #1864ab; }
+    .navbar { fill: #343a40; stroke: none; }
+    .navbar-text { fill: #ffffff; }
+    .sidebar { fill: #f8f9fa; stroke: #dee2e6; stroke-width: 1; }
+  </style>
+
+  <!-- 페이지 제목 -->
+  <text x="600" y="40" text-anchor="middle" class="text title">7. 혼잡도 대시보드 (dashboard.jsp)</text>
+    
+  <!-- 프레임 -->
+  <rect x="50" y="70" width="1100" height="670" class="frame" />
+    
+  <!-- 상단 네비게이션 바 -->
+  <rect x="50" y="70" width="1100" height="60" class="navbar" />
+  <text x="120" y="110" class="text subtitle navbar-text">스마트 주차 가이드</text>
+  
+  <!-- 네비게이션 메뉴 -->
+  <text x="500" y="110" class="text label navbar-text">홈</text>
+  <text x="600" y="110" class="text label navbar-text">검색</text>
+  <text x="700" y="110" class="text label navbar-text">대시보드</text>
+  <text x="830" y="110" class="text label navbar-text">커뮤니티</text>
+  
+  <!-- 로그인 영역 - 사용자 로그인 상태 -->
+  <text x="1050" y="110" class="text label navbar-text">사용자님 ▼</text>
+  
+  <!-- 대시보드 헤더 및 필터 영역 -->
+  <rect x="50" y="130" width="1100" height="80" class="section" />
+  <text x="80" y="165" class="text title">주차장 혼잡도 대시보드</text>
+  <text x="80" y="195" class="text small">실시간 혼잡도 정보와 추이를 확인할 수 있습니다.</text>
+  
+  <!-- 필터 영역 -->
+  <text x="700" y="165" class="text label">지역:</text>
+  <rect x="750" y="145" width="150" height="40" class="search" />
+  <text x="770" y="170" class="text small">서울시 전체 ▼</text>
+  
+  <text x="920" y="165" class="text label">날짜:</text>
+  <rect x="970" y="145" width="150" height="40" class="search" />
+  <text x="990" y="170" class="text small">2023-11-15 ▼</text>
+  
+  <!-- 탭 메뉴 -->
+  <rect x="50" y="210" width="367" height="50" class="section highlight" />
+  <text x="233" y="240" text-anchor="middle" class="text label">지역별 혼잡도</text>
+  
+  <rect x="417" y="210" width="367" height="50" class="section" />
+  <text x="600" y="240" text-anchor="middle" class="text label">시간대별 혼잡도</text>
+  
+  <rect x="784" y="210" width="366" height="50" class="section" />
+  <text x="967" y="240" text-anchor="middle" class="text label">주간 혼잡도 추이</text>
+  
+  <!-- 지역별 혼잡도 차트 영역 -->
+  <rect x="50" y="260" width="1100" height="450" class="section" />
+  
+  <!-- 상단 통계 카드 -->
+  <rect x="80" y="280" width="320" height="100" class="section highlight" />
+  <text x="100" y="310" class="text subtitle">현재 혼잡도 평균</text>
+  <text x="100" y="350" class="text title">67.4%</text>
+  <text x="200" y="350" class="text small">전일 대비 +5.2%</text>
+  
+  <rect x="430" y="280" width="320" height="100" class="section highlight" />
+  <text x="450" y="310" class="text subtitle">가장 혼잡한 지역</text>
+  <text x="450" y="350" class="text title">강남구 (82.3%)</text>
+  <text x="600" y="350" class="text small">전일 대비 +7.8%</text>
+  
+  <rect x="780" y="280" width="320" height="100" class="section highlight" />
+  <text x="800" y="310" class="text subtitle">가장 여유 있는 지역</text>
+  <text x="800" y="350" class="text title">송파구 (34.6%)</text>
+  <text x="950" y="350" class="text small">전일 대비 -2.1%</text>
+  
+  <!-- 지역별 혼잡도 바 차트 -->
+  <rect x="80" y="400" width="1040" height="220" fill="none" stroke="#ddd" />
+  
+  <!-- 지역별 차트 바 -->
+  <rect x="120" y="520" width="80" height="60" class="chart-medium" />
+  <rect x="220" y="500" width="80" height="80" class="chart-medium" />
+  <rect x="320" y="460" width="80" height="120" class="chart-high" />
+  <rect x="420" y="420" width="80" height="160" class="chart-very-high" />
+  <rect x="520" y="480" width="80" height="100" class="chart-high" />
+  <rect x="620" y="540" width="80" height="40" class="chart-low" />
+  <rect x="720" y="500" width="80" height="80" class="chart-medium" />
+  <rect x="820" y="530" width="80" height="50" class="chart-low" />
+  <rect x="920" y="490" width="80" height="90" class="chart-high" />
+  <rect x="1020" y="510" width="80" height="70" class="chart-medium" />
+  
+  <!-- 지역 레이블 -->
+  <text x="160" y="595" class="text small" text-anchor="middle">종로구</text>
+  <text x="260" y="595" class="text small" text-anchor="middle">중구</text>
+  <text x="360" y="595" class="text small" text-anchor="middle">용산구</text>
+  <text x="460" y="595" class="text small" text-anchor="middle">강남구</text>
+  <text x="560" y="595" class="text small" text-anchor="middle">서초구</text>
+  <text x="660" y="595" class="text small" text-anchor="middle">송파구</text>
+  <text x="760" y="595" class="text small" text-anchor="middle">마포구</text>
+  <text x="860" y="595" class="text small" text-anchor="middle">성동구</text>
+  <text x="960" y="595" class="text small" text-anchor="middle">영등포구</text>
+  <text x="1060" y="595" class="text small" text-anchor="middle">동대문구</text>
+  
+  <!-- 차트 안내 및 범례 -->
+  <rect x="80" y="630" width="1040" height="50" fill="none" />
+  <rect x="100" y="640" width="20" height="20" class="chart-low" />
+  <text x="130" y="655" class="text small">여유 (0~40%)</text>
+  
+  <rect x="220" y="640" width="20" height="20" class="chart-medium" />
+  <text x="250" y="655" class="text small">보통 (41~60%)</text>
+  
+  <rect x="340" y="640" width="20" height="20" class="chart-high" />
+  <text x="370" y="655" class="text small">혼잡 (61~80%)</text>
+  
+  <rect x="460" y="640" width="20" height="20" class="chart-very-high" />
+  <text x="490" y="655" class="text small">매우 혼잡 (81~100%)</text>
+  
+  <text x="880" y="655" class="text small">데이터 기준: 2023-11-15 14:30 현재</text>
+  
+  <!-- 하단 다운로드 버튼 -->
+  <rect x="960" y="635" width="160" height="40" class="button" />
+  <text x="1040" y="660" text-anchor="middle" class="text label" fill="white">데이터 다운로드</text>
+  
+  <!-- 하단 푸터 -->
+  <rect x="50" y="710" width="1100" height="30" class="footer" />
+  <text x="120" y="730" class="text small">© 2023 스마트 주차 가이드. All rights reserved.</text>
+  <text x="950" y="730" class="text small">이용약관 | 개인정보처리방침 | 문의하기</text>
+</svg>

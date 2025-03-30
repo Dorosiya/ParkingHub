@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800">
+  <!-- 스타일 정의 -->
+  <style>
+    .frame { fill: #f8f9fa; stroke: #333; stroke-width: 2; }
+    .header { fill: #e9ecef; stroke: #333; stroke-width: 1; }
+    .footer { fill: #e9ecef; stroke: #333; stroke-width: 1; }
+    .section { fill: #ffffff; stroke: #ddd; stroke-width: 1; }
+    .button { fill: #4dabf7; stroke: #339af0; stroke-width: 1; rx: 5; ry: 5; }
+    .input { fill: #ffffff; stroke: #ced4da; stroke-width: 1; rx: 5; ry: 5; }
+    .text { font-family: Arial, sans-serif; }
+    .title { font-size: 24px; font-weight: bold; }
+    .subtitle { font-size: 18px; }
+    .label { font-size: 14px; }
+    .small { font-size: 12px; }
+    .icon { font-size: 18px; font-family: "FontAwesome", Arial; }
+    .logo { font-size: 28px; font-weight: bold; }
+    .navbar { fill: #343a40; stroke: none; }
+    .navbar-text { fill: #ffffff; }
+    .form-check { fill: #dee2e6; stroke: #adb5bd; stroke-width: 1; }
+    .form-check-active { fill: #4dabf7; stroke: #339af0; stroke-width: 1; }
+    .link-text { fill: #4dabf7; }
+    .divider { stroke: #dee2e6; stroke-width: 1; }
+  </style>
+
+  <!-- 페이지 제목 -->
+  <text x="600" y="40" text-anchor="middle" class="text title">Parking Hub 데스크톱 와이어프레임 - 로그인 (최종)</text>
+    
+  <!-- 프레임 -->
+  <rect x="50" y="70" width="1100" height="670" class="frame" />
+    
+  <!-- 상단 네비게이션 바 -->
+  <rect x="50" y="70" width="1100" height="60" class="navbar" />
+  <text x="140" y="110" class="text logo navbar-text">Parking Hub</text>
+  
+  <!-- 네비게이션 메뉴 -->
+  <text x="500" y="110" class="text label navbar-text">홈</text>
+  <text x="600" y="110" class="text label navbar-text">검색</text>
+  <text x="700" y="110" class="text label navbar-text">대시보드</text>
+  <text x="830" y="110" class="text label navbar-text">커뮤니티</text>
+  
+  <!-- 로그인/회원가입 영역 -->
+  <text x="1000" y="110" class="text label navbar-text">로그인</text>
+  <text x="1080" y="110" class="text label navbar-text">회원가입</text>
+  
+  <!-- 로그인 폼 영역 - 간소화된 버전 -->
+  <rect x="350" y="160" width="500" height="400" class="section" />
+  <text x="600" y="200" text-anchor="middle" class="text title">로그인</text>
+  <text x="600" y="230" text-anchor="middle" class="text small">Parking Hub에 오신 것을 환영합니다.</text>
+  
+  <!-- 로그인 입력 폼 -->
+  <text x="400" y="280" class="text label">이메일</text>
+  <rect x="400" y="290" width="400" height="40" class="input" />
+  <text x="420" y="315" class="text small" fill="#adb5bd">name@example.com</text>
+  
+  <text x="400" y="350" class="text label">비밀번호</text>
+  <rect x="400" y="360" width="400" height="40" class="input" />
+  <text x="420" y="385" class="text small" fill="#adb5bd">비밀번호를 입력하세요</text>
+  
+  <!-- 계정 찾기 링크 -->
+  <text x="550" y="425" class="text small link-text" text-anchor="middle">아이디 찾기</text>
+  <line x1="600" y1="420" x2="600" y2="430" class="divider" />
+  <text x="650" y="425" class="text small link-text" text-anchor="middle">비밀번호 찾기</text>
+  
+  <!-- 로그인 버튼 -->
+  <rect x="400" y="450" width="400" height="50" class="button" />
+  <text x="600" y="480" text-anchor="middle" class="text label" fill="white">로그인</text>
+  
+  <!-- 회원가입 링크 -->
+  <text x="600" y="520" text-anchor="middle" class="text small">아직 회원이 아니신가요? <tspan class="link-text">회원가입하기</tspan></text>
+  
+  <!-- 하단 푸터 -->
+  <rect x="50" y="730" width="1100" height="40" class="footer" />
+  <text x="120" y="755" class="text small">© 2023 Parking Hub. All rights reserved.</text>
+  <text x="950" y="755" class="text small">이용약관 | 개인정보처리방침 | 문의하기</text>
+</svg>

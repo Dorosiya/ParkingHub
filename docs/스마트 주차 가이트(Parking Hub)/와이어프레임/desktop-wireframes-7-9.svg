@@ -1,0 +1,343 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 2000">
+  <!-- 스타일 정의 -->
+  <style>
+    .frame { fill: #f8f9fa; stroke: #333; stroke-width: 2; }
+    .header { fill: #e9ecef; stroke: #333; stroke-width: 1; }
+    .footer { fill: #e9ecef; stroke: #333; stroke-width: 1; }
+    .section { fill: #ffffff; stroke: #ddd; stroke-width: 1; }
+    .button { fill: #4dabf7; stroke: #339af0; stroke-width: 1; rx: 5; ry: 5; }
+    .cancel-button { fill: #f1f3f5; stroke: #adb5bd; stroke-width: 1; rx: 5; ry: 5; }
+    .search { fill: #ffffff; stroke: #333; stroke-width: 1; rx: 5; ry: 5; }
+    .marker { fill: #ff6b6b; stroke: #fa5252; stroke-width: 1; }
+    .list-item { fill: #ffffff; stroke: #ddd; stroke-width: 1; }
+    .text { font-family: Arial, sans-serif; }
+    .title { font-size: 20px; font-weight: bold; }
+    .subtitle { font-size: 16px; }
+    .label { font-size: 14px; }
+    .small { font-size: 12px; }
+    .icon { font-size: 18px; font-family: "FontAwesome", Arial; }
+    .map { fill: #e9ecef; stroke: #ced4da; stroke-width: 1; }
+    .rating { fill: #ffd43b; stroke: #fab005; stroke-width: 1; }
+    .gray-bg { fill: #f1f3f5; }
+    .highlight { fill: #d0ebff; }
+    .chart { fill: #4dabf7; stroke: #339af0; stroke-width: 1; }
+    .chart-low { fill: #74c0fc; }
+    .chart-medium { fill: #4dabf7; }
+    .chart-high { fill: #228be6; }
+    .chart-very-high { fill: #1864ab; }
+    .navbar { fill: #343a40; stroke: none; }
+    .navbar-text { fill: #ffffff; }
+    .sidebar { fill: #f8f9fa; stroke: #dee2e6; stroke-width: 1; }
+    .form-check { fill: #dee2e6; stroke: #adb5bd; stroke-width: 1; }
+    .form-check-active { fill: #4dabf7; stroke: #339af0; stroke-width: 1; }
+    .textarea { fill: #ffffff; stroke: #ced4da; stroke-width: 1; }
+    .admin-menu { fill: #212529; stroke: none; }
+    .admin-menu-text { fill: #f8f9fa; }
+    .admin-menu-active { fill: #4dabf7; stroke: none; }
+  </style>
+
+  <!-- 페이지 제목 -->
+  <text x="600" y="40" text-anchor="middle" class="text title">스마트 주차 가이드 데스크톱 와이어프레임 (7-9)</text>
+
+  <!-- 7. 혼잡도 대시보드 -->
+  <g transform="translate(0, 80)">
+    <!-- 프레임 -->
+    <rect x="50" y="0" width="1100" height="600" class="frame" />
+    <text x="600" y="30" text-anchor="middle" class="text title">7. 혼잡도 대시보드 (dashboard.jsp)</text>
+    
+    <!-- 상단 네비게이션 바 -->
+    <rect x="50" y="60" width="1100" height="60" class="navbar" />
+    <text x="120" y="100" class="text subtitle navbar-text">스마트 주차 가이드</text>
+    
+    <!-- 네비게이션 메뉴 -->
+    <text x="500" y="100" class="text label navbar-text">홈</text>
+    <text x="600" y="100" class="text label navbar-text">검색</text>
+    <text x="700" y="100" class="text label navbar-text">대시보드</text>
+    <text x="830" y="100" class="text label navbar-text">커뮤니티</text>
+    
+    <!-- 로그인 영역 - 사용자 로그인 상태 -->
+    <text x="1050" y="100" class="text label navbar-text">사용자님 ▼</text>
+    
+    <!-- 대시보드 헤더 및 필터 영역 -->
+    <rect x="50" y="120" width="1100" height="80" class="section" />
+    <text x="80" y="150" class="text title">주차장 혼잡도 대시보드</text>
+    <text x="80" y="180" class="text small">실시간 혼잡도 정보와 추이를 확인할 수 있습니다.</text>
+    
+    <!-- 필터 영역 -->
+    <text x="700" y="150" class="text label">지역:</text>
+    <rect x="750" y="130" width="150" height="40" class="search" />
+    <text x="770" y="155" class="text small">서울시 전체 ▼</text>
+    
+    <text x="920" y="150" class="text label">날짜:</text>
+    <rect x="970" y="130" width="150" height="40" class="search" />
+    <text x="990" y="155" class="text small">2023-11-15 ▼</text>
+    
+    <!-- 탭 메뉴 -->
+    <rect x="50" y="200" width="367" height="50" class="section highlight" />
+    <text x="233" y="230" text-anchor="middle" class="text label">지역별 혼잡도</text>
+    
+    <rect x="417" y="200" width="367" height="50" class="section" />
+    <text x="600" y="230" text-anchor="middle" class="text label">시간대별 혼잡도</text>
+    
+    <rect x="784" y="200" width="366" height="50" class="section" />
+    <text x="967" y="230" text-anchor="middle" class="text label">주간 혼잡도 추이</text>
+    
+    <!-- 지역별 혼잡도 차트 영역 -->
+    <rect x="50" y="250" width="1100" height="350" class="section" />
+    
+    <!-- 지역별 혼잡도 바 차트 -->
+    <rect x="100" y="280" width="1000" height="280" fill="none" stroke="#ddd" />
+    
+    <!-- 지역별 차트 바 -->
+    <rect x="150" y="460" width="80" height="60" class="chart-medium" />
+    <rect x="250" y="440" width="80" height="80" class="chart-medium" />
+    <rect x="350" y="400" width="80" height="120" class="chart-high" />
+    <rect x="450" y="360" width="80" height="160" class="chart-very-high" />
+    <rect x="550" y="420" width="80" height="100" class="chart-high" />
+    <rect x="650" y="480" width="80" height="40" class="chart-low" />
+    <rect x="750" y="440" width="80" height="80" class="chart-medium" />
+    <rect x="850" y="470" width="80" height="50" class="chart-low" />
+    <rect x="950" y="430" width="80" height="90" class="chart-high" />
+    
+    <!-- 지역 레이블 -->
+    <text x="190" y="485" class="text small" text-anchor="middle">종로구</text>
+    <text x="290" y="485" class="text small" text-anchor="middle">중구</text>
+    <text x="390" y="485" class="text small" text-anchor="middle">용산구</text>
+    <text x="490" y="485" class="text small" text-anchor="middle">강남구</text>
+    <text x="590" y="485" class="text small" text-anchor="middle">서초구</text>
+    <text x="690" y="485" class="text small" text-anchor="middle">송파구</text>
+    <text x="790" y="485" class="text small" text-anchor="middle">마포구</text>
+    <text x="890" y="485" class="text small" text-anchor="middle">성동구</text>
+    <text x="990" y="485" class="text small" text-anchor="middle">영등포구</text>
+    
+    <!-- 차트 안내 및 범례 -->
+    <rect x="100" y="510" width="1000" height="50" fill="none" />
+    <rect x="150" y="525" width="20" height="20" class="chart-low" />
+    <text x="180" y="540" class="text small">여유 (0~30%)</text>
+    
+    <rect x="300" y="525" width="20" height="20" class="chart-medium" />
+    <text x="330" y="540" class="text small">보통 (31~60%)</text>
+    
+    <rect x="450" y="525" width="20" height="20" class="chart-high" />
+    <text x="480" y="540" class="text small">혼잡 (61~80%)</text>
+    
+    <rect x="600" y="525" width="20" height="20" class="chart-very-high" />
+    <text x="630" y="540" class="text small">매우 혼잡 (81~100%)</text>
+    
+    <text x="850" y="540" class="text small">데이터 기준: 2023-11-15 14:30 현재</text>
+    
+    <!-- 하단 푸터 -->
+    <rect x="50" y="600" width="1100" height="50" class="footer" />
+    <text x="120" y="630" class="text small">© 2023 스마트 주차 가이드. All rights reserved.</text>
+    <text x="950" y="630" class="text small">이용약관 | 개인정보처리방침 | 문의하기</text>
+  </g>
+
+  <!-- 8. 알림 설정 -->
+  <g transform="translate(0, 730)">
+    <!-- 프레임 -->
+    <rect x="50" y="0" width="1100" height="600" class="frame" />
+    <text x="600" y="30" text-anchor="middle" class="text title">8. 알림 설정 (alert.jsp)</text>
+    
+    <!-- 상단 네비게이션 바 -->
+    <rect x="50" y="60" width="1100" height="60" class="navbar" />
+    <text x="120" y="100" class="text subtitle navbar-text">스마트 주차 가이드</text>
+    
+    <!-- 네비게이션 메뉴 -->
+    <text x="500" y="100" class="text label navbar-text">홈</text>
+    <text x="600" y="100" class="text label navbar-text">검색</text>
+    <text x="700" y="100" class="text label navbar-text">대시보드</text>
+    <text x="830" y="100" class="text label navbar-text">커뮤니티</text>
+    
+    <!-- 로그인 영역 - 사용자 로그인 상태 -->
+    <text x="1050" y="100" class="text label navbar-text">사용자님 ▼</text>
+    
+    <!-- 좌측 사이드바 메뉴 -->
+    <rect x="50" y="120" width="250" height="480" class="sidebar" />
+    
+    <rect x="50" y="120" width="250" height="60" class="section" />
+    <text x="70" y="155" class="text label">마이페이지</text>
+    
+    <rect x="50" y="180" width="250" height="60" class="section" />
+    <text x="70" y="215" class="text label">즐겨찾기</text>
+    
+    <rect x="50" y="240" width="250" height="60" class="section" />
+    <text x="70" y="275" class="text label">최근 이용 기록</text>
+    
+    <rect x="50" y="300" width="250" height="60" class="section highlight" />
+    <text x="70" y="335" class="text label">알림 설정</text>
+    
+    <rect x="50" y="360" width="250" height="60" class="section" />
+    <text x="70" y="395" class="text label">내가 쓴 리뷰</text>
+    
+    <rect x="50" y="420" width="250" height="60" class="section" />
+    <text x="70" y="455" class="text label">내가 쓴 글</text>
+    
+    <rect x="50" y="480" width="250" height="60" class="section" />
+    <text x="70" y="515" class="text label">설정</text>
+    
+    <!-- 메인 콘텐츠 영역 -->
+    <rect x="300" y="120" width="850" height="480" class="section" />
+    <text x="340" y="160" class="text title">알림 설정</text>
+    <text x="340" y="190" class="text small">주차장 상태에 따른 알림을 설정할 수 있습니다.</text>
+    
+    <!-- 알림 설정 현황 영역 -->
+    <rect x="340" y="220" width="770" height="60" class="section gray-bg" />
+    <text x="370" y="255" class="text label">현재 설정된 알림: 3개</text>
+    <rect x="970" y="230" width="120" height="40" class="button" />
+    <text x="1030" y="255" text-anchor="middle" class="text label" fill="white">새 알림 추가</text>
+    
+    <!-- 알림 목록 헤더 -->
+    <rect x="340" y="280" width="770" height="40" class="section gray-bg" />
+    <text x="370" y="305" class="text label">주차장</text>
+    <text x="550" y="305" class="text label">요일</text>
+    <text x="650" y="305" class="text label">시간</text>
+    <text x="750" y="305" class="text label">최소 가용 공간</text>
+    <text x="880" y="305" class="text label">상태</text>
+    <text x="990" y="305" class="text label">관리</text>
+    
+    <!-- 알림 설정 아이템 1 -->
+    <rect x="340" y="320" width="770" height="70" class="list-item" />
+    <text x="370" y="350" class="text label">서울시청 지하 주차장</text>
+    <text x="550" y="350" class="text small">월-금</text>
+    <text x="650" y="350" class="text small">18:00-21:00</text>
+    <text x="750" y="350" class="text small">5대 이상</text>
+    <text x="880" y="350" class="text small">활성화됨</text>
+    
+    <rect x="970" y="335" width="60" height="30" class="button" />
+    <text x="1000" y="355" text-anchor="middle" class="text small" fill="white">수정</text>
+    <rect x="1040" y="335" width="60" height="30" class="cancel-button" />
+    <text x="1070" y="355" text-anchor="middle" class="text small">삭제</text>
+    
+    <!-- 알림 설정 아이템 2 -->
+    <rect x="340" y="390" width="770" height="70" class="list-item" />
+    <text x="370" y="420" class="text label">강남역 지하 주차장</text>
+    <text x="550" y="420" class="text small">토-일</text>
+    <text x="650" y="420" class="text small">13:00-17:00</text>
+    <text x="750" y="420" class="text small">10대 이상</text>
+    <text x="880" y="420" class="text small">활성화됨</text>
+    
+    <rect x="970" y="405" width="60" height="30" class="button" />
+    <text x="1000" y="425" text-anchor="middle" class="text small" fill="white">수정</text>
+    <rect x="1040" y="405" width="60" height="30" class="cancel-button" />
+    <text x="1070" y="425" text-anchor="middle" class="text small">삭제</text>
+    
+    <!-- 알림 설정 아이템 3 -->
+    <rect x="340" y="460" width="770" height="70" class="list-item" />
+    <text x="370" y="490" class="text label">명동 공영주차장</text>
+    <text x="550" y="490" class="text small">월-일</text>
+    <text x="650" y="490" class="text small">10:00-12:00</text>
+    <text x="750" y="490" class="text small">3대 이상</text>
+    <text x="880" y="490" class="text small">비활성화</text>
+    
+    <rect x="970" y="475" width="60" height="30" class="button" />
+    <text x="1000" y="495" text-anchor="middle" class="text small" fill="white">수정</text>
+    <rect x="1040" y="475" width="60" height="30" class="cancel-button" />
+    <text x="1070" y="495" text-anchor="middle" class="text small">삭제</text>
+    
+    <!-- 하단 알림 정보 -->
+    <rect x="340" y="550" width="770" height="40" class="section" />
+    <text x="370" y="575" class="text small">※ 알림은 해당 시간에 최소 가용 공간이 충족될 때 브라우저에 표시됩니다.</text>
+    <text x="840" y="575" class="text small">※ 브라우저 알림 설정이 켜져 있어야 합니다.</text>
+    
+    <!-- 하단 푸터 -->
+    <rect x="50" y="600" width="1100" height="50" class="footer" />
+    <text x="120" y="630" class="text small">© 2023 스마트 주차 가이드. All rights reserved.</text>
+    <text x="950" y="630" class="text small">이용약관 | 개인정보처리방침 | 문의하기</text>
+  </g>
+
+  <!-- 9. 관리자 페이지 -->
+  <g transform="translate(0, 1380)">
+    <!-- 프레임 -->
+    <rect x="50" y="0" width="1100" height="600" class="frame" />
+    <text x="600" y="30" text-anchor="middle" class="text title">9. 관리자 페이지 (admin.jsp)</text>
+    
+    <!-- 상단 네비게이션 바 -->
+    <rect x="50" y="60" width="1100" height="60" class="navbar" />
+    <text x="120" y="100" class="text subtitle navbar-text">스마트 주차 가이드</text>
+    <text x="300" y="100" class="text label navbar-text">관리자 페이지</text>
+    
+    <!-- 관리자 정보 영역 -->
+    <text x="1000" y="100" class="text label navbar-text">관리자</text>
+    <text x="1080" y="100" class="text label navbar-text">로그아웃</text>
+    
+    <!-- 좌측 관리자 메뉴 -->
+    <rect x="50" y="120" width="250" height="480" class="admin-menu" />
+    
+    <rect x="50" y="120" width="250" height="60" class="admin-menu-active" />
+    <text x="70" y="155" class="text label">대시보드</text>
+    
+    <rect x="50" y="180" width="250" height="60" class="admin-menu" />
+    <text x="70" y="215" class="text label admin-menu-text">사용자 관리</text>
+    
+    <rect x="50" y="240" width="250" height="60" class="admin-menu" />
+    <text x="70" y="275" class="text label admin-menu-text">리뷰 관리</text>
+    
+    <rect x="50" y="300" width="250" height="60" class="admin-menu" />
+    <text x="70" y="335" class="text label admin-menu-text">커뮤니티 관리</text>
+    
+    <rect x="50" y="360" width="250" height="60" class="admin-menu" />
+    <text x="70" y="395" class="text label admin-menu-text">주차장 데이터 관리</text>
+    
+    <rect x="50" y="420" width="250" height="60" class="admin-menu" />
+    <text x="70" y="455" class="text label admin-menu-text">통계 및 보고서</text>
+    
+    <rect x="50" y="480" width="250" height="60" class="admin-menu" />
+    <text x="70" y="515" class="text label admin-menu-text">시스템 설정</text>
+    
+    <!-- 관리자 대시보드 콘텐츠 영역 -->
+    <rect x="300" y="120" width="850" height="480" class="section" />
+    <text x="340" y="160" class="text title">관리자 대시보드</text>
+    <text x="340" y="190" class="text small">시스템 현황 및 통계를 확인할 수 있습니다.</text>
+    
+    <!-- 상단 통계 카드 영역 -->
+    <rect x="340" y="220" width="250" height="120" class="section" />
+    <text x="360" y="250" class="text subtitle">총 사용자 수</text>
+    <text x="360" y="290" class="text title">2,537</text>
+    <text x="360" y="320" class="text small">전월 대비 +12%</text>
+    
+    <rect x="600" y="220" width="250" height="120" class="section" />
+    <text x="620" y="250" class="text subtitle">오늘 접속자 수</text>
+    <text x="620" y="290" class="text title">423</text>
+    <text x="620" y="320" class="text small">어제 대비 -5%</text>
+    
+    <rect x="860" y="220" width="250" height="120" class="section" />
+    <text x="880" y="250" class="text subtitle">저장된 리뷰 수</text>
+    <text x="880" y="290" class="text title">3,642</text>
+    <text x="880" y="320" class="text small">전월 대비 +8%</text>
+    
+    <!-- 좌측 최근 리뷰 목록 -->
+    <rect x="340" y="360" width="380" height="220" class="section" />
+    <text x="360" y="390" class="text subtitle">최근 리뷰</text>
+    
+    <rect x="360" y="410" width="340" height="60" class="list-item" />
+    <text x="370" y="430" class="text small">user123 | 서울시청 지하주차장</text>
+    <text x="370" y="450" class="text small">★★★★★ | 2023-11-15</text>
+    
+    <rect x="360" y="470" width="340" height="60" class="list-item" />
+    <text x="370" y="490" class="text small">user456 | 강남역 지하주차장</text>
+    <text x="370" y="510" class="text small">★★★☆☆ | 2023-11-14</text>
+    
+    <rect x="580" y="530" width="120" height="30" class="button" />
+    <text x="640" y="550" text-anchor="middle" class="text small" fill="white">더보기</text>
+    
+    <!-- 우측 최근 게시글 목록 -->
+    <rect x="730" y="360" width="380" height="220" class="section" />
+    <text x="750" y="390" class="text subtitle">최근 커뮤니티 게시글</text>
+    
+    <rect x="750" y="410" width="340" height="60" class="list-item" />
+    <text x="760" y="430" class="text small">user789 | 주차 꿀팁 공유합니다</text>
+    <text x="760" y="450" class="text small">2023-11-15 | 조회수: 124</text>
+    
+    <rect x="750" y="470" width="340" height="60" class="list-item" />
+    <text x="760" y="490" class="text small">user321 | 강남 주차장 할인 정보</text>
+    <text x="760" y="510" class="text small">2023-11-14 | 조회수: 87</text>
+    
+    <rect x="970" y="530" width="120" height="30" class="button" />
+    <text x="1030" y="550" text-anchor="middle" class="text small" fill="white">더보기</text>
+    
+    <!-- 하단 푸터 -->
+    <rect x="50" y="600" width="1100" height="50" class="footer" />
+    <text x="120" y="630" class="text small">© 2023 스마트 주차 가이드. All rights reserved.</text>
+    <text x="950" y="630" class="text small">이용약관 | 개인정보처리방침 | 문의하기</text>
+  </g>
+</svg>

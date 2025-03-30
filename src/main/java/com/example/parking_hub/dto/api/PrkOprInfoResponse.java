@@ -1,33 +1,61 @@
 package com.example.parking_hub.dto.api;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Getter;
-import lombok.Setter;
-
+import lombok.Data;
 import java.util.List;
 
-@Getter
-@Setter
+@Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class PrkOprInfoResponse {
-    private String resultCode;
-    private String resultMsg;
-    private int numOfRows;
-    private int pageNo;
-    private int totalCount;
     
-    @JsonProperty("PrkOprInfo")
-    private List<PrkOprInfo> prkOprInfoList;
-
-    @Getter
-    @Setter
+    @JsonProperty("resultCode")
+    private String resultCode;
+    
+    @JsonProperty("resultMsg")
+    private String resultMsg;
+    
+    @JsonProperty("numOfRows")
+    private Integer numOfRows;
+    
+    @JsonProperty("pageNo")
+    private Integer pageNo;
+    
+    @JsonProperty("totalCount")
+    private Integer totalCount;
+    
+    @JsonProperty("items")
+    private List<PrkOprInfo> items;
+    
+    @Data
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class PrkOprInfo {
+        
+        @JsonProperty("prkCenterId")
         private String prkCenterId;
-        private String opertnBsFreeTime;    // 기본 회차(기본무료)시간
-        private String parkingChrgeBsTime;  // 기본 시간
-        private String parkingChrgeBsChrge; // 기본 요금
-        private String parkingChrgeAditUnitTime;  // 추가 단위 시간
-        private String parkingChrgeAditUnitChrge; // 추가 단위 요금
-        private String parkingChrgeOneDayChrge;   // 1일 요금
-        private String parkingChrgeMonUnitChrge;  // 월 정액
+        
+        @JsonProperty("opertnBsFreeTime")
+        private String opertnBsFreeTime;
+        
+        @JsonProperty("parkingChrgeBsTime")
+        private String parkingChrgeBsTime;
+        
+        @JsonProperty("parkingChrgeBsChrg")
+        private String parkingChrgeBsChrg;
+        
+        @JsonProperty("operationDayInfo")
+        private String operationDayInfo;
+        
+        @JsonProperty("satOperOpenHhmm")
+        private String satOperOpenHhmm;
+        
+        @JsonProperty("satOperCloseHhmm")
+        private String satOperCloseHhmm;
+        
+        @JsonProperty("holidayOperOpenHhmm")
+        private String holidayOperOpenHhmm;
+        
+        @JsonProperty("holidayOperCloseHhmm")
+        private String holidayOperCloseHhmm;
     }
 } 

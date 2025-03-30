@@ -1,0 +1,136 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800">
+  <!-- 스타일 정의 -->
+  <style>
+    .frame { fill: #f8f9fa; stroke: #333; stroke-width: 2; }
+    .header { fill: #e9ecef; stroke: #333; stroke-width: 1; }
+    .footer { fill: #e9ecef; stroke: #333; stroke-width: 1; }
+    .section { fill: #ffffff; stroke: #ddd; stroke-width: 1; }
+    .button { fill: #4dabf7; stroke: #339af0; stroke-width: 1; rx: 5; ry: 5; }
+    .cancel-button { fill: #f1f3f5; stroke: #adb5bd; stroke-width: 1; rx: 5; ry: 5; }
+    .search { fill: #ffffff; stroke: #333; stroke-width: 1; rx: 5; ry: 5; }
+    .marker { fill: #ff6b6b; stroke: #fa5252; stroke-width: 1; }
+    .list-item { fill: #ffffff; stroke: #ddd; stroke-width: 1; }
+    .text { font-family: Arial, sans-serif; }
+    .title { font-size: 24px; font-weight: bold; }
+    .subtitle { font-size: 18px; }
+    .label { font-size: 14px; }
+    .small { font-size: 12px; }
+    .icon { font-size: 18px; font-family: "FontAwesome", Arial; }
+    .map { fill: #e9ecef; stroke: #ced4da; stroke-width: 1; }
+    .rating { fill: #ffd43b; stroke: #fab005; stroke-width: 1; }
+    .gray-bg { fill: #f1f3f5; }
+    .highlight { fill: #d0ebff; }
+    .chart { fill: #4dabf7; stroke: #339af0; stroke-width: 1; }
+    .navbar { fill: #343a40; stroke: none; }
+    .navbar-text { fill: #ffffff; }
+    .admin-menu { fill: #212529; stroke: none; }
+    .admin-menu-text { fill: #f8f9fa; }
+    .admin-menu-active { fill: #4dabf7; stroke: none; }
+    .admin-menu-hover { fill: #343a40; stroke: none; }
+    .card { fill: #ffffff; stroke: #e9ecef; stroke-width: 1; }
+    .card-highlight { fill: #e7f5ff; stroke: #339af0; stroke-width: 1; }
+  </style>
+
+  <!-- 페이지 제목 -->
+  <text x="600" y="40" text-anchor="middle" class="text title">9. 관리자 페이지 (admin.jsp)</text>
+    
+  <!-- 프레임 -->
+  <rect x="50" y="70" width="1100" height="670" class="frame" />
+    
+  <!-- 상단 네비게이션 바 -->
+  <rect x="50" y="70" width="1100" height="60" class="navbar" />
+  <text x="120" y="110" class="text subtitle navbar-text">스마트 주차 가이드</text>
+  <text x="300" y="110" class="text label navbar-text">관리자 페이지</text>
+  
+  <!-- 관리자 정보 영역 -->
+  <text x="1000" y="110" class="text label navbar-text">관리자</text>
+  <text x="1080" y="110" class="text label navbar-text">로그아웃</text>
+  
+  <!-- 좌측 관리자 메뉴 -->
+  <rect x="50" y="130" width="250" height="570" class="admin-menu" />
+  
+  <rect x="50" y="130" width="250" height="60" class="admin-menu-active" />
+  <text x="70" y="168" class="text label">대시보드</text>
+  
+  <rect x="50" y="190" width="250" height="60" class="admin-menu" />
+  <text x="70" y="228" class="text label admin-menu-text">사용자 관리</text>
+  
+  <rect x="50" y="250" width="250" height="60" class="admin-menu" />
+  <text x="70" y="288" class="text label admin-menu-text">리뷰 관리</text>
+  
+  <rect x="50" y="310" width="250" height="60" class="admin-menu" />
+  <text x="70" y="348" class="text label admin-menu-text">커뮤니티 관리</text>
+  
+  <rect x="50" y="370" width="250" height="60" class="admin-menu" />
+  <text x="70" y="408" class="text label admin-menu-text">주차장 데이터 관리</text>
+  
+  <rect x="50" y="430" width="250" height="60" class="admin-menu" />
+  <text x="70" y="468" class="text label admin-menu-text">통계 및 보고서</text>
+  
+  <rect x="50" y="490" width="250" height="60" class="admin-menu" />
+  <text x="70" y="528" class="text label admin-menu-text">시스템 설정</text>
+  
+  <!-- 관리자 대시보드 콘텐츠 영역 -->
+  <rect x="300" y="130" width="850" height="570" class="section" />
+  <text x="340" y="170" class="text title">관리자 대시보드</text>
+  <text x="340" y="200" class="text small">시스템 현황 및 통계를 확인할 수 있습니다.</text>
+  
+  <!-- 상단 통계 카드 영역 -->
+  <rect x="340" y="230" width="250" height="130" class="card" />
+  <text x="360" y="260" class="text subtitle">총 사용자 수</text>
+  <text x="360" y="300" class="text title">2,537</text>
+  <text x="360" y="330" class="text small">전월 대비 +12%</text>
+  
+  <rect x="610" y="230" width="250" height="130" class="card" />
+  <text x="630" y="260" class="text subtitle">오늘 접속자 수</text>
+  <text x="630" y="300" class="text title">423</text>
+  <text x="630" y="330" class="text small">어제 대비 -5%</text>
+  
+  <rect x="880" y="230" width="250" height="130" class="card" />
+  <text x="900" y="260" class="text subtitle">저장된 리뷰 수</text>
+  <text x="900" y="300" class="text title">3,642</text>
+  <text x="900" y="330" class="text small">전월 대비 +8%</text>
+  
+  <!-- 좌측 최근 리뷰 목록 -->
+  <rect x="340" y="380" width="380" height="280" class="section" />
+  <text x="360" y="410" class="text subtitle">최근 리뷰</text>
+  
+  <rect x="360" y="430" width="340" height="60" class="list-item" />
+  <text x="370" y="450" class="text small">user123 | 서울시청 지하주차장</text>
+  <text x="370" y="470" class="text small">★★★★★ | 2023-11-15</text>
+  
+  <rect x="360" y="490" width="340" height="60" class="list-item" />
+  <text x="370" y="510" class="text small">user456 | 강남역 지하주차장</text>
+  <text x="370" y="530" class="text small">★★★☆☆ | 2023-11-14</text>
+  
+  <rect x="360" y="550" width="340" height="60" class="list-item" />
+  <text x="370" y="570" class="text small">user789 | 명동 공영주차장</text>
+  <text x="370" y="590" class="text small">★★★★☆ | 2023-11-13</text>
+  
+  <rect x="580" y="610" width="120" height="30" class="button" />
+  <text x="640" y="630" text-anchor="middle" class="text small" fill="white">더보기</text>
+  
+  <!-- 우측 최근 게시글 목록 -->
+  <rect x="740" y="380" width="380" height="280" class="section" />
+  <text x="760" y="410" class="text subtitle">최근 커뮤니티 게시글</text>
+  
+  <rect x="760" y="430" width="340" height="60" class="list-item" />
+  <text x="770" y="450" class="text small">user789 | 주차 꿀팁 공유합니다</text>
+  <text x="770" y="470" class="text small">2023-11-15 | 조회수: 124</text>
+  
+  <rect x="760" y="490" width="340" height="60" class="list-item" />
+  <text x="770" y="510" class="text small">user321 | 강남 주차장 할인 정보</text>
+  <text x="770" y="530" class="text small">2023-11-14 | 조회수: 87</text>
+  
+  <rect x="760" y="550" width="340" height="60" class="list-item" />
+  <text x="770" y="570" class="text small">user567 | 명동 주차 요령 안내</text>
+  <text x="770" y="590" class="text small">2023-11-12 | 조회수: 56</text>
+  
+  <rect x="980" y="610" width="120" height="30" class="button" />
+  <text x="1040" y="630" text-anchor="middle" class="text small" fill="white">더보기</text>
+  
+  <!-- 하단 푸터 -->
+  <rect x="50" y="700" width="1100" height="40" class="footer" />
+  <text x="120" y="725" class="text small">© 2023 스마트 주차 가이드. All rights reserved.</text>
+  <text x="950" y="725" class="text small">관리자 모드 | 버전: 1.0.5 | 최종 업데이트: 2023-11-15</text>
+</svg>

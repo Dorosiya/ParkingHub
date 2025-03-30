@@ -10,15 +10,18 @@ import java.util.Collections;
 
 public class CustomUserDetails implements UserDetails {
     private final User user;
+    private final String roleName;
 
-    public CustomUserDetails(User user) {
+    public CustomUserDetails(User user, String roleName) {
         this.user = user;
+        this.roleName = roleName;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        RoleType roleType = RoleType.fromId(user.getRoleId());
-        return Collections.singletonList(new SimpleGrantedAuthority(roleType.getRoleName()));
+        return Collections.singletonList(
+            new SimpleGrantedAuthority(roleName)
+        );
     }
 
     @Override

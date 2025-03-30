@@ -22,9 +22,15 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userMapper.findByUsername(username);
         if (user == null) {
-            throw new UsernameNotFoundException("아이디 또는 비밀번호가 잘못되었습니다.");
+            throw new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + username);
         }
 
-        return new CustomUserDetails(user);
+        // RoleType enum을 사용하여 역할 정보 가져오기
+        RoleType roleType = RoleType.fromId(user.getRoleId());
+        if (roleType == null) {
+            throw new RuntimeException("유효하지 않은 역할 ID입니다: roleId=" + user.getRoleId());
+        }
+
+        return new CustomUserDetails(user, roleType.getRoleName());
     }
 } 

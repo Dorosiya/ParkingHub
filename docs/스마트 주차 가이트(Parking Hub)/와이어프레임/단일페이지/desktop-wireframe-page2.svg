@@ -1,0 +1,137 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800">
+  <!-- 스타일 정의 -->
+  <style>
+    .frame { fill: #f8f9fa; stroke: #333; stroke-width: 2; }
+    .header { fill: #e9ecef; stroke: #333; stroke-width: 1; }
+    .footer { fill: #e9ecef; stroke: #333; stroke-width: 1; }
+    .section { fill: #ffffff; stroke: #ddd; stroke-width: 1; }
+    .button { fill: #4dabf7; stroke: #339af0; stroke-width: 1; rx: 5; ry: 5; }
+    .search { fill: #ffffff; stroke: #333; stroke-width: 1; rx: 5; ry: 5; }
+    .marker { fill: #ff6b6b; stroke: #fa5252; stroke-width: 1; }
+    .list-item { fill: #ffffff; stroke: #ddd; stroke-width: 1; }
+    .text { font-family: Arial, sans-serif; }
+    .title { font-size: 24px; font-weight: bold; }
+    .subtitle { font-size: 18px; }
+    .label { font-size: 14px; }
+    .small { font-size: 12px; }
+    .icon { font-size: 18px; font-family: "FontAwesome", Arial; }
+    .map { fill: #e9ecef; stroke: #ced4da; stroke-width: 1; }
+    .rating { fill: #ffd43b; stroke: #fab005; stroke-width: 1; }
+    .gray-bg { fill: #f1f3f5; }
+    .highlight { fill: #d0ebff; }
+    .chart { fill: #4dabf7; stroke: #339af0; stroke-width: 1; }
+    .navbar { fill: #343a40; stroke: none; }
+    .navbar-text { fill: #ffffff; }
+    .sidebar { fill: #f8f9fa; stroke: #dee2e6; stroke-width: 1; }
+  </style>
+
+  <!-- 페이지 제목 -->
+  <text x="600" y="40" text-anchor="middle" class="text title">2. 지도 기반 검색 (mapSearch.jsp)</text>
+    
+  <!-- 프레임 -->
+  <rect x="50" y="70" width="1100" height="670" class="frame" />
+    
+  <!-- 상단 네비게이션 바 -->
+  <rect x="50" y="70" width="1100" height="60" class="navbar" />
+  <text x="120" y="110" class="text subtitle navbar-text">스마트 주차 가이드</text>
+  
+  <!-- 네비게이션 메뉴 -->
+  <text x="500" y="110" class="text label navbar-text">홈</text>
+  <text x="600" y="110" class="text label navbar-text">검색</text>
+  <text x="700" y="110" class="text label navbar-text">대시보드</text>
+  <text x="830" y="110" class="text label navbar-text">커뮤니티</text>
+  
+  <!-- 로그인/회원가입 영역 -->
+  <text x="1000" y="110" class="text label navbar-text">로그인</text>
+  <text x="1080" y="110" class="text label navbar-text">회원가입</text>
+  
+  <!-- 검색/필터 영역 -->
+  <rect x="50" y="130" width="1100" height="60" class="section" />
+  <rect x="80" y="140" width="500" height="40" class="search" />
+  <text x="110" y="165" class="text label">지역, 주소 또는 장소명으로 검색</text>
+  <rect x="580" y="140" width="60" height="40" class="button" />
+  <text x="610" y="165" class="text icon">🔍</text>
+  
+  <!-- 필터 옵션 -->
+  <text x="680" y="165" class="text label">정렬: </text>
+  <rect x="730" y="140" width="120" height="40" class="search" />
+  <text x="760" y="165" class="text small">거리순 ▼</text>
+  
+  <text x="880" y="165" class="text label">필터: </text>
+  <rect x="930" y="140" width="200" height="40" class="search" />
+  <text x="960" y="165" class="text small">요금, 공간 크기, 운영시간 ▼</text>
+  
+  <!-- 좌측 주차장 목록 영역 -->
+  <rect x="50" y="190" width="350" height="490" class="section" />
+  <rect x="50" y="190" width="350" height="50" class="section gray-bg" />
+  <text x="80" y="220" class="text subtitle">검색 결과 (12)</text>
+  
+  <!-- 주차장 목록 아이템들 -->
+  <rect x="60" y="250" width="330" height="80" class="list-item highlight" />
+  <text x="80" y="280" class="text label">서울시청 지하 주차장</text>
+  <text x="80" y="300" class="text small">서울특별시 중구 세종대로 110</text>
+  <text x="80" y="320" class="text small">🚗 35/120 | 💰 4,000원/시간 | 🚶 350m</text>
+  
+  <rect x="60" y="340" width="330" height="80" class="list-item" />
+  <text x="80" y="370" class="text label">명동 공영주차장</text>
+  <text x="80" y="390" class="text small">서울특별시 중구 남대문로 지하</text>
+  <text x="80" y="410" class="text small">🚗 12/80 | 💰 3,000원/시간 | 🚶 450m</text>
+  
+  <rect x="60" y="430" width="330" height="80" class="list-item" />
+  <text x="80" y="460" class="text label">을지로입구역 주변 주차장</text>
+  <text x="80" y="480" class="text small">서울특별시 중구 을지로 42</text>
+  <text x="80" y="500" class="text small">🚗 25/90 | 💰 5,000원/시간 | 🚶 520m</text>
+  
+  <rect x="60" y="520" width="330" height="80" class="list-item" />
+  <text x="80" y="550" class="text label">청계광장 지하 주차장</text>
+  <text x="80" y="570" class="text small">서울특별시 종로구 청계천로 41</text>
+  <text x="80" y="590" class="text small">🚗 40/150 | 💰 3,500원/시간 | 🚶 680m</text>
+
+  <!-- 페이지 네비게이션 -->
+  <rect x="150" y="620" width="150" height="40" fill="none" />
+  <text x="170" y="645" class="text small">◀</text>
+  <text x="200" y="645" class="text small">1</text>
+  <text x="230" y="645" class="text small">2</text>
+  <text x="260" y="645" class="text small">3</text>
+  <text x="290" y="645" class="text small">▶</text>
+  
+  <!-- 지도 영역 (카카오맵) -->
+  <rect x="400" y="190" width="750" height="490" class="map" />
+  
+  <!-- 마커들 -->
+  <circle cx="570" cy="290" r="12" class="marker" />
+  <text x="570" cy="290" text-anchor="middle" class="text small" fill="white">1</text>
+  
+  <circle cx="650" cy="360" r="12" class="marker" />
+  <text x="650" cy="360" text-anchor="middle" class="text small" fill="white">2</text>
+  
+  <circle cx="820" cy="290" r="12" class="marker" />
+  <text x="820" cy="290" text-anchor="middle" class="text small" fill="white">3</text>
+  
+  <circle cx="750" cy="410" r="12" class="marker" />
+  <text x="750" cy="410" text-anchor="middle" class="text small" fill="white">4</text>
+  
+  <circle cx="900" cy="510" r="12" class="marker" />
+  <text x="900" cy="510" text-anchor="middle" class="text small" fill="white">5</text>
+  
+  <!-- 지도 컨트롤 -->
+  <rect x="1080" y="210" width="50" height="100" fill="white" stroke="#ddd" />
+  <text x="1105" y="240" text-anchor="middle" class="text label">+</text>
+  <line x1="1090" y1="260" x2="1120" y2="260" stroke="#ddd" />
+  <text x="1105" y="290" text-anchor="middle" class="text label">-</text>
+  
+  <rect x="1080" y="320" width="50" height="50" fill="white" stroke="#ddd" />
+  <text x="1105" y="350" text-anchor="middle" class="text icon">🧭</text>
+  
+  <!-- 선택된 주차장 정보 -->
+  <rect x="420" y="600" width="710" height="60" class="section highlight" />
+  <text x="450" y="635" class="text label">서울시청 지하 주차장 - 서울특별시 중구 세종대로 110</text>
+  <text x="450" y="655" class="text small">운영시간: 24시간 | 요금: 시간당 4,000원 | 현재 가용: 35/120대</text>
+  <rect x="1000" y="615" width="100" height="30" class="button" />
+  <text x="1050" y="635" text-anchor="middle" class="text small" fill="white">상세보기</text>
+  
+  <!-- 하단 푸터 -->
+  <rect x="50" y="680" width="1100" height="60" class="footer" />
+  <text x="120" y="720" class="text small">© 2023 스마트 주차 가이드. All rights reserved.</text>
+  <text x="950" y="720" class="text small">이용약관 | 개인정보처리방침 | 문의하기</text>
+</svg>

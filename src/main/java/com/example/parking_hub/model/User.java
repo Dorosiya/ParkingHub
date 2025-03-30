@@ -9,6 +9,7 @@ public class User {
     private String password;
     private String phoneNumber;
     private Integer roleId;
+    private Role role;
     private LocalDateTime createdAt;
 
     public Integer getId() {
@@ -65,5 +66,13 @@ public class User {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
     }
 }

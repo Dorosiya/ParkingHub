@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>업데이트된 스마트 주차 가이드 데이터베이스 테이블 명세서 - 1부</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        table { border-collapse: collapse; width: 100%; margin-bottom: 20px; }
+        th, td { border: 1px solid #dddddd; text-align: left; padding: 8px; }
+        th { background-color: #f2f2f2; }
+        h1 { color: #333; }
+        h2 { color: #555; margin-top: 30px; }
+        .note { background-color: #f9f9f9; padding: 10px; border-left: 4px solid #ddd; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>업데이트된 스마트 주차 가이드 데이터베이스 테이블 명세서 - 1부</h1>
+
+    <h2>1. 사용자(USER)</h2>
+    <table>
+        <tr>
+            <th>필드명</th>
+            <th>데이터 타입</th>
+            <th>설명</th>
+            <th>키</th>
+            <th>제약조건</th>
+        </tr>
+        <tr>
+            <td>id</td>
+            <td>int</td>
+            <td>사용자 ID</td>
+            <td>PK</td>
+            <td>자동증가(AUTO_INCREMENT)</td>
+        </tr>
+        <tr>
+            <td>email</td>
+            <td>varchar(100)</td>
+            <td>이메일</td>
+            <td></td>
+            <td>UNIQUE, NOT NULL</td>
+        </tr>
+        <tr>
+            <td>nickname</td>
+            <td>varchar(50)</td>
+            <td>닉네임</td>
+            <td></td>
+            <td>NOT NULL</td>
+        </tr>
+        <tr>
+            <td>password</td>
+            <td>varchar(100)</td>
+            <td>비밀번호</td>
+            <td></td>
+            <td>NOT NULL</td>
+        </tr>
+        <tr>
+            <td>created_at</td>
+            <td>datetime</td>
+            <td>생성일시</td>
+            <td></td>
+            <td>DEFAULT CURRENT_TIMESTAMP</td>
+        </tr>
+    </table>
+    <div class="note">
+        <p><strong>추가 설명:</strong> 사용자 테이블은 회원 기능 구현 시 사용되며, 비회원 사용 시에는 IP 기반으로 대체할 수 있습니다. 비밀번호는 보안을 위해 해시화하여 저장해야 합니다.</p>
+    </div>
+
+    <h2>2. 주차장 정보(PARKING_INFO)</h2>
+    <table>
+        <tr>
+            <th>필드명</th>
+            <th>데이터 타입</th>
+            <th>설명</th>
+            <th>키</th>
+            <th>제약조건</th>
+        </tr>
+        <tr>
+            <td>prk_center_id</td>
+            <td>varchar(50)</td>
+            <td>주차장 관리 ID</td>
+            <td>PK</td>
+            <td>NOT NULL</td>
+        </tr>
+        <tr>
+            <td>prk_plce_nm</td>
+            <td>varchar(100)</td>
+            <td>주차장명</td>
+            <td></td>
+            <td>NOT NULL</td>
+        </tr>
+        <tr>
+            <td>prk_plce_adres</td>
+            <td>varchar(200)</td>
+            <td>주차장 도로명 주소</td>
+            <td></td>
+            <td>NOT NULL</td>
+        </tr>
+        <tr>
+            <td>prk_plce_entrc_la</td>
+            <td>decimal(10,6)</td>
+            <td>위도</td>
+            <td></td>
+            <td>NOT NULL</td>
+        </tr>
+        <tr>
+            <td>prk_plce_entrc_lo</td>
+            <td>decimal(10,6)</td>
+            <td>경도</td>
+            <td></td>
+            <td>NOT NULL</td>
+        </tr>
+        <tr>
+            <td>prk_cmprt_co</td>
+            <td>int</td>
+            <td>총 주차 구획 수</td>
+            <td></td>
+            <td>NOT NULL</td>
+        </tr>
+    </table>
+    <div class="note">
+        <p><strong>추가 설명:</strong> 이 테이블은 한국교통안전공단의 주차정보 API의 PrkSttusInfo 정보를 저장합니다. API에서 제공하는 정보를 실시간으로 조회하고 필요에 따라 캐싱하여 사용합니다. 필드명은 API 응답과 일치시켜 데이터 매핑을 용이하게 했습니다.</p>
+    </div>
+
+    <h2>3. 주차장 운영정보(PARKING_OPERATION)</h2>
+    <table>
+        <tr>
+            <th>필드명</th>
+            <th>데이터 타입</th>
+            <th>설명</th>
+            <th>키</th>
+            <th>제약조건</th>
+        </tr>
+        <tr>
+            <td>prk_center_id</td>
+            <td>varchar(50)</td>
+            <td>주차장 관리 ID</td>
+            <td>PK, FK</td>
+            <td>NOT NULL, REFERENCES PARKING_INFO(prk_center_id)</td>
+        </tr>
+        <tr>
+            <td>opertn_bs_free_time</td>
+            <td>int</td>
+            <td>기본 회차(기본무료)시간</td>
+            <td></td>
+            <td></td>
+        </tr>
+    </table>
+    <div class="note">
+        <p><strong>추가 설명:</strong> 이 테이블은 주차장의 기본 무료 시간 정보를 저장합니다. 운영시간과 요금 정보는 별도의 테이블로 분리했습니다.</p>
+    </div>
+
+    <h2>4. 주차장 운영시간(PARKING_OPERATION_HOURS)</h2>
+    <table>
+        <tr>
+            <th>필드명</th>
+            <th>데이터 타입</th>
+            <th>설명</th>
+            <th>키</th>
+            <th>제약조건</th>
+        </tr>
+        <tr>
+            <td>id</td>
+            <td>int</td>
+            <td>ID</td>
+            <td>PK</td>
+            <td>자동증가(AUTO_INCREMENT)</td>
+        </tr>
+        <tr>
+            <td>prk_center_id</td>
+            <td>varchar(50)</td>
+            <td>주차장 관리 ID</td>
+            <td>FK</td>
+            <td>NOT NULL, REFERENCES PARKING_INFO(prk_center_id)</td>
+        </tr>
+        <tr>
+            <td>day_of_week</td>
+            <td>varchar(3)</td>
+            <td>요일</td>
+            <td></td>
+            <td>NOT NULL, CHECK(day_of_week IN ('SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'HOL'))</td>
+        </tr>
+        <tr>
+            <td>start_time</td>
+            <td>time</td>
+            <td>운영 시작 시간</td>
+            <td></td>
+            <td>NOT NULL</td>
+        </tr>
+        <tr>
+            <td>end_time</td>
+            <td>time</td>
+            <td>운영 종료 시간</td>
+            <td></td>
+            <td>NOT NULL</td>
+        </tr>
+    </table>
+    <div class="note">
+        <p><strong>추가 설명:</strong> 이 테이블은 주차장의 요일별 운영시간을 저장합니다. 특정 주차장에 대해 각 요일마다 하나의 레코드가 생성됩니다. 예를 들어, 하나의 주차장은 일반적으로 7개의 레코드(일~토)와 추가로 휴일에 대한 레코드를 가질 수 있습니다. 시간은 TIME 형식(예: '08:00:00')으로 저장되며, API에서 제공하는 형식(예: "080000")이 있다면 변환이 필요합니다.</p>
+    </div>
+
+    <h2>5. 주차장 요금정보(PARKING_PRICE_INFO)</h2>
+    <table>
+        <tr>
+            <th>필드명</th>
+            <th>데이터 타입</th>
+            <th>설명</th>
+            <th>키</th>
+            <th>제약조건</th>
+        </tr>
+        <tr>
+            <td>prk_center_id</td>
+            <td>varchar(50)</td>
+            <td>주차장 관리 ID</td>
+            <td>PK, FK</td>
+            <td>NOT NULL, REFERENCES PARKING_INFO(prk_center_id)</td>
+        </tr>
+        <tr>
+            <td>parking_chrge_bs_time</td>
+            <td>int</td>
+            <td>기본시간</td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>parking_chrge_bs_chrge</td>
+            <td>int</td>
+            <td>기본요금</td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>parking_chrge_adit_unit_time</td>
+            <td>int</td>
+            <td>추가단위시간</td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>parking_chrge_adit_unit_chrge</td>
+            <td>int</td>
+            <td>추가단위요금</td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>parking_chrge_one_day_chrge</td>
+            <td>int</td>
+            <td>1일 요금</td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>parking_chrge_mon_unit_chrge</td>
+            <td>int</td>
+            <td>월 정액</td>
+            <td></td>
+            <td></td>
+        </tr>
+    </table>
+    <div class="note">
+        <p><strong>추가 설명:</strong> 이 테이블은 주차장의 요금 정보를 저장합니다. 기본시간 및 요금, 추가 시간 및 요금, 1일 요금, 월 정액 등 다양한 요금 체계를 저장할 수 있습니다. API에서 제공하는 값을 그대로 저장하며, 애플리케이션 레벨에서 필요에 따라 변환하여 사용할 수 있습니다.</p>
+    </div>
+
+    <h2>6. 주차장 실시간 정보(PARKING_REALTIME)</h2>
+    <table>
+        <tr>
+            <th>필드명</th>
+            <th>데이터 타입</th>
+            <th>설명</th>
+            <th>키</th>
+            <th>제약조건</th>
+        </tr>
+        <tr>
+            <td>prk_center_id</td>
+            <td>varchar(50)</td>
+            <td>주차장 관리 ID</td>
+            <td>PK, FK</td>
+            <td>NOT NULL, REFERENCES PARKING_INFO(prk_center_id)</td>
+        </tr>
+        <tr>
+            <td>pkfc_ParkingLots_total</td>
+            <td>int</td>
+            <td>총 주차 구획 수</td>
+            <td></td>
+            <td>NOT NULL</td>
+        </tr>
+        <tr>
+            <td>pkfc_Available_ParkingLots_total</td>
+            <td>int</td>
+            <td>주차 가능 구획 수</td>
+            <td></td>
+            <td>NOT NULL</td>
+        </tr>
+        <tr>
+            <td>updated_at</td>
+            <td>datetime</td>
+            <td>정보 갱신 시간</td>
+            <td></td>
+            <td>NOT NULL, DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP</td>
+        </tr>
+    </table>
+    <div class="note">
+        <p><strong>추가 설명:</strong> 이 테이블은 API의 PrkRealtimeInfo를 저장합니다. 실시간으로 업데이트되는 주차 가능 대수 정보를 캐싱합니다. updated_at 필드는 자동으로 업데이트되어 정보의 최신성을 판단할 수 있습니다. 이 정보는 사용자에게 실시간 주차 가능 여부를 제공하는 데 중요합니다.</p>
+    </div>
+
+    <h2>7. 즐겨찾기 주차장(FAVORITE_PARKING)</h2>
+    <table>
+        <tr>
+            <th>필드명</th>
+            <th>데이터 타입</th>
+            <th>설명</th>
+            <th>키</th>
+            <th>제약조건</th>
+        </tr>
+        <tr>
+            <td>id</td>
+            <td>int</td>
+            <td>즐겨찾기 ID</td>
+            <td>PK</td>
+            <td>자동증가(AUTO_INCREMENT)</td>
+        </tr>
+        <tr>
+            <td>user_id</td>
+            <td>int</td>
+            <td>사용자 ID</td>
+            <td>FK</td>
+            <td>NOT NULL, REFERENCES USER(id)</td>
+        </tr>
+        <tr>
+            <td>parking_code</td>
+            <td>varchar(50)</td>
+            <td>주차장 코드</td>
+            <td>FK</td>
+            <td>NOT NULL, REFERENCES PARKING_INFO(prk_center_id)</td>
+        </tr>
+        <tr>
+            <td>created_at</td>
+            <td>datetime</td>
+            <td>생성일시</td>
+            <td></td>
+            <td>DEFAULT CURRENT_TIMESTAMP</td>
+        </tr>
+    </table>
+    <div class="note">
+        <p><strong>추가 설명:</strong> 이 테이블은 사용자가 즐겨찾기로 등록한 주차장 정보를 저장합니다. user_id와 parking_code의 조합에 UNIQUE 제약조건을 추가하여 중복 등록을 방지합니다.</p>
+    </div>
+</body>
+</html>

@@ -1,8 +1,12 @@
 package com.example.parking_hub.security;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public enum RoleType {
-    USER(1, "ROLE_USER"),
-    ADMIN(2, "ROLE_ADMIN");
+    ADMIN(1, "ROLE_ADMIN"),
+    USER(2, "ROLE_USER"),
+    MANAGER(3, "ROLE_MANAGER");
 
     private final int id;
     private final String roleName;
@@ -20,16 +24,16 @@ public enum RoleType {
         return roleName;
     }
 
-    public static RoleType fromId(Integer id) {
-        if (id == null) {
-            return USER; // Default role
+    // ✅ 여기부터 중요! 일반 for문 사용
+    private static final Map<Integer, RoleType> idToEnumMap = new HashMap<>();
+
+    static {
+        for (RoleType role : RoleType.values()) {
+            idToEnumMap.put(role.getId(), role);
         }
-        
-        for (RoleType roleType : RoleType.values()) {
-            if (roleType.id == id) {
-                return roleType;
-            }
-        }
-        return USER; // Default role if not found
+    }
+
+    public static RoleType fromId(int id) {
+        return idToEnumMap.get(id);
     }
 }

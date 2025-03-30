@@ -1,0 +1,345 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 2000">
+  <!-- 스타일 정의 -->
+  <style>
+    .frame { fill: #f8f9fa; stroke: #333; stroke-width: 2; }
+    .header { fill: #e9ecef; stroke: #333; stroke-width: 1; }
+    .footer { fill: #e9ecef; stroke: #333; stroke-width: 1; }
+    .section { fill: #ffffff; stroke: #ddd; stroke-width: 1; }
+    .button { fill: #4dabf7; stroke: #339af0; stroke-width: 1; rx: 5; ry: 5; }
+    .search { fill: #ffffff; stroke: #333; stroke-width: 1; rx: 5; ry: 5; }
+    .marker { fill: #ff6b6b; stroke: #fa5252; stroke-width: 1; }
+    .list-item { fill: #ffffff; stroke: #ddd; stroke-width: 1; }
+    .text { font-family: Arial, sans-serif; }
+    .title { font-size: 20px; font-weight: bold; }
+    .subtitle { font-size: 16px; }
+    .label { font-size: 14px; }
+    .small { font-size: 12px; }
+    .icon { font-size: 18px; font-family: "FontAwesome", Arial; }
+    .map { fill: #e9ecef; stroke: #ced4da; stroke-width: 1; }
+    .rating { fill: #ffd43b; stroke: #fab005; stroke-width: 1; }
+    .gray-bg { fill: #f1f3f5; }
+    .highlight { fill: #d0ebff; }
+    .chart { fill: #4dabf7; stroke: #339af0; stroke-width: 1; }
+    .navbar { fill: #343a40; stroke: none; }
+    .navbar-text { fill: #ffffff; }
+    .sidebar { fill: #f8f9fa; stroke: #dee2e6; stroke-width: 1; }
+    .form-check { fill: #dee2e6; stroke: #adb5bd; stroke-width: 1; }
+    .form-check-active { fill: #4dabf7; stroke: #339af0; stroke-width: 1; }
+    .textarea { fill: #ffffff; stroke: #ced4da; stroke-width: 1; }
+  </style>
+
+  <!-- 페이지 제목 -->
+  <text x="600" y="40" text-anchor="middle" class="text title">스마트 주차 가이드 데스크톱 와이어프레임 (4-6)</text>
+
+  <!-- 4. 즐겨찾기 -->
+  <g transform="translate(0, 80)">
+    <!-- 프레임 -->
+    <rect x="50" y="0" width="1100" height="600" class="frame" />
+    <text x="600" y="30" text-anchor="middle" class="text title">4. 즐겨찾기 (favorite.jsp)</text>
+    
+    <!-- 상단 네비게이션 바 -->
+    <rect x="50" y="60" width="1100" height="60" class="navbar" />
+    <text x="120" y="100" class="text subtitle navbar-text">스마트 주차 가이드</text>
+    
+    <!-- 네비게이션 메뉴 -->
+    <text x="500" y="100" class="text label navbar-text">홈</text>
+    <text x="600" y="100" class="text label navbar-text">검색</text>
+    <text x="700" y="100" class="text label navbar-text">대시보드</text>
+    <text x="830" y="100" class="text label navbar-text">커뮤니티</text>
+    
+    <!-- 로그인 영역 - 사용자 로그인 상태 -->
+    <text x="1050" y="100" class="text label navbar-text">사용자님 ▼</text>
+    
+    <!-- 좌측 사이드바 메뉴 -->
+    <rect x="50" y="120" width="250" height="480" class="sidebar" />
+    
+    <rect x="50" y="120" width="250" height="60" class="section" />
+    <text x="70" y="155" class="text label">마이페이지</text>
+    
+    <rect x="50" y="180" width="250" height="60" class="section highlight" />
+    <text x="70" y="215" class="text label">즐겨찾기</text>
+    
+    <rect x="50" y="240" width="250" height="60" class="section" />
+    <text x="70" y="275" class="text label">최근 이용 기록</text>
+    
+    <rect x="50" y="300" width="250" height="60" class="section" />
+    <text x="70" y="335" class="text label">알림 설정</text>
+    
+    <rect x="50" y="360" width="250" height="60" class="section" />
+    <text x="70" y="395" class="text label">내가 쓴 리뷰</text>
+    
+    <rect x="50" y="420" width="250" height="60" class="section" />
+    <text x="70" y="455" class="text label">내가 쓴 글</text>
+    
+    <rect x="50" y="480" width="250" height="60" class="section" />
+    <text x="70" y="515" class="text label">설정</text>
+    
+    <!-- 메인 콘텐츠 영역 -->
+    <rect x="300" y="120" width="850" height="480" class="section" />
+    <text x="340" y="160" class="text title">즐겨찾기</text>
+    <text x="340" y="190" class="text small">자주 이용하는 주차장을 쉽게 찾을 수 있습니다.</text>
+    
+    <!-- 즐겨찾기 목록 헤더 -->
+    <rect x="340" y="220" width="770" height="40" class="section gray-bg" />
+    <text x="370" y="245" class="text label">주차장 이름</text>
+    <text x="570" y="245" class="text label">주소</text>
+    <text x="770" y="245" class="text label">요금</text>
+    <text x="870" y="245" class="text label">상태</text>
+    <text x="990" y="245" class="text label">액션</text>
+    
+    <!-- 즐겨찾기 목록 아이템 1 -->
+    <rect x="340" y="260" width="770" height="70" class="list-item" />
+    <text x="370" y="290" class="text label">서울시청 지하 주차장</text>
+    <text x="570" y="290" class="text small">서울특별시 중구 세종대로 110</text>
+    <text x="770" y="290" class="text small">시간당 4,000원</text>
+    <text x="870" y="290" class="text small">🚗 35/120</text>
+    
+    <rect x="940" y="275" width="80" height="30" class="button" />
+    <text x="980" y="295" text-anchor="middle" class="text small" fill="white">상세</text>
+    <rect x="1030" y="275" width="40" height="30" class="button" />
+    <text x="1050" y="295" text-anchor="middle" class="text small" fill="white">✖</text>
+    
+    <!-- 즐겨찾기 목록 아이템 2 -->
+    <rect x="340" y="330" width="770" height="70" class="list-item" />
+    <text x="370" y="360" class="text label">명동 공영주차장</text>
+    <text x="570" y="360" class="text small">서울특별시 중구 남대문로 지하</text>
+    <text x="770" y="360" class="text small">시간당 3,000원</text>
+    <text x="870" y="360" class="text small">🚗 12/80</text>
+    
+    <rect x="940" y="345" width="80" height="30" class="button" />
+    <text x="980" y="365" text-anchor="middle" class="text small" fill="white">상세</text>
+    <rect x="1030" y="345" width="40" height="30" class="button" />
+    <text x="1050" y="365" text-anchor="middle" class="text small" fill="white">✖</text>
+    
+    <!-- 즐겨찾기 목록 아이템 3 -->
+    <rect x="340" y="400" width="770" height="70" class="list-item" />
+    <text x="370" y="430" class="text label">강남역 지하 주차장</text>
+    <text x="570" y="430" class="text small">서울특별시 강남구 테헤란로 지하</text>
+    <text x="770" y="430" class="text small">시간당 5,000원</text>
+    <text x="870" y="430" class="text small">🚗 45/200</text>
+    
+    <rect x="940" y="415" width="80" height="30" class="button" />
+    <text x="980" y="435" text-anchor="middle" class="text small" fill="white">상세</text>
+    <rect x="1030" y="415" width="40" height="30" class="button" />
+    <text x="1050" y="435" text-anchor="middle" class="text small" fill="white">✖</text>
+    
+    <!-- 더보기 버튼 -->
+    <rect x="670" y="500" width="120" height="40" class="section" />
+    <text x="730" y="525" text-anchor="middle" class="text label">더보기</text>
+    
+    <!-- 하단 푸터 -->
+    <rect x="50" y="600" width="1100" height="50" class="footer" />
+    <text x="120" y="630" class="text small">© 2023 스마트 주차 가이드. All rights reserved.</text>
+    <text x="950" y="630" class="text small">이용약관 | 개인정보처리방침 | 문의하기</text>
+  </g>
+
+  <!-- 5. 리뷰/평점 작성 및 조회 -->
+  <g transform="translate(0, 730)">
+    <!-- 프레임 -->
+    <rect x="50" y="0" width="1100" height="600" class="frame" />
+    <text x="600" y="30" text-anchor="middle" class="text title">5. 리뷰/평점 (review.jsp)</text>
+    
+    <!-- 상단 네비게이션 바 -->
+    <rect x="50" y="60" width="1100" height="60" class="navbar" />
+    <text x="120" y="100" class="text subtitle navbar-text">스마트 주차 가이드</text>
+    
+    <!-- 네비게이션 메뉴 -->
+    <text x="500" y="100" class="text label navbar-text">홈</text>
+    <text x="600" y="100" class="text label navbar-text">검색</text>
+    <text x="700" y="100" class="text label navbar-text">대시보드</text>
+    <text x="830" y="100" class="text label navbar-text">커뮤니티</text>
+    
+    <!-- 로그인 영역 - 사용자 로그인 상태 -->
+    <text x="1050" y="100" class="text label navbar-text">사용자님 ▼</text>
+    
+    <!-- 주차장 기본 정보 섹션 -->
+    <rect x="50" y="120" width="1100" height="80" class="section" />
+    <text x="80" y="150" class="text title">서울시청 지하 주차장 - 리뷰</text>
+    <text x="80" y="180" class="text small">서울특별시 중구 세종대로 110</text>
+    
+    <!-- 리뷰 정보 및 통계 -->
+    <rect x="700" y="150" width="400" height="30" class="section" />
+    <text x="740" y="170" class="text small">총 48건의 리뷰 | 평균 ★★★★☆ (4.5/5.0)</text>
+    
+    <!-- 콘텐츠 탭 메뉴 -->
+    <rect x="50" y="200" width="275" height="50" class="section" />
+    <text x="187" y="230" text-anchor="middle" class="text label">기본 정보</text>
+    
+    <rect x="325" y="200" width="275" height="50" class="section highlight" />
+    <text x="462" y="230" text-anchor="middle" class="text label">리뷰 (48)</text>
+    
+    <rect x="600" y="200" width="275" height="50" class="section" />
+    <text x="737" y="230" text-anchor="middle" class="text label">시설 안내</text>
+    
+    <rect x="875" y="200" width="275" height="50" class="section" />
+    <text x="1012" y="230" text-anchor="middle" class="text label">주변 정보</text>
+    
+    <!-- 좌측 리뷰 작성 영역 -->
+    <rect x="50" y="250" width="500" height="350" class="section" />
+    <text x="80" y="280" class="text subtitle">리뷰 작성</text>
+    
+    <!-- 별점 선택 영역 -->
+    <text x="80" y="320" class="text label">별점을 선택하세요</text>
+    <rect x="80" y="330" width="40" height="40" class="rating" />
+    <rect x="130" y="330" width="40" height="40" class="rating" />
+    <rect x="180" y="330" width="40" height="40" class="rating" />
+    <rect x="230" y="330" width="40" height="40" class="rating" />
+    <rect x="280" y="330" width="40" height="40" class="gray-bg" />
+    
+    <!-- 리뷰 내용 입력 -->
+    <text x="80" y="400" class="text label">리뷰 내용</text>
+    <rect x="80" y="410" width="440" height="120" class="textarea" />
+    <text x="100" y="440" class="text small" fill="#adb5bd">주차장에 대한 경험을 공유해주세요...</text>
+    
+    <!-- 등록 버튼 -->
+    <rect x="390" y="550" width="130" height="40" class="button" />
+    <text x="455" y="575" text-anchor="middle" class="text label" fill="white">등록하기</text>
+    
+    <!-- 우측 리뷰 목록 영역 -->
+    <rect x="570" y="250" width="580" height="350" class="section" />
+    <text x="600" y="280" class="text subtitle">리뷰 목록</text>
+    
+    <!-- 리뷰 목록 필터 -->
+    <text x="900" y="280" class="text small">정렬: </text>
+    <rect x="950" y="265" width="120" height="30" class="search" />
+    <text x="970" y="285" class="text small">최신순 ▼</text>
+    
+    <!-- 리뷰 아이템 1 -->
+    <rect x="590" y="310" width="540" height="110" class="list-item" />
+    <text x="610" y="330" class="text small">user123 | 2023-11-15</text>
+    
+    <rect x="610" y="340" width="25" height="25" class="rating" />
+    <rect x="640" y="340" width="25" height="25" class="rating" />
+    <rect x="670" y="340" width="25" height="25" class="rating" />
+    <rect x="700" y="340" width="25" height="25" class="rating" />
+    <rect x="730" y="340" width="25" height="25" class="rating" />
+    
+    <text x="610" y="380" class="text small">접근성이 좋고 깨끗한 주차장입니다. 시내 중심부에 위치해 있어 매우 편리합니다. 주차 공간도 넓어서 주차하기 편해요.</text>
+    
+    <!-- 리뷰 아이템 2 -->
+    <rect x="590" y="430" width="540" height="110" class="list-item" />
+    <text x="610" y="450" class="text small">user456 | 2023-11-10</text>
+    
+    <rect x="610" y="460" width="25" height="25" class="rating" />
+    <rect x="640" y="460" width="25" height="25" class="rating" />
+    <rect x="670" y="460" width="25" height="25" class="rating" />
+    <rect x="700" y="460" width="25" height="25" class="rating" />
+    <rect x="730" y="460" width="25" height="25" class="gray-bg" />
+    
+    <text x="610" y="500" class="text small">시설은 좋지만 요금이 조금 비싼 편입니다. 주차 공간은 넓고 깨끗해서 만족스러웠습니다.</text>
+    
+    <!-- 하단 푸터 -->
+    <rect x="50" y="600" width="1100" height="50" class="footer" />
+    <text x="120" y="630" class="text small">© 2023 스마트 주차 가이드. All rights reserved.</text>
+    <text x="950" y="630" class="text small">이용약관 | 개인정보처리방침 | 문의하기</text>
+  </g>
+
+  <!-- 6. 최근 이용 기록 -->
+  <g transform="translate(0, 1380)">
+    <!-- 프레임 -->
+    <rect x="50" y="0" width="1100" height="600" class="frame" />
+    <text x="600" y="30" text-anchor="middle" class="text title">6. 최근 이용 기록 (history.jsp)</text>
+    
+    <!-- 상단 네비게이션 바 -->
+    <rect x="50" y="60" width="1100" height="60" class="navbar" />
+    <text x="120" y="100" class="text subtitle navbar-text">스마트 주차 가이드</text>
+    
+    <!-- 네비게이션 메뉴 -->
+    <text x="500" y="100" class="text label navbar-text">홈</text>
+    <text x="600" y="100" class="text label navbar-text">검색</text>
+    <text x="700" y="100" class="text label navbar-text">대시보드</text>
+    <text x="830" y="100" class="text label navbar-text">커뮤니티</text>
+    
+    <!-- 로그인 영역 - 사용자 로그인 상태 -->
+    <text x="1050" y="100" class="text label navbar-text">사용자님 ▼</text>
+    
+    <!-- 좌측 사이드바 메뉴 -->
+    <rect x="50" y="120" width="250" height="480" class="sidebar" />
+    
+    <rect x="50" y="120" width="250" height="60" class="section" />
+    <text x="70" y="155" class="text label">마이페이지</text>
+    
+    <rect x="50" y="180" width="250" height="60" class="section" />
+    <text x="70" y="215" class="text label">즐겨찾기</text>
+    
+    <rect x="50" y="240" width="250" height="60" class="section highlight" />
+    <text x="70" y="275" class="text label">최근 이용 기록</text>
+    
+    <rect x="50" y="300" width="250" height="60" class="section" />
+    <text x="70" y="335" class="text label">알림 설정</text>
+    
+    <rect x="50" y="360" width="250" height="60" class="section" />
+    <text x="70" y="395" class="text label">내가 쓴 리뷰</text>
+    
+    <rect x="50" y="420" width="250" height="60" class="section" />
+    <text x="70" y="455" class="text label">내가 쓴 글</text>
+    
+    <rect x="50" y="480" width="250" height="60" class="section" />
+    <text x="70" y="515" class="text label">설정</text>
+    
+    <!-- 메인 콘텐츠 영역 -->
+    <rect x="300" y="120" width="850" height="480" class="section" />
+    <text x="340" y="160" class="text title">최근 이용 기록</text>
+    <text x="340" y="190" class="text small">최근에 방문한 주차장 목록을 확인할 수 있습니다.</text>
+    
+    <!-- 탭 메뉴 -->
+    <rect x="340" y="220" width="200" height="40" class="section highlight" />
+    <text x="440" y="245" text-anchor="middle" class="text label">최근 방문</text>
+    
+    <rect x="540" y="220" width="200" height="40" class="section" />
+    <text x="640" y="245" text-anchor="middle" class="text label">자주 방문</text>
+    
+    <!-- 이용 기록 목록 헤더 -->
+    <rect x="340" y="260" width="770" height="40" class="section gray-bg" />
+    <text x="370" y="285" class="text label">주차장 이름</text>
+    <text x="570" y="285" class="text label">주소</text>
+    <text x="770" y="285" class="text label">방문일시</text>
+    <text x="990" y="285" class="text label">액션</text>
+    
+    <!-- 이용 기록 목록 아이템 1 -->
+    <rect x="340" y="300" width="770" height="70" class="list-item" />
+    <text x="370" y="330" class="text label">서울시청 지하 주차장</text>
+    <text x="570" y="330" class="text small">서울특별시 중구 세종대로 110</text>
+    <text x="770" y="330" class="text small">2023-11-15 14:30</text>
+    
+    <rect x="940" y="315" width="80" height="30" class="button" />
+    <text x="980" y="335" text-anchor="middle" class="text small" fill="white">상세</text>
+    <rect x="1030" y="315" width="80" height="30" class="section" />
+    <text x="1070" y="335" text-anchor="middle" class="text small">리뷰 작성</text>
+    
+    <!-- 이용 기록 목록 아이템 2 -->
+    <rect x="340" y="370" width="770" height="70" class="list-item" />
+    <text x="370" y="400" class="text label">명동 공영주차장</text>
+    <text x="570" y="400" class="text small">서울특별시 중구 남대문로 지하</text>
+    <text x="770" y="400" class="text small">2023-11-12 18:45</text>
+    
+    <rect x="940" y="385" width="80" height="30" class="button" />
+    <text x="980" y="405" text-anchor="middle" class="text small" fill="white">상세</text>
+    <rect x="1030" y="385" width="80" height="30" class="section" />
+    <text x="1070" y="405" text-anchor="middle" class="text small">리뷰 작성</text>
+    
+    <!-- 이용 기록 목록 아이템 3 -->
+    <rect x="340" y="440" width="770" height="70" class="list-item" />
+    <text x="370" y="470" class="text label">강남역 지하 주차장</text>
+    <text x="570" y="470" class="text small">서울특별시 강남구 테헤란로 지하</text>
+    <text x="770" y="470" class="text small">2023-11-08 10:15</text>
+    
+    <rect x="940" y="455" width="80" height="30" class="button" />
+    <text x="980" y="475" text-anchor="middle" class="text small" fill="white">상세</text>
+    <rect x="1030" y="455" width="80" height="30" class="section" />
+    <text x="1070" y="475" text-anchor="middle" class="text small">리뷰 작성</text>
+    
+    <!-- 페이지네이션 -->
+    <rect x="600" y="540" width="250" height="40" fill="none" />
+    <text x="640" y="565" class="text small">◀</text>
+    <text x="680" y="565" class="text small">1</text>
+    <text x="720" y="565" class="text small">2</text>
+    <text x="760" y="565" class="text small">3</text>
+    <text x="800" y="565" class="text small">▶</text>
+    
+    <!-- 하단 푸터 -->
+    <rect x="50" y="600" width="1100" height="50" class="footer" />
+    <text x="120" y="630" class="text small">© 2023 스마트 주차 가이드. All rights reserved.</text>
+    <text x="950" y="630" class="text small">이용약관 | 개인정보처리방침 | 문의하기</text>
+  </g>
+</svg>

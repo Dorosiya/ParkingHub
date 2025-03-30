@@ -1,5 +1,6 @@
 package com.example.parking_hub.mapper;
 
+import com.example.parking_hub.dto.UserDto;
 import com.example.parking_hub.model.User;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -9,26 +10,30 @@ import java.util.List;
 @Mapper
 public interface UserMapper {
     // 사용자 목록 조회
-    List<User> selectAllUsers();
+    List<UserDto> selectAllUsers();
 
     // 사용자 정보 조회
-    User selectUserById(@Param("id") Long id);
+    UserDto selectUserById(@Param("id") int id);
 
     // 사용자 정보 조회 (이메일)
-    User selectUserByEmail(@Param("email") String email);
+    UserDto selectUserByEmail(@Param("email") String email);
 
-    // username으로 사용자 조회 (Spring Security 인증용)
-    User findByUsername(@Param("username") String username);
+    // username(email)으로 사용자 조회 (Spring Security 인증용)
+    UserDto findByUsername(@Param("username") String username);
 
     // 사용자 등록
-    void insertUser(User user);
+    int insertUser(UserDto user);
 
     // 사용자 정보 수정
-    void updateUser(User user);
+    int updateUser(UserDto user);
 
     // 사용자 삭제
-    void deleteUser(@Param("id") Long id);
-    
-    // ID로 사용자 조회
+    int deleteUser(@Param("id") int id);
+
+    User findByUsername(@Param("username") String username);
+    User selectUserByEmail(@Param("email") String email);
+    void insertUser(User user);
     User findById(@Param("id") Long id);
+    void updateUser(User user);
+    void deleteUser(@Param("id") Long id);
 }

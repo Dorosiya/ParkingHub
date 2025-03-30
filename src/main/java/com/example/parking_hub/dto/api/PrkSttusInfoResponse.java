@@ -1,31 +1,58 @@
 package com.example.parking_hub.dto.api;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Getter;
-import lombok.Setter;
-
+import lombok.Data;
 import java.util.List;
 
-@Getter
-@Setter
+@Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class PrkSttusInfoResponse {
-    private String resultCode;
-    private String resultMsg;
-    private int numOfRows;
-    private int pageNo;
-    private int totalCount;
     
-    @JsonProperty("PrkSttusInfo")
-    private List<PrkSttusInfo> prkSttusInfoList;
-
-    @Getter
-    @Setter
+    @JsonProperty("resultCode")
+    private String resultCode;
+    
+    @JsonProperty("resultMsg")
+    private String resultMsg;
+    
+    @JsonProperty("numOfRows")
+    private Integer numOfRows;
+    
+    @JsonProperty("pageNo")
+    private Integer pageNo;
+    
+    @JsonProperty("totalCount")
+    private Integer totalCount;
+    
+    @JsonProperty("items")
+    private List<PrkSttusInfo> items;
+    
+    @Data
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class PrkSttusInfo {
+        
+        @JsonProperty("prkCenterId")
         private String prkCenterId;
-        private String prkPlceNm;
-        private String prkPlceAdres;
-        private double prkPlceEntrcLa;
-        private double prkPlceEntrcLo;
-        private int prkCmprtCo;
+        
+        @JsonProperty("prkCenterNm")
+        private String prkCenterNm;
+        
+        @JsonProperty("prkCenterType")
+        private String prkCenterType;
+        
+        @JsonProperty("rdnmadr")
+        private String rdnmadr;
+        
+        @JsonProperty("lnmadr")
+        private String lnmadr;
+        
+        @JsonProperty("latitude")
+        private Double latitude;
+        
+        @JsonProperty("longitude")
+        private Double longitude;
+        
+        @JsonProperty("parkingLotCount")
+        private Integer parkingLotCount;
     }
 } 

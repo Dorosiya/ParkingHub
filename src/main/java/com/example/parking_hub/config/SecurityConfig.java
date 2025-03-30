@@ -54,12 +54,12 @@ public class SecurityConfig {
                 .formLogin()
                 .loginPage("/login")                                // JSP 파일명이 아닌 컨트롤러 매핑 URL
                 .loginProcessingUrl("/perform-login")               // 로그인 처리 URL
-                .defaultSuccessUrl("/")                         // 로그인 성공 시 리다이렉트
+                .defaultSuccessUrl("/home")                         // 로그인 성공 시 리다이렉트
                 .failureUrl("/login?error=true")  // 로그인 실패 시
                 .and()
                 .logout()
                 .logoutUrl("/logout")
-                .logoutSuccessUrl("/")  // 로그아웃 성공 시 리다이렉트
+                .logoutSuccessUrl("/home")
                 .invalidateHttpSession(true)
                 .clearAuthentication(true)
                 .and()

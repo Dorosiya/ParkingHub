@@ -1,0 +1,149 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800">
+  <!-- 스타일 정의 -->
+  <style>
+    .frame { fill: #f8f9fa; stroke: #333; stroke-width: 2; }
+    .header { fill: #e9ecef; stroke: #333; stroke-width: 1; }
+    .footer { fill: #e9ecef; stroke: #333; stroke-width: 1; }
+    .section { fill: #ffffff; stroke: #ddd; stroke-width: 1; }
+    .button { fill: #4dabf7; stroke: #339af0; stroke-width: 1; rx: 5; ry: 5; }
+    .cancel-button { fill: #f1f3f5; stroke: #adb5bd; stroke-width: 1; rx: 5; ry: 5; }
+    .search { fill: #ffffff; stroke: #333; stroke-width: 1; rx: 5; ry: 5; }
+    .marker { fill: #ff6b6b; stroke: #fa5252; stroke-width: 1; }
+    .list-item { fill: #ffffff; stroke: #ddd; stroke-width: 1; }
+    .text { font-family: Arial, sans-serif; }
+    .title { font-size: 24px; font-weight: bold; }
+    .subtitle { font-size: 18px; }
+    .label { font-size: 14px; }
+    .small { font-size: 12px; }
+    .icon { font-size: 18px; font-family: "FontAwesome", Arial; }
+    .map { fill: #e9ecef; stroke: #ced4da; stroke-width: 1; }
+    .rating { fill: #ffd43b; stroke: #fab005; stroke-width: 1; }
+    .gray-bg { fill: #f1f3f5; }
+    .highlight { fill: #d0ebff; }
+    .chart { fill: #4dabf7; stroke: #339af0; stroke-width: 1; }
+    .navbar { fill: #343a40; stroke: none; }
+    .navbar-text { fill: #ffffff; }
+    .sidebar { fill: #f8f9fa; stroke: #dee2e6; stroke-width: 1; }
+    .textarea { fill: #ffffff; stroke: #ced4da; stroke-width: 1; }
+  </style>
+
+  <!-- 페이지 제목 -->
+  <text x="600" y="40" text-anchor="middle" class="text title">5. 리뷰/평점 (review.jsp)</text>
+    
+  <!-- 프레임 -->
+  <rect x="50" y="70" width="1100" height="670" class="frame" />
+    
+  <!-- 상단 네비게이션 바 -->
+  <rect x="50" y="70" width="1100" height="60" class="navbar" />
+  <text x="120" y="110" class="text subtitle navbar-text">스마트 주차 가이드</text>
+  
+  <!-- 네비게이션 메뉴 -->
+  <text x="500" y="110" class="text label navbar-text">홈</text>
+  <text x="600" y="110" class="text label navbar-text">검색</text>
+  <text x="700" y="110" class="text label navbar-text">대시보드</text>
+  <text x="830" y="110" class="text label navbar-text">커뮤니티</text>
+  
+  <!-- 로그인 영역 - 사용자 로그인 상태 -->
+  <text x="1050" y="110" class="text label navbar-text">사용자님 ▼</text>
+  
+  <!-- 주차장 기본 정보 섹션 -->
+  <rect x="50" y="130" width="1100" height="80" class="section" />
+  <text x="80" y="165" class="text title">서울시청 지하 주차장 - 리뷰</text>
+  <text x="80" y="195" class="text small">서울특별시 중구 세종대로 110</text>
+  
+  <!-- 리뷰 정보 및 통계 -->
+  <rect x="700" y="150" width="400" height="30" class="section" />
+  <text x="740" y="170" class="text small">총 48건의 리뷰 | 평균 ★★★★☆ (4.5/5.0)</text>
+  
+  <!-- 콘텐츠 탭 메뉴 -->
+  <rect x="50" y="210" width="275" height="50" class="section" />
+  <text x="187" y="240" text-anchor="middle" class="text label">기본 정보</text>
+  
+  <rect x="325" y="210" width="275" height="50" class="section highlight" />
+  <text x="462" y="240" text-anchor="middle" class="text label">리뷰 (48)</text>
+  
+  <rect x="600" y="210" width="275" height="50" class="section" />
+  <text x="737" y="240" text-anchor="middle" class="text label">시설 안내</text>
+  
+  <rect x="875" y="210" width="275" height="50" class="section" />
+  <text x="1012" y="240" text-anchor="middle" class="text label">주변 정보</text>
+  
+  <!-- 좌측 리뷰 작성 영역 -->
+  <rect x="50" y="260" width="500" height="430" class="section" />
+  <text x="80" y="290" class="text subtitle">리뷰 작성</text>
+  
+  <!-- 별점 선택 영역 -->
+  <text x="80" y="330" class="text label">별점을 선택하세요</text>
+  <rect x="80" y="340" width="40" height="40" class="rating" />
+  <rect x="130" y="340" width="40" height="40" class="rating" />
+  <rect x="180" y="340" width="40" height="40" class="rating" />
+  <rect x="230" y="340" width="40" height="40" class="rating" />
+  <rect x="280" y="340" width="40" height="40" class="gray-bg" />
+  
+  <!-- 리뷰 내용 입력 -->
+  <text x="80" y="410" class="text label">리뷰 내용</text>
+  <rect x="80" y="420" width="440" height="170" class="textarea" />
+  <text x="100" y="450" class="text small" fill="#adb5bd">주차장에 대한 경험을 공유해주세요...</text>
+  
+  <!-- 등록 버튼 -->
+  <rect x="390" y="610" width="130" height="40" class="button" />
+  <text x="455" y="635" text-anchor="middle" class="text label" fill="white">등록하기</text>
+  
+  <!-- 우측 리뷰 목록 영역 -->
+  <rect x="570" y="260" width="580" height="430" class="section" />
+  <text x="600" y="290" class="text subtitle">리뷰 목록</text>
+  
+  <!-- 리뷰 목록 필터 -->
+  <text x="900" y="290" class="text small">정렬: </text>
+  <rect x="950" y="275" width="120" height="30" class="search" />
+  <text x="970" y="295" class="text small">최신순 ▼</text>
+  
+  <!-- 리뷰 아이템 1 -->
+  <rect x="590" y="320" width="540" height="110" class="list-item" />
+  <text x="610" y="340" class="text small">user123 | 2023-11-15</text>
+  
+  <rect x="610" y="350" width="25" height="25" class="rating" />
+  <rect x="640" y="350" width="25" height="25" class="rating" />
+  <rect x="670" y="350" width="25" height="25" class="rating" />
+  <rect x="700" y="350" width="25" height="25" class="rating" />
+  <rect x="730" y="350" width="25" height="25" class="rating" />
+  
+  <text x="610" y="390" class="text small">접근성이 좋고 깨끗한 주차장입니다. 시내 중심부에 위치해 있어 매우 편리합니다. 주차 공간도 넓어서 주차하기 편해요.</text>
+  
+  <!-- 리뷰 아이템 2 -->
+  <rect x="590" y="440" width="540" height="110" class="list-item" />
+  <text x="610" y="460" class="text small">user456 | 2023-11-10</text>
+  
+  <rect x="610" y="470" width="25" height="25" class="rating" />
+  <rect x="640" y="470" width="25" height="25" class="rating" />
+  <rect x="670" y="470" width="25" height="25" class="rating" />
+  <rect x="700" y="470" width="25" height="25" class="rating" />
+  <rect x="730" y="470" width="25" height="25" class="gray-bg" />
+  
+  <text x="610" y="510" class="text small">시설은 좋지만 요금이 조금 비싼 편입니다. 주차 공간은 넓고 깨끗해서 만족스러웠습니다.</text>
+  
+  <!-- 리뷰 아이템 3 -->
+  <rect x="590" y="560" width="540" height="110" class="list-item" />
+  <text x="610" y="580" class="text small">user789 | 2023-11-05</text>
+  
+  <rect x="610" y="590" width="25" height="25" class="rating" />
+  <rect x="640" y="590" width="25" height="25" class="rating" />
+  <rect x="670" y="590" width="25" height="25" class="rating" />
+  <rect x="700" y="590" width="25" height="25" class="rating" />
+  <rect x="730" y="590" width="25" height="25" class="gray-bg" />
+  
+  <text x="610" y="630" class="text small">평일보다 주말에 이용하면 훨씬 공간이 많습니다. 저층보다는 윗층에 주차하는 것이 출입이 편리해요.</text>
+  
+  <!-- 페이지 네비게이션 -->
+  <rect x="800" y="680" width="150" height="30" fill="none" />
+  <text x="820" y="700" class="text small">◀</text>
+  <text x="850" y="700" class="text small">1</text>
+  <text x="880" y="700" class="text small">2</text>
+  <text x="910" y="700" class="text small">3</text>
+  <text x="940" y="700" class="text small">▶</text>
+  
+  <!-- 하단 푸터 -->
+  <rect x="50" y="700" width="1100" height="40" class="footer" />
+  <text x="120" y="725" class="text small">© 2023 스마트 주차 가이드. All rights reserved.</text>
+  <text x="950" y="725" class="text small">이용약관 | 개인정보처리방침 | 문의하기</text>
+</svg>

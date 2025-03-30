@@ -1,0 +1,103 @@
+erDiagram
+    USER["사용자(USER)"] {
+        int id PK "사용자 ID"
+        string email "이메일"
+        string nickname "닉네임"
+        string password "비밀번호"
+        datetime created_at "생성일시"
+    }
+    
+    PARKING_INFO["주차장 정보(PARKING_INFO)"] {
+        string prk_center_id PK "주차장 관리 ID"
+        string prk_plce_nm "주차장명"
+        string prk_plce_adres "주차장 도로명 주소"
+        decimal prk_plce_entrc_la "위도"
+        decimal prk_plce_entrc_lo "경도" 
+        int prk_cmprt_co "총 주차 구획 수"
+    }
+    
+    PARKING_OPERATION["주차장 운영정보(PARKING_OPERATION)"] {
+        string prk_center_id PK "주차장 관리 ID"
+        string week_operation "요일별 운영시간(JSON)"
+        int opertn_bs_free_time "기본 회차(기본무료)시간"
+        string price_info "요금 정보(JSON)"
+    }
+    
+    PARKING_REALTIME["주차장 실시간 정보(PARKING_REALTIME)"] {
+        string prk_center_id PK "주차장 관리 ID"
+        int pkfc_ParkingLots_total "총 주차 구획 수"
+        int pkfc_Available_ParkingLots_total "주차 가능 구획 수"
+        datetime updated_at "정보 갱신 시간"
+    }
+    
+    FAVORITE_PARKING["즐겨찾기 주차장(FAVORITE_PARKING)"] {
+        int id PK "즐겨찾기 ID"
+        int user_id FK "사용자 ID"
+        string parking_code FK "주차장 코드"
+        datetime created_at "생성일시"
+    }
+    
+    REVIEW["리뷰(REVIEW)"] {
+        int id PK "리뷰 ID"
+        int user_id FK "사용자 ID"
+        string parking_code FK "주차장 코드"
+        decimal rating "별점 (0-5)"
+        string comment "리뷰 내용"
+        datetime created_at "생성일시"
+    }
+    
+    USER_HISTORY["사용자 방문 기록(USER_HISTORY)"] {
+        int id PK "방문 기록 ID"
+        int user_id FK "사용자 ID"
+        string parking_code FK "주차장 코드"
+        datetime visited_at "방문 일시"
+    }
+    
+    ALERT_SETTING["알림 설정(ALERT_SETTING)"] {
+        int id PK "알림 설정 ID"
+        int user_id FK "사용자 ID"
+        string parking_code FK "주차장 코드"
+        string day_of_week "요일"
+        int hour "시간(24시간)"
+        int min_free_slots "최소 가용 주차공간"
+    }
+    
+    POST["게시글(POST)"] {
+        int id PK "게시글 ID"
+        int user_id FK "사용자 ID"
+        string title "제목"
+        string content "내용"
+        int views "조회수"
+        datetime created_at "생성일시"
+    }
+    
+    COMMENT["댓글(COMMENT)"] {
+        int id PK "댓글 ID"
+        int post_id FK "게시글 ID"
+        int user_id FK "사용자 ID"
+        string comment "댓글 내용"
+        datetime created_at "생성일시"
+    }
+    
+    ADMIN["관리자(ADMIN)"] {
+        int admin_id PK "관리자 ID"
+        string password "비밀번호"
+        datetime created_at "생성일시"
+    }
+    
+    USER ||--o{ FAVORITE_PARKING : "즐겨찾기"
+    USER ||--o{ REVIEW : "리뷰작성"
+    USER ||--o{ USER_HISTORY : "방문기록"
+    USER ||--o{ ALERT_SETTING : "알림설정"
+    USER ||--o{ POST : "게시글작성"
+    USER ||--o{ COMMENT : "댓글작성"
+    
+    PARKING_INFO ||--|| PARKING_OPERATION : "운영정보"
+    PARKING_INFO ||--|| PARKING_REALTIME : "실시간정보"
+    
+    PARKING_INFO ||--o{ FAVORITE_PARKING : "등록됨"
+    PARKING_INFO ||--o{ REVIEW : "평가됨"
+    PARKING_INFO ||--o{ USER_HISTORY : "방문됨"
+    PARKING_INFO ||--o{ ALERT_SETTING : "알림설정됨"
+    
+    POST ||--o{ COMMENT : "포함"

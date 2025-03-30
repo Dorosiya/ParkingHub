@@ -1,0 +1,179 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800">
+  <!-- 스타일 정의 -->
+  <style>
+    .frame { fill: #f8f9fa; stroke: #333; stroke-width: 2; }
+    .header { fill: #e9ecef; stroke: #333; stroke-width: 1; }
+    .footer { fill: #e9ecef; stroke: #333; stroke-width: 1; }
+    .section { fill: #ffffff; stroke: #ddd; stroke-width: 1; }
+    .button { fill: #4dabf7; stroke: #339af0; stroke-width: 1; rx: 5; ry: 5; }
+    .cancel-button { fill: #f1f3f5; stroke: #adb5bd; stroke-width: 1; rx: 5; ry: 5; }
+    .search { fill: #ffffff; stroke: #333; stroke-width: 1; rx: 5; ry: 5; }
+    .marker { fill: #ff6b6b; stroke: #fa5252; stroke-width: 1; }
+    .list-item { fill: #ffffff; stroke: #ddd; stroke-width: 1; }
+    .text { font-family: Arial, sans-serif; }
+    .title { font-size: 24px; font-weight: bold; }
+    .subtitle { font-size: 18px; }
+    .label { font-size: 14px; }
+    .small { font-size: 12px; }
+    .icon { font-size: 18px; font-family: "FontAwesome", Arial; }
+    .map { fill: #e9ecef; stroke: #ced4da; stroke-width: 1; }
+    .rating { fill: #ffd43b; stroke: #fab005; stroke-width: 1; }
+    .gray-bg { fill: #f1f3f5; }
+    .highlight { fill: #d0ebff; }
+    .chart { fill: #4dabf7; stroke: #339af0; stroke-width: 1; }
+    .navbar { fill: #343a40; stroke: none; }
+    .navbar-text { fill: #ffffff; }
+    .editor-toolbar { fill: #f1f3f5; stroke: #dee2e6; stroke-width: 1; }
+  </style>
+
+  <!-- 페이지 제목 -->
+  <text x="600" y="40" text-anchor="middle" class="text title">10. 커뮤니티 (community.jsp)</text>
+    
+  <!-- 프레임 -->
+  <rect x="50" y="70" width="1100" height="670" class="frame" />
+    
+  <!-- 상단 네비게이션 바 -->
+  <rect x="50" y="70" width="1100" height="60" class="navbar" />
+  <text x="120" y="110" class="text subtitle navbar-text">스마트 주차 가이드</text>
+  
+  <!-- 네비게이션 메뉴 -->
+  <text x="500" y="110" class="text label navbar-text">홈</text>
+  <text x="600" y="110" class="text label navbar-text">검색</text>
+  <text x="700" y="110" class="text label navbar-text">대시보드</text>
+  <text x="830" y="110" class="text label navbar-text">커뮤니티</text>
+  
+  <!-- 로그인 영역 - 사용자 로그인 상태 -->
+  <text x="1050" y="110" class="text label navbar-text">사용자님 ▼</text>
+  
+  <!-- 커뮤니티 헤더 및 검색 영역 -->
+  <rect x="50" y="130" width="1100" height="80" class="section" />
+  <text x="80" y="165" class="text title">커뮤니티</text>
+  <text x="80" y="195" class="text small">주차 관련 정보와 팁을 공유하는 공간입니다.</text>
+  
+  <!-- 검색 및 글쓰기 버튼 -->
+  <rect x="700" y="150" width="300" height="40" class="search" />
+  <text x="720" y="175" class="text small">검색어 입력</text>
+  <rect x="1000" y="150" width="40" height="40" class="button" />
+  <text x="1020" y="175" class="text icon">🔍</text>
+  
+  <rect x="1060" y="150" width="70" height="40" class="button" />
+  <text x="1095" y="175" text-anchor="middle" class="text small" fill="white">글쓰기</text>
+  
+  <!-- 게시판 카테고리 탭 -->
+  <rect x="50" y="210" width="220" height="50" class="section highlight" />
+  <text x="160" y="240" text-anchor="middle" class="text label">전체 글</text>
+  
+  <rect x="270" y="210" width="220" height="50" class="section" />
+  <text x="380" y="240" text-anchor="middle" class="text label">주차 팁</text>
+  
+  <rect x="490" y="210" width="220" height="50" class="section" />
+  <text x="600" y="240" text-anchor="middle" class="text label">할인 정보</text>
+  
+  <rect x="710" y="210" width="220" height="50" class="section" />
+  <text x="820" y="240" text-anchor="middle" class="text label">주차장 리뷰</text>
+  
+  <rect x="930" y="210" width="220" height="50" class="section" />
+  <text x="1040" y="240" text-anchor="middle" class="text label">질문/답변</text>
+  
+  <!-- 게시글 목록 헤더 -->
+  <rect x="50" y="260" width="1100" height="40" class="section gray-bg" />
+  <text x="70" y="285" class="text label">번호</text>
+  <text x="130" y="285" class="text label">카테고리</text>
+  <text x="250" y="285" class="text label">제목</text>
+  <text x="750" y="285" class="text label">작성자</text>
+  <text x="850" y="285" class="text label">작성일</text>
+  <text x="950" y="285" class="text label">조회수</text>
+  <text x="1050" y="285" class="text label">추천수</text>
+  
+  <!-- 게시글 목록 아이템 1 -->
+  <rect x="50" y="300" width="1100" height="50" class="list-item" />
+  <text x="70" y="330" class="text small">159</text>
+  <text x="130" y="330" class="text small">주차 팁</text>
+  <text x="250" y="330" class="text label">주차 꿀팁 공유합니다</text>
+  <text x="750" y="330" class="text small">user789</text>
+  <text x="850" y="330" class="text small">2023-11-15</text>
+  <text x="950" y="330" class="text small">124</text>
+  <text x="1050" y="330" class="text small">15</text>
+  
+  <!-- 게시글 목록 아이템 2 -->
+  <rect x="50" y="350" width="1100" height="50" class="list-item" />
+  <text x="70" y="380" class="text small">158</text>
+  <text x="130" y="380" class="text small">할인 정보</text>
+  <text x="250" y="380" class="text label">강남 주차장 할인 정보</text>
+  <text x="750" y="380" class="text small">user321</text>
+  <text x="850" y="380" class="text small">2023-11-14</text>
+  <text x="950" y="380" class="text small">87</text>
+  <text x="1050" y="380" class="text small">12</text>
+  
+  <!-- 게시글 목록 아이템 3 -->
+  <rect x="50" y="400" width="1100" height="50" class="list-item" />
+  <text x="70" y="430" class="text small">157</text>
+  <text x="130" y="430" class="text small">주차장 리뷰</text>
+  <text x="250" y="430" class="text label">시청 주변 저렴한 주차장 추천</text>
+  <text x="750" y="430" class="text small">user456</text>
+  <text x="850" y="430" class="text small">2023-11-13</text>
+  <text x="950" y="430" class="text small">65</text>
+  <text x="1050" y="430" class="text small">8</text>
+  
+  <!-- 게시글 목록 아이템 4 -->
+  <rect x="50" y="450" width="1100" height="50" class="list-item" />
+  <text x="70" y="480" class="text small">156</text>
+  <text x="130" y="480" class="text small">주차장 리뷰</text>
+  <text x="250" y="480" class="text label">명동에서 주차하기 좋은 곳</text>
+  <text x="750" y="480" class="text small">user234</text>
+  <text x="850" y="480" class="text small">2023-11-12</text>
+  <text x="950" y="480" class="text small">43</text>
+  <text x="1050" y="480" class="text small">5</text>
+  
+  <!-- 게시글 목록 아이템 5 -->
+  <rect x="50" y="500" width="1100" height="50" class="list-item" />
+  <text x="70" y="530" class="text small">155</text>
+  <text x="130" y="530" class="text small">주차 팁</text>
+  <text x="250" y="530" class="text label">주차 앱 비교 분석해봤습니다</text>
+  <text x="750" y="530" class="text small">user567</text>
+  <text x="850" y="530" class="text small">2023-11-10</text>
+  <text x="950" y="530" class="text small">156</text>
+  <text x="1050" y="530" class="text small">23</text>
+  
+  <!-- 게시글 목록 아이템 6 -->
+  <rect x="50" y="550" width="1100" height="50" class="list-item" />
+  <text x="70" y="580" class="text small">154</text>
+  <text x="130" y="580" class="text small">질문/답변</text>
+  <text x="250" y="580" class="text label">종로 지역 24시간 주차장 문의</text>
+  <text x="750" y="580" class="text small">user876</text>
+  <text x="850" y="580" class="text small">2023-11-08</text>
+  <text x="950" y="580" class="text small">32</text>
+  <text x="1050" y="580" class="text small">3</text>
+  
+  <!-- 게시글 목록 아이템 7 -->
+  <rect x="50" y="600" width="1100" height="50" class="list-item" />
+  <text x="70" y="630" class="text small">153</text>
+  <text x="130" y="630" class="text small">할인 정보</text>
+  <text x="250" y="630" class="text label">주말 주차 할인 정보 모음</text>
+  <text x="750" y="630" class="text small">user123</text>
+  <text x="850" y="630" class="text small">2023-11-07</text>
+  <text x="950" y="630" class="text small">95</text>
+  <text x="1050" y="630" class="text small">14</text>
+  
+  <!-- 페이지네이션 -->
+  <rect x="500" y="660" width="200" height="40" fill="none" />
+  <rect x="520" y="665" width="30" height="30" class="section" />
+  <text x="535" y="685" text-anchor="middle" class="text small">◀</text>
+  
+  <rect x="550" y="665" width="30" height="30" class="section highlight" />
+  <text x="565" y="685" text-anchor="middle" class="text small">1</text>
+  
+  <rect x="580" y="665" width="30" height="30" class="section" />
+  <text x="595" y="685" text-anchor="middle" class="text small">2</text>
+  
+  <rect x="610" y="665" width="30" height="30" class="section" />
+  <text x="625" y="685" text-anchor="middle" class="text small">3</text>
+  
+  <rect x="640" y="665" width="30" height="30" class="section" />
+  <text x="655" y="685" text-anchor="middle" class="text small">▶</text>
+  
+  <!-- 하단 푸터 -->
+  <rect x="50" y="700" width="1100" height="40" class="footer" />
+  <text x="120" y="725" class="text small">© 2023 스마트 주차 가이드. All rights reserved.</text>
+  <text x="950" y="725" class="text small">이용약관 | 개인정보처리방침 | 문의하기</text>
+</svg>

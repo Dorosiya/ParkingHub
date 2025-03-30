@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.parking_hub.mapper.RoleMapper">
+
+    <!-- 모든 역할 조회 -->
+    <select id="selectAllRoles" resultType="com.example.parking_hub.model.Role">
+        SELECT * FROM ROLE
+    </select>
+    
+    <!-- 특정 역할 조회 -->
+    <select id="selectRoleById" resultType="com.example.parking_hub.model.Role">
+        SELECT * FROM ROLE WHERE id = #{id}
+    </select>
+    
+    <!-- 역할명으로 역할 조회 -->
+    <select id="selectRoleByName" resultType="com.example.parking_hub.model.Role">
+        SELECT * FROM ROLE WHERE name = #{name}
+    </select>
+    
+    <!-- 사용자 ID로 역할 조회 -->
+    <select id="selectRolesByUserId" resultType="com.example.parking_hub.model.Role">
+        SELECT r.* 
+        FROM ROLE r
+        JOIN USER_ROLE ur ON r.id = ur.role_id
+        WHERE ur.user_id = #{userId}
+    </select>
+    
+    <!-- 역할 생성 -->
+    <insert id="insertRole" parameterType="com.example.parking_hub.model.Role" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO ROLE (name, description, created_at, updated_at) 
+        VALUES (#{name}, #{description}, NOW(), NOW())
+    </insert>
+    
+    <!-- 역할 수정 -->
+    <update id="updateRole" parameterType="com.example.parking_hub.model.Role">
+        UPDATE ROLE 
+        SET name = #{name}, 
+            description = #{description}, 
+            updated_at = NOW() 
+        WHERE id = #{id}
+    </update>
+    
+    <!-- 역할 삭제 -->
+    <delete id="deleteRole">
+        DELETE FROM ROLE WHERE id = #{id}
+    </delete>
+    
+    <!-- 사용자에 역할 할당 -->
+    <insert id="assignRoleToUser">
+        INSERT INTO USER_ROLE (user_id, role_id, created_at) 
+        VALUES (#{userId}, #{roleId}, NOW())
+    </insert>
+    
+    <!-- 사용자의 역할 제거 -->
+    <delete id="removeRoleFromUser">
+        DELETE FROM USER_ROLE 
+        WHERE user_id = #{userId} AND role_id = #{roleId}
+    </delete>
+
+</mapper> 

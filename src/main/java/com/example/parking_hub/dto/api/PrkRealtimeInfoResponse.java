@@ -1,28 +1,43 @@
 package com.example.parking_hub.dto.api;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Getter;
-import lombok.Setter;
-
+import lombok.Data;
 import java.util.List;
 
-@Getter
-@Setter
+@Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class PrkRealtimeInfoResponse {
-    private String resultCode;
-    private String resultMsg;
-    private int numOfRows;
-    private int pageNo;
-    private int totalCount;
     
-    @JsonProperty("PrkRealtimeInfo")
-    private List<PrkRealtimeInfo> prkRealtimeInfoList;
-
-    @Getter
-    @Setter
+    @JsonProperty("resultCode")
+    private String resultCode;
+    
+    @JsonProperty("resultMsg")
+    private String resultMsg;
+    
+    @JsonProperty("numOfRows")
+    private Integer numOfRows;
+    
+    @JsonProperty("pageNo")
+    private Integer pageNo;
+    
+    @JsonProperty("totalCount")
+    private Integer totalCount;
+    
+    @JsonProperty("items")
+    private List<PrkRealtimeInfo> items;
+    
+    @Data
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class PrkRealtimeInfo {
+        
+        @JsonProperty("prkCenterId")
         private String prkCenterId;
-        private int pkfcParkingLotsTotal;        // 총 주차 구획 수
-        private int pkfcAvailableParkingLotsTotal; // 주차 가능 구획 수
+        
+        @JsonProperty("pkfcParkingLotsTotal")
+        private Integer pkfcParkingLotsTotal;
+        
+        @JsonProperty("pkfcAvailableParkingLotsTotal")
+        private Integer pkfcAvailableParkingLotsTotal;
     }
 } 
