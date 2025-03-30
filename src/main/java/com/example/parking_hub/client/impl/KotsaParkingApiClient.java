@@ -3,6 +3,7 @@ package com.example.parking_hub.client.impl;
 import com.example.parking_hub.client.ParkingApiClient;
 import com.example.parking_hub.dto.api.PrkSttusInfoResponse;
 import com.example.parking_hub.dto.api.PrkOprInfoResponse;
+import com.example.parking_hub.dto.api.PrkRealtimeInfoResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -50,5 +51,19 @@ public class KotsaParkingApiClient implements ParkingApiClient {
 
         log.info("Requesting PrkOprInfo API: {}", url);
         return restTemplate.getForObject(url, PrkOprInfoResponse.class);
+    }
+
+    @Override
+    public PrkRealtimeInfoResponse getPrkRealtimeInfo(int pageNo, int numOfRows) {
+        String url = UriComponentsBuilder.fromUriString(BASE_URL + "/PrkRealtimeInfo")
+                .queryParam("serviceKey", apiKey)
+                .queryParam("pageNo", pageNo)
+                .queryParam("numOfRows", numOfRows)
+                .queryParam("format", "json")
+                .build()
+                .toUriString();
+
+        log.info("Requesting PrkRealtimeInfo API: {}", url);
+        return restTemplate.getForObject(url, PrkRealtimeInfoResponse.class);
     }
 } 
