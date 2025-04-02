@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.parking_hub.mapper.ParkingInfoMapper">
+
+    <resultMap id="ParkingInfoResultMap" type="com.example.parking_hub.model.ParkingInfo">
+        <id property="id" column="id"/>
+        <result property="parkingName" column="parking_name"/>
+        <result property="parkingTypeNm" column="parking_type_nm"/>
+        <result property="rdnmadr" column="rdnmadr"/>
+        <result property="lnmadr" column="lnmadr"/>
+        <result property="latitude" column="latitude"/>
+        <result property="longitude" column="longitude"/>
+        <result property="phoneNumber" column="phone_number"/>
+        <result property="referenceDate" column="reference_date"/>
+        <result property="insttNm" column="instt_nm"/>
+        <result property="institutionNm" column="institution_nm"/>
+        <result property="syncDate" column="sync_date"/>
+    </resultMap>
+
+    <!-- 주차장 정보 등록 -->
+    <insert id="insertParkingInfo" parameterType="com.example.parking_hub.model.ParkingInfo">
+        INSERT INTO parking_info (
+            id, parking_name, parking_type_nm, rdnmadr, lnmadr,
+            latitude, longitude, phone_number, reference_date, instt_nm,
+            institution_nm, sync_date
+        ) VALUES (
+            #{id}, #{parkingName}, #{parkingTypeNm}, #{rdnmadr}, #{lnmadr},
+            #{latitude}, #{longitude}, #{phoneNumber}, #{referenceDate}, #{insttNm},
+            #{institutionNm}, NOW()
+        )
+    </insert>
+
+    <!-- 주차장 정보 조회 - 전체 -->
+    <select id="selectAllParkingInfo" resultMap="ParkingInfoResultMap">
+        SELECT * FROM parking_info ORDER BY parking_name
+    </select>
+
+    <!-- 주차장 정보 조회 - 특정 ID -->
+    <select id="selectParkingInfoById" resultMap="ParkingInfoResultMap">
+        SELECT * FROM parking_info WHERE id = #{id}
+    </select>
+
+    <!-- 주차장 정보 수정 -->
+    <update id="updateParkingInfo" parameterType="com.example.parking_hub.model.ParkingInfo">
+        UPDATE parking_info
+        SET
+            parking_name = #{parkingName},
+            parking_type_nm = #{parkingTypeNm},
+            rdnmadr = #{rdnmadr},
+            lnmadr = #{lnmadr},
+            latitude = #{latitude},
+            longitude = #{longitude},
+            phone_number = #{phoneNumber},
+            reference_date = #{referenceDate},
+            instt_nm = #{insttNm},
+            institution_nm = #{institutionNm},
+            sync_date = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <!-- 주차장 정보 삭제 -->
+    <delete id="deleteParkingInfo">
+        DELETE FROM parking_info WHERE id = #{id}
+    </delete>
+
+    <!-- 주차장 정보 조회 - 이름으로 검색 -->
+    <select id="selectParkingByName" resultMap="ParkingInfoResultMap">
+        SELECT * FROM parking_info
+        WHERE parking_name LIKE #{name}
+        ORDER BY parking_name
+    </select>
+
+    <!-- 주차장 정보 조회 - 주소로 검색 -->
+    <select id="selectParkingByAddress" resultMap="ParkingInfoResultMap">
+        SELECT * FROM parking_info
+        WHERE rdnmadr LIKE #{address} OR lnmadr LIKE #{address}
+        ORDER BY parking_name
+    </select>
+
+    <!-- 주차장 정보 조회 - 위치 기반 검색 -->
+    <select id="selectParkingNearby" resultMap="ParkingInfoResultMap">
+        SELECT *, 
+            (6371 * acos(cos(radians(#{latitude})) * cos(radians(latitude)) * cos(radians(longitude) - radians(#{longitude})) + sin(radians(#{latitude})) * sin(radians(latitude)))) AS distance
+        FROM parking_info
+        HAVING distance &lt; #{radiusKm}
+        ORDER BY distance
+    </select>
+
+    <!-- 주차장 ID 존재 여부 확인 -->
+    <select id="existsById" resultType="boolean">
+        SELECT COUNT(*) > 0 FROM parking_info WHERE id = #{id}
+    </select>
+</mapper> 

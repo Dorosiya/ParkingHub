@@ -8,24 +8,44 @@ import java.util.List;
 
 @Mapper
 public interface ParkingRealtimeMapper {
-    // 모든 주차장 실시간 정보 조회
+    
+    /**
+     * 주차장 실시간 정보 등록
+     */
+    void insertParkingRealtime(ParkingRealtime parkingRealtime);
+    
+    /**
+     * 주차장 실시간 정보 조회 - 전체
+     */
     List<ParkingRealtime> selectAllParkingRealtimes();
-
-    // 특정 주차장 실시간 정보 조회
-    ParkingRealtime selectParkingRealtimeById(@Param("prkCenterId") String prkCenterId);
-
-    // 가용 주차면 기준 주차장 조회
-    List<ParkingRealtime> selectParkingRealtimesByAvailableSlots(@Param("minSlots") int minSlots);
-
-    // 실시간 정보 등록
-    int insertParkingRealtime(ParkingRealtime parkingRealtime);
-
-    // 실시간 정보 수정
-    int updateParkingRealtime(ParkingRealtime parkingRealtime);
-
-    // 실시간 정보 등록 또는 수정 (UPSERT)
-    int insertOrUpdateParkingRealtime(ParkingRealtime parkingRealtime);
-
-    // 실시간 정보 삭제
-    int deleteParkingRealtime(@Param("prkCenterId") String prkCenterId);
+    
+    /**
+     * 주차장 실시간 정보 조회 - 특정 ID
+     */
+    ParkingRealtime selectParkingRealtimeById(@Param("id") String id);
+    
+    /**
+     * 주차장 실시간 정보 수정
+     */
+    void updateParkingRealtime(ParkingRealtime parkingRealtime);
+    
+    /**
+     * 주차장 실시간 정보 삭제
+     */
+    void deleteParkingRealtime(@Param("id") String id);
+    
+    /**
+     * 주차 가능한 주차장 목록 조회
+     */
+    List<ParkingRealtime> selectAvailableParkingLots(@Param("minSpots") Integer minAvailableSpots);
+    
+    /**
+     * 주차 공간 이용률이 높은 주차장 목록 조회
+     */
+    List<ParkingRealtime> selectHighOccupancyParkingLots(@Param("occupancyRate") Double occupancyRate);
+    
+    /**
+     * 주차장 ID 기준으로 실시간 정보 일괄 조회
+     */
+    List<ParkingRealtime> selectParkingRealtimeByIds(@Param("ids") List<String> parkingIds);
 }

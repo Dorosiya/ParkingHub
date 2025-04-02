@@ -8,21 +8,40 @@ import java.util.List;
 
 @Mapper
 public interface ParkingOperationMapper {
-    // 주차장 운영 정보 목록 조회
+    
+    /**
+     * 주차장 운영 정보 등록
+     */
+    void insertParkingOperation(ParkingOperation parkingOperation);
+    
+    /**
+     * 주차장 운영 정보 조회 - 전체
+     */
     List<ParkingOperation> selectAllParkingOperations();
-
-    // 주차장 운영 정보 조회
-    ParkingOperation selectParkingOperationById(@Param("prkCenterId") String prkCenterId);
-
-    // 주차장 운영 정보 등록
-    int insertParkingOperation(ParkingOperation parkingOperation);
-
-    // 주차장 운영 정보 수정
-    int updateParkingOperation(ParkingOperation parkingOperation);
-
-    // 주차장 운영 정보 등록 또는 수정 (UPSERT)
-    int insertOrUpdateParkingOperation(ParkingOperation parkingOperation);
-
-    // 주차장 운영 정보 삭제
-    int deleteParkingOperation(@Param("prkCenterId") String prkCenterId);
+    
+    /**
+     * 주차장 운영 정보 조회 - 특정 ID
+     */
+    ParkingOperation selectParkingOperationById(@Param("id") String id);
+    
+    /**
+     * 주차장 운영 정보 수정
+     */
+    void updateParkingOperation(ParkingOperation parkingOperation);
+    
+    /**
+     * 주차장 운영 정보 삭제
+     */
+    void deleteParkingOperation(@Param("id") String id);
+    
+    /**
+     * 무료 운영 주차장 조회
+     */
+    List<ParkingOperation> selectFreeParkingOperations();
+    
+    /**
+     * 요금별 주차장 조회
+     */
+    List<ParkingOperation> selectParkingByFeeRange(@Param("minFee") Integer minFee, 
+                                                  @Param("maxFee") Integer maxFee);
 }

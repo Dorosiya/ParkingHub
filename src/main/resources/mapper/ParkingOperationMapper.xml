@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.parking_hub.mapper.ParkingOperationMapper">
+
+    <resultMap id="ParkingOperationResultMap" type="com.example.parking_hub.model.ParkingOperation">
+        <id property="id" column="id"/>
+        <result property="parkingId" column="parking_id"/>
+        <result property="operationRateNm" column="operation_rate_nm"/>
+        <result property="parkingchrgeInfo" column="parkingchrge_info"/>
+        <result property="basicTime" column="basic_time"/>
+        <result property="basicCharge" column="basic_charge"/>
+        <result property="addUnitTime" column="add_unit_time"/>
+        <result property="addUnitCharge" column="add_unit_charge"/>
+        <result property="dayOperOpenHhmm" column="day_oper_open_hhmm"/>
+        <result property="dayOperCloseHhmm" column="day_oper_close_hhmm"/>
+        <result property="satOperOpenHhmm" column="sat_oper_open_hhmm"/>
+        <result property="satOperCloseHhmm" column="sat_oper_close_hhmm"/>
+        <result property="holidayOperOpenHhmm" column="holiday_oper_open_hhmm"/>
+        <result property="holidayCloseOpenHhmm" column="holiday_close_open_hhmm"/>
+        <result property="syncDate" column="sync_date"/>
+    </resultMap>
+
+    <!-- 주차장 운영 정보 등록 -->
+    <insert id="insertParkingOperation" parameterType="com.example.parking_hub.model.ParkingOperation">
+        INSERT INTO parking_operation (
+            id, parking_id, operation_rate_nm, parkingchrge_info, basic_time,
+            basic_charge, add_unit_time, add_unit_charge, day_oper_open_hhmm, day_oper_close_hhmm,
+            sat_oper_open_hhmm, sat_oper_close_hhmm, holiday_oper_open_hhmm, holiday_close_open_hhmm,
+            sync_date
+        ) VALUES (
+            #{id}, #{parkingId}, #{operationRateNm}, #{parkingchrgeInfo}, #{basicTime},
+            #{basicCharge}, #{addUnitTime}, #{addUnitCharge}, #{dayOperOpenHhmm}, #{dayOperCloseHhmm},
+            #{satOperOpenHhmm}, #{satOperCloseHhmm}, #{holidayOperOpenHhmm}, #{holidayCloseOpenHhmm},
+            NOW()
+        )
+    </insert>
+
+    <!-- 주차장 운영 정보 조회 - 전체 -->
+    <select id="selectAllParkingOperations" resultMap="ParkingOperationResultMap">
+        SELECT * FROM parking_operation
+    </select>
+
+    <!-- 주차장 운영 정보 조회 - 특정 ID -->
+    <select id="selectParkingOperationById" resultMap="ParkingOperationResultMap">
+        SELECT * FROM parking_operation WHERE id = #{id}
+    </select>
+
+    <!-- 주차장 운영 정보 수정 -->
+    <update id="updateParkingOperation" parameterType="com.example.parking_hub.model.ParkingOperation">
+        UPDATE parking_operation
+        SET
+            operation_rate_nm = #{operationRateNm},
+            parkingchrge_info = #{parkingchrgeInfo},
+            basic_time = #{basicTime},
+            basic_charge = #{basicCharge},
+            add_unit_time = #{addUnitTime},
+            add_unit_charge = #{addUnitCharge},
+            day_oper_open_hhmm = #{dayOperOpenHhmm},
+            day_oper_close_hhmm = #{dayOperCloseHhmm},
+            sat_oper_open_hhmm = #{satOperOpenHhmm},
+            sat_oper_close_hhmm = #{satOperCloseHhmm},
+            holiday_oper_open_hhmm = #{holidayOperOpenHhmm},
+            holiday_close_open_hhmm = #{holidayCloseOpenHhmm},
+            sync_date = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <!-- 주차장 운영 정보 삭제 -->
+    <delete id="deleteParkingOperation">
+        DELETE FROM parking_operation WHERE id = #{id}
+    </delete>
+
+    <!-- 무료 운영 주차장 조회 -->
+    <select id="selectFreeParkingOperations" resultMap="ParkingOperationResultMap">
+        SELECT * FROM parking_operation
+        WHERE operation_rate_nm = '무료'
+           OR (basic_charge = 0 AND add_unit_charge = 0)
+    </select>
+
+    <!-- 요금별 주차장 조회 -->
+    <select id="selectParkingByFeeRange" resultMap="ParkingOperationResultMap">
+        SELECT * FROM parking_operation
+        WHERE (basic_charge >= #{minFee} AND basic_charge <= #{maxFee})
+           OR (add_unit_charge >= #{minFee} AND add_unit_charge <= #{maxFee})
+        ORDER BY basic_charge, add_unit_charge
+    </select>
+</mapper> 
