@@ -1,7 +1,8 @@
 package com.example.parking_hub.config;
 
 import com.example.parking_hub.security.CustomUserDetailsService;
-import com.example.parking_hub.security.JwtAuthenticationFilter;
+import com.example.parking_hub.security.JwtAuthorizationFilter;
+import com.example.parking_hub.security.JwtLoginFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -40,31 +41,44 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        // 인증 관리자 가져오기
+        AuthenticationManager authManager = authenticationManager(http.getSharedObject(AuthenticationConfiguration.class));
+        
+        // JWT 로그인 필터 설정
+        JwtLoginFilter jwtLoginFilter = new JwtLoginFilter(authManager, jwtUtil);
+        jwtLoginFilter.setFilterProcessesUrl("/api/auth/login");
+        
         http
-                .csrf().disable()  // CSRF 보호는 상황에 따라 활성화 고려
+                .csrf().disable()  // CSRF 보호 비활성화 (JWT 사용 시 일반적)
+                .formLogin().disable()  // 기본 폼 로그인 비활성화
+                .httpBasic().disable()  // HTTP Basic 인증 비활성화
                 .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED) // 폼 로그인을 위한 세션 생성
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 세션 사용 안함 (JWT 사용)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/", "/home", "/login", "/register", "/mapSearch", "/api/auth/**").permitAll()
-                .antMatchers("/api/parkings/**").permitAll()
-                .antMatchers("/resources/**", "/static/**", "/css/**", "/js/**", "/images/**").permitAll()
-                .anyRequest().authenticated()
+                    // 접근 허용할 URL 설정
+                    .antMatchers("/", "/home", "/login", "/register", "/mapSearch").permitAll()
+                    .antMatchers("/api/auth/**").permitAll()
+                    .antMatchers("/api/parking/**").permitAll()
+                    .antMatchers("/resources/**", "/static/**", "/css/**", "/js/**", "/images/**").permitAll()
+                    // 그 외 모든 요청은 인증 필요
+                    .anyRequest().authenticated()
                 .and()
-                .formLogin()
-                .loginPage("/login")                                // JSP 파일명이 아닌 컨트롤러 매핑 URL
-                .loginProcessingUrl("/perform-login")               // 로그인 처리 URL
-                .defaultSuccessUrl("/")                         // 로그인 성공 시 리다이렉트
-                .failureUrl("/login?error=true")  // 로그인 실패 시
-                .and()
+                // JWT 로그인 필터 추가 (UsernamePasswordAuthenticationFilter 위치에)
+                .addFilter(jwtLoginFilter)
+                // JWT 인증 확인 필터 추가
+                .addFilterBefore(new JwtAuthorizationFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
+        
+        http
                 .logout()
-                .logoutUrl("/logout")
-                .logoutSuccessUrl("/")  // 로그아웃 성공 시 리다이렉트
+                .logoutUrl("/api/auth/logout")
+                .logoutSuccessHandler((request, response, authentication) -> {
+                    response.setStatus(200);
+                    response.setContentType("application/json");
+                    response.getWriter().write("{\"message\":\"로그아웃 되었습니다.\"}");
+                })
                 .invalidateHttpSession(true)
-                .clearAuthentication(true)
-                .and()
-                .addFilterBefore(new JwtAuthenticationFilter(jwtUtil),
-                        UsernamePasswordAuthenticationFilter.class);
+                .clearAuthentication(true);
 
         return http.build();
     }
