@@ -3,30 +3,23 @@
 <mapper namespace="com.example.parking_hub.mapper.ParkingInfoMapper">
 
     <resultMap id="ParkingInfoResultMap" type="com.example.parking_hub.model.ParkingInfo">
-        <id property="id" column="id"/>
-        <result property="parkingName" column="parking_name"/>
-        <result property="parkingTypeNm" column="parking_type_nm"/>
-        <result property="rdnmadr" column="rdnmadr"/>
-        <result property="lnmadr" column="lnmadr"/>
-        <result property="latitude" column="latitude"/>
-        <result property="longitude" column="longitude"/>
-        <result property="phoneNumber" column="phone_number"/>
-        <result property="referenceDate" column="reference_date"/>
-        <result property="insttNm" column="instt_nm"/>
-        <result property="institutionNm" column="institution_nm"/>
+        <id property="prkCenterId" column="id"/>
+        <result property="prkPlceNm" column="parking_name"/>
+        <result property="prkPlceAdres" column="rdnmadr"/>
+        <result property="prkPlceEntrcLa" column="latitude"/>
+        <result property="prkPlceEntrcLo" column="longitude"/>
+        <result property="prkCmprtCo" column="parking_lots_count"/>
         <result property="syncDate" column="sync_date"/>
     </resultMap>
 
     <!-- 주차장 정보 등록 -->
     <insert id="insertParkingInfo" parameterType="com.example.parking_hub.model.ParkingInfo">
         INSERT INTO parking_info (
-            id, parking_name, parking_type_nm, rdnmadr, lnmadr,
-            latitude, longitude, phone_number, reference_date, instt_nm,
-            institution_nm, sync_date
+            id, parking_name, rdnmadr, latitude, longitude, 
+            parking_lots_count, sync_date
         ) VALUES (
-            #{id}, #{parkingName}, #{parkingTypeNm}, #{rdnmadr}, #{lnmadr},
-            #{latitude}, #{longitude}, #{phoneNumber}, #{referenceDate}, #{insttNm},
-            #{institutionNm}, NOW()
+            #{prkCenterId}, #{prkPlceNm}, #{prkPlceAdres}, #{prkPlceEntrcLa}, #{prkPlceEntrcLo},
+            #{prkCmprtCo}, NOW()
         )
     </insert>
 
@@ -44,18 +37,13 @@
     <update id="updateParkingInfo" parameterType="com.example.parking_hub.model.ParkingInfo">
         UPDATE parking_info
         SET
-            parking_name = #{parkingName},
-            parking_type_nm = #{parkingTypeNm},
-            rdnmadr = #{rdnmadr},
-            lnmadr = #{lnmadr},
-            latitude = #{latitude},
-            longitude = #{longitude},
-            phone_number = #{phoneNumber},
-            reference_date = #{referenceDate},
-            instt_nm = #{insttNm},
-            institution_nm = #{institutionNm},
+            parking_name = #{prkPlceNm},
+            rdnmadr = #{prkPlceAdres},
+            latitude = #{prkPlceEntrcLa},
+            longitude = #{prkPlceEntrcLo},
+            parking_lots_count = #{prkCmprtCo},
             sync_date = NOW()
-        WHERE id = #{id}
+        WHERE id = #{prkCenterId}
     </update>
 
     <!-- 주차장 정보 삭제 -->
@@ -90,4 +78,22 @@
     <select id="existsById" resultType="boolean">
         SELECT COUNT(*) > 0 FROM parking_info WHERE id = #{id}
     </select>
+
+    <!-- 주차장 정보 등록 또는 수정 (Upsert) -->
+    <insert id="insertOrUpdateParkingInfo" parameterType="com.example.parking_hub.model.ParkingInfo">
+        INSERT INTO parking_info (
+            id, parking_name, rdnmadr, latitude, longitude, 
+            parking_lots_count, sync_date
+        ) VALUES (
+            #{prkCenterId}, #{prkPlceNm}, #{prkPlceAdres}, #{prkPlceEntrcLa}, #{prkPlceEntrcLo},
+            #{prkCmprtCo}, NOW()
+        )
+        ON DUPLICATE KEY UPDATE
+            parking_name = #{prkPlceNm},
+            rdnmadr = #{prkPlceAdres},
+            latitude = #{prkPlceEntrcLa},
+            longitude = #{prkPlceEntrcLo},
+            parking_lots_count = #{prkCmprtCo},
+            sync_date = NOW()
+    </insert>
 </mapper> 

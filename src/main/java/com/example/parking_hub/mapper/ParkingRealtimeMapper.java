@@ -48,4 +48,10 @@ public interface ParkingRealtimeMapper {
      * 주차장 ID 기준으로 실시간 정보 일괄 조회
      */
     List<ParkingRealtime> selectParkingRealtimeByIds(@Param("ids") List<String> parkingIds);
+    
+    /**
+     * 주차장 실시간 정보 등록 또는 수정 (Upsert)
+     * 이미 존재하는 경우 업데이트, 없는 경우 삽입
+     */
+    void insertOrUpdateParkingRealtime(ParkingRealtime parkingRealtime);
 }

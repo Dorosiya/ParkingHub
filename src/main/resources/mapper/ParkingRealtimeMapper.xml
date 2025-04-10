@@ -3,8 +3,7 @@
 <mapper namespace="com.example.parking_hub.mapper.ParkingRealtimeMapper">
 
     <resultMap id="ParkingRealtimeResultMap" type="com.example.parking_hub.model.ParkingRealtime">
-        <id property="id" column="id"/>
-        <result property="parkingId" column="parking_id"/>
+        <id property="prkCenterId" column="id"/>
         <result property="pkfcParkingLotsTotal" column="pkfc_parking_lots_total"/>
         <result property="pkfcAvailableParkingLotsTotal" column="pkfc_available_parking_lots_total"/>
         <result property="updatedAt" column="updated_at"/>
@@ -14,10 +13,10 @@
     <!-- 주차장 실시간 정보 등록 -->
     <insert id="insertParkingRealtime" parameterType="com.example.parking_hub.model.ParkingRealtime">
         INSERT INTO parking_realtime (
-            id, parking_id, pkfc_parking_lots_total, pkfc_available_parking_lots_total,
+            id, pkfc_parking_lots_total, pkfc_available_parking_lots_total,
             updated_at, sync_date
         ) VALUES (
-            #{id}, #{parkingId}, #{pkfcParkingLotsTotal}, #{pkfcAvailableParkingLotsTotal},
+            #{prkCenterId}, #{pkfcParkingLotsTotal}, #{pkfcAvailableParkingLotsTotal},
             #{updatedAt}, NOW()
         )
     </insert>
@@ -40,7 +39,7 @@
             pkfc_available_parking_lots_total = #{pkfcAvailableParkingLotsTotal},
             updated_at = #{updatedAt},
             sync_date = NOW()
-        WHERE id = #{id}
+        WHERE id = #{prkCenterId}
     </update>
 
     <!-- 주차장 실시간 정보 삭제 -->
@@ -73,4 +72,20 @@
             #{id}
         </foreach>
     </select>
+
+    <!-- 주차장 실시간 정보 등록 또는 수정 (Upsert) -->
+    <insert id="insertOrUpdateParkingRealtime" parameterType="com.example.parking_hub.model.ParkingRealtime">
+        INSERT INTO parking_realtime (
+            id, pkfc_parking_lots_total, pkfc_available_parking_lots_total,
+            updated_at, sync_date
+        ) VALUES (
+            #{prkCenterId}, #{pkfcParkingLotsTotal}, #{pkfcAvailableParkingLotsTotal},
+            #{updatedAt}, NOW()
+        )
+        ON DUPLICATE KEY UPDATE
+            pkfc_parking_lots_total = #{pkfcParkingLotsTotal},
+            pkfc_available_parking_lots_total = #{pkfcAvailableParkingLotsTotal},
+            updated_at = #{updatedAt},
+            sync_date = NOW()
+    </insert>
 </mapper> 

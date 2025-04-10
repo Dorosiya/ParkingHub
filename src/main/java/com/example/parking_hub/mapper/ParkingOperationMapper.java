@@ -44,4 +44,10 @@ public interface ParkingOperationMapper {
      */
     List<ParkingOperation> selectParkingByFeeRange(@Param("minFee") Integer minFee, 
                                                   @Param("maxFee") Integer maxFee);
+    
+    /**
+     * 주차장 운영 정보 등록 또는 수정 (Upsert)
+     * 이미 존재하는 경우 업데이트, 없는 경우 삽입
+     */
+    void insertOrUpdateParkingOperation(ParkingOperation parkingOperation);
 }

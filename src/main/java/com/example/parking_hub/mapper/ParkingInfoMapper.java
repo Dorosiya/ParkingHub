@@ -55,4 +55,10 @@ public interface ParkingInfoMapper {
      * 주차장 ID 존재 여부 확인
      */
     boolean existsById(@Param("id") String id);
+    
+    /**
+     * 주차장 정보 등록 또는 수정 (Upsert)
+     * 이미 존재하는 경우 업데이트, 없는 경우 삽입
+     */
+    void insertOrUpdateParkingInfo(ParkingInfo parkingInfo);
 }
