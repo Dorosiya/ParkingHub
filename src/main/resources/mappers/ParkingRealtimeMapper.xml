@@ -4,8 +4,8 @@
 
     <resultMap id="ParkingRealtimeResultMap" type="com.example.parking_hub.model.ParkingRealtime">
         <id property="prkCenterId" column="prk_center_id"/>
-        <result property="pkfcParkingLotsTotal" column="pkfc_ParkingLots_total"/>
-        <result property="pkfcAvailableParkingLotsTotal" column="pkfc_Available_ParkingLots_total"/>
+        <result property="pkfcParkingLotsTotal" column="pkfc_parking_lots_total"/>
+        <result property="pkfcAvailableParkingLotsTotal" column="pkfc_available_parking_lots_total"/>
         <result property="updatedAt" column="updated_at"/>
     </resultMap>
 
@@ -14,37 +14,50 @@
     </select>
 
     <select id="selectParkingRealtimeById" resultMap="ParkingRealtimeResultMap">
-        SELECT * FROM PARKING_REALTIME WHERE prk_center_id = #{prkCenterId}
+        SELECT * FROM PARKING_REALTIME WHERE prk_center_id = #{id}
     </select>
 
-    <select id="selectParkingRealtimesByAvailableSlots" resultMap="ParkingRealtimeResultMap">
+    <select id="selectAvailableParkingLots" resultMap="ParkingRealtimeResultMap">
         SELECT * FROM PARKING_REALTIME
-        WHERE pkfc_Available_ParkingLots_total >= #{minSlots}
+        WHERE pkfc_available_parking_lots_total >= #{minSpots}
     </select>
 
     <insert id="insertParkingRealtime">
-        INSERT INTO PARKING_REALTIME (prk_center_id, pkfc_ParkingLots_total, pkfc_Available_ParkingLots_total)
+        INSERT INTO PARKING_REALTIME (prk_center_id, pkfc_parking_lots_total, pkfc_available_parking_lots_total)
         VALUES (#{prkCenterId}, #{pkfcParkingLotsTotal}, #{pkfcAvailableParkingLotsTotal})
     </insert>
 
     <update id="updateParkingRealtime">
         UPDATE PARKING_REALTIME
-        SET pkfc_ParkingLots_total = #{pkfcParkingLotsTotal},
-            pkfc_Available_ParkingLots_total = #{pkfcAvailableParkingLotsTotal},
+        SET pkfc_parking_lots_total = #{pkfcParkingLotsTotal},
+            pkfc_available_parking_lots_total = #{pkfcAvailableParkingLotsTotal},
             updated_at = CURRENT_TIMESTAMP
         WHERE prk_center_id = #{prkCenterId}
     </update>
 
     <insert id="insertOrUpdateParkingRealtime">
-        INSERT INTO PARKING_REALTIME (prk_center_id, pkfc_ParkingLots_total, pkfc_Available_ParkingLots_total)
+        INSERT INTO PARKING_REALTIME (prk_center_id, pkfc_parking_lots_total, pkfc_available_parking_lots_total)
         VALUES (#{prkCenterId}, #{pkfcParkingLotsTotal}, #{pkfcAvailableParkingLotsTotal})
             ON DUPLICATE KEY UPDATE
-                                 pkfc_ParkingLots_total = VALUES(pkfc_ParkingLots_total),
-                                 pkfc_Available_ParkingLots_total = VALUES(pkfc_Available_ParkingLots_total),
+                                 pkfc_parking_lots_total = VALUES(pkfc_parking_lots_total),
+                                 pkfc_available_parking_lots_total = VALUES(pkfc_available_parking_lots_total),
                                  updated_at = CURRENT_TIMESTAMP
     </insert>
 
     <delete id="deleteParkingRealtime">
-        DELETE FROM PARKING_REALTIME WHERE prk_center_id = #{prkCenterId}
+        DELETE FROM PARKING_REALTIME WHERE prk_center_id = #{id}
     </delete>
+
+    <select id="selectHighOccupancyParkingLots" resultMap="ParkingRealtimeResultMap">
+        SELECT * FROM PARKING_REALTIME
+        WHERE (pkfc_parking_lots_total - pkfc_available_parking_lots_total) / pkfc_parking_lots_total >= #{occupancyRate}
+    </select>
+
+    <select id="selectParkingRealtimeByIds" resultMap="ParkingRealtimeResultMap">
+        SELECT * FROM PARKING_REALTIME 
+        WHERE prk_center_id IN 
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
 </mapper>

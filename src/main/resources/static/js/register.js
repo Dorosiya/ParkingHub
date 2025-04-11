@@ -1,3 +1,6 @@
+/**
+ * 회원가입 페이지 관련 스크립트
+ */
 function validateForm() {
     const password = document.getElementById('password').value;
     const confirmPassword = document.getElementById('confirmPassword').value;

@@ -49,11 +49,9 @@
             <h2 class="text-center mb-3">로그인</h2>
             <p class="text-center text-muted mb-4">Parking Hub에 오신 것을 환영합니다.</p>
             
-            <c:if test="${param.error != null}">
-                <div class="error-message text-center">
-                    아이디 또는 비밀번호가 올바르지 않습니다.
-                </div>
-            </c:if>
+            <div id="error-message" class="error-message text-center" style="display: none;">
+                아이디 또는 비밀번호가 올바르지 않습니다.
+            </div>
             
             <c:if test="${param.registered != null}">
                 <div class="success-message text-center">
@@ -61,7 +59,7 @@
                 </div>
             </c:if>
             
-            <form action="/perform-login" method="post">
+            <form id="loginForm">
                 <div class="mb-3">
                     <label for="username" class="form-label">아이디</label>
                     <input type="text" class="form-control" id="username" name="username" placeholder="아이디를 입력하세요" required>
@@ -78,7 +76,7 @@
                 </div>
                 
                 <div class="d-grid gap-2 mt-4">
-                    <button type="submit" class="btn btn-primary py-2">로그인</button>
+                    <button type="button" class="btn btn-primary py-2" id="loginButton">로그인</button>
                 </div>
             </form>
             
@@ -100,5 +98,8 @@
     </footer>
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/login.js"></script>
 </body>
 </html> 

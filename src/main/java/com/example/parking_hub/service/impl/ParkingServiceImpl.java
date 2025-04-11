@@ -114,7 +114,7 @@ public class ParkingServiceImpl implements ParkingService {
         
         // 조회된 각 주차장에 대한 기본 정보와 실시간 정보 결합
         for (ParkingRealtime realtime : availableList) {
-            String parkingId = realtime.getParkingId();
+            String parkingId = realtime.getPrkCenterId();
             ParkingInfo info = parkingInfoMapper.selectParkingInfoById(parkingId);
             
             if (info != null) {

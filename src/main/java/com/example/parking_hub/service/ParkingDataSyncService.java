@@ -11,12 +11,14 @@ import com.example.parking_hub.model.ParkingInfo;
 import com.example.parking_hub.model.ParkingOperation;
 import com.example.parking_hub.model.ParkingRealtime;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -24,10 +26,11 @@ import java.util.stream.Collectors;
 /**
  * 주차장 데이터 동기화 서비스
  */
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ParkingDataSyncService {
+
+    private static final Logger logger = LoggerFactory.getLogger(ParkingDataSyncService.class);
 
     private final ParkingApiClient parkingApiClient;
     private final ParkingInfoMapper parkingInfoMapper;
@@ -40,7 +43,7 @@ public class ParkingDataSyncService {
      */
     @Scheduled(cron = "0 0 0 * * *")
     public void syncParkingData() {
-        log.info("주차장 데이터 동기화 시작");
+        logger.info("주차장 데이터 동기화 시작");
         
         try {
             // 1. 기본정보 조회 및 저장
@@ -49,9 +52,9 @@ public class ParkingDataSyncService {
             // 2. 운영정보 조회 및 저장
             syncParkingOperationInfo();
             
-            log.info("주차장 데이터 동기화 완료");
+            logger.info("주차장 데이터 동기화 완료");
         } catch (Exception e) {
-            log.error("주차장 데이터 동기화 중 오류 발생", e);
+            logger.error("주차장 데이터 동기화 중 오류 발생", e);
         }
     }
 
@@ -60,7 +63,7 @@ public class ParkingDataSyncService {
      */
     @Transactional
     public void syncParkingBasicInfo() {
-        log.info("주차장 기본정보 동기화 시작");
+        logger.info("주차장 기본정보 동기화 시작");
         
         try {
             int pageNo = 1;
@@ -69,42 +72,43 @@ public class ParkingDataSyncService {
             
             while (true) {
                 PrkSttusInfoResponse response = parkingApiClient.getPrkSttusInfo(pageNo, numOfRows);
+                List<PrkSttusInfoResponse.PrkSttusInfo> items = getItemsFromResponse(response);
                 
-                if (response == null || response.getItems() == null || response.getItems().isEmpty()) {
-                    log.info("주차장 기본정보 더 이상 데이터 없음");
+                if (response == null || items == null || items.isEmpty()) {
+                    logger.info("주차장 기본정보 더 이상 데이터 없음");
                     break;
                 }
                 
                 // API 응답 코드 확인
-                if (!"00".equals(response.getResultCode())) {
-                    log.error("주차장 기본정보 API 오류: {}", response.getResultMsg());
+                if (!"00".equals(getResultCodeFromResponse(response))) {
+                    logger.error("주차장 기본정보 API 오류: {}", getResultMsgFromResponse(response));
                     break;
                 }
 
-                log.info("주차장 기본정보 페이지 {}: {} 건", pageNo, response.getItems().size());
+                logger.info("주차장 기본정보 페이지 {}: {} 건", pageNo, items.size());
 
                 // 새로운 데이터 처리
-                for (PrkSttusInfoResponse.PrkSttusInfo item : response.getItems()) {
+                for (PrkSttusInfoResponse.PrkSttusInfo item : items) {
                     try {
                         ParkingInfo parkingInfo = convertToParkingInfo(item);
                         parkingInfoMapper.insertOrUpdateParkingInfo(parkingInfo);
                         totalProcessed++;
                     } catch (Exception e) {
-                        log.error("주차장 기본정보 처리 중 오류: {}", item.getPrkCenterId(), e);
+                        logger.error("주차장 기본정보 처리 중 오류: {}", item.getPrkCenterId(), e);
                     }
                 }
 
                 // 다음 페이지가 없으면 종료
-                if (response.getItems().size() < numOfRows) {
+                if (items.size() < numOfRows) {
                     break;
                 }
 
                 pageNo++;
             }
             
-            log.info("주차장 기본정보 동기화 완료: 총 {} 건 처리", totalProcessed);
+            logger.info("주차장 기본정보 동기화 완료: 총 {} 건 처리", totalProcessed);
         } catch (Exception e) {
-            log.error("주차장 기본정보 동기화 중 오류 발생", e);
+            logger.error("주차장 기본정보 동기화 중 오류 발생", e);
             throw e;
         }
     }
@@ -114,7 +118,7 @@ public class ParkingDataSyncService {
      */
     @Transactional
     public void syncParkingOperationInfo() {
-        log.info("주차장 운영정보 동기화 시작");
+        logger.info("주차장 운영정보 동기화 시작");
         
         try {
             int pageNo = 1;
@@ -123,42 +127,43 @@ public class ParkingDataSyncService {
             
             while (true) {
                 PrkOprInfoResponse response = parkingApiClient.getPrkOprInfo(pageNo, numOfRows);
+                List<PrkOprInfoResponse.PrkOprInfo> items = getItemsFromResponse(response);
                 
-                if (response == null || response.getItems() == null || response.getItems().isEmpty()) {
-                    log.info("주차장 운영정보 더 이상 데이터 없음");
+                if (response == null || items == null || items.isEmpty()) {
+                    logger.info("주차장 운영정보 더 이상 데이터 없음");
                     break;
                 }
                 
                 // API 응답 코드 확인
-                if (!"00".equals(response.getResultCode())) {
-                    log.error("주차장 운영정보 API 오류: {}", response.getResultMsg());
+                if (!"00".equals(getResultCodeFromResponse(response))) {
+                    logger.error("주차장 운영정보 API 오류: {}", getResultMsgFromResponse(response));
                     break;
                 }
 
-                log.info("주차장 운영정보 페이지 {}: {} 건", pageNo, response.getItems().size());
+                logger.info("주차장 운영정보 페이지 {}: {} 건", pageNo, items.size());
 
                 // 새로운 데이터 처리
-                for (PrkOprInfoResponse.PrkOprInfo item : response.getItems()) {
+                for (PrkOprInfoResponse.PrkOprInfo item : items) {
                     try {
                         ParkingOperation operation = convertToParkingOperation(item);
                         parkingOperationMapper.insertOrUpdateParkingOperation(operation);
                         totalProcessed++;
                     } catch (Exception e) {
-                        log.error("주차장 운영정보 처리 중 오류: {}", item.getPrkCenterId(), e);
+                        logger.error("주차장 운영정보 처리 중 오류: {}", item.getPrkCenterId(), e);
                     }
                 }
 
                 // 다음 페이지가 없으면 종료
-                if (response.getItems().size() < numOfRows) {
+                if (items.size() < numOfRows) {
                     break;
                 }
 
                 pageNo++;
             }
             
-            log.info("주차장 운영정보 동기화 완료: 총 {} 건 처리", totalProcessed);
+            logger.info("주차장 운영정보 동기화 완료: 총 {} 건 처리", totalProcessed);
         } catch (Exception e) {
-            log.error("주차장 운영정보 동기화 중 오류 발생", e);
+            logger.error("주차장 운영정보 동기화 중 오류 발생", e);
             throw e;
         }
     }
@@ -170,7 +175,7 @@ public class ParkingDataSyncService {
     @Scheduled(fixedRate = 300000) // 5분
     @Transactional
     public void syncParkingRealtimeInfo() {
-        log.info("주차장 실시간 정보 동기화 시작");
+        logger.info("주차장 실시간 정보 동기화 시작");
         
         try {
             int pageNo = 1;
@@ -179,43 +184,131 @@ public class ParkingDataSyncService {
             
             while (true) {
                 PrkRealtimeInfoResponse response = parkingApiClient.getPrkRealtimeInfo(pageNo, numOfRows);
+                List<PrkRealtimeInfoResponse.PrkRealtimeInfo> items = getItemsFromResponse(response);
                 
-                if (response == null || response.getItems() == null || response.getItems().isEmpty()) {
-                    log.info("주차장 실시간 정보 더 이상 데이터 없음");
+                if (response == null || items == null || items.isEmpty()) {
+                    logger.info("주차장 실시간 정보 더 이상 데이터 없음");
                     break;
                 }
                 
                 // API 응답 코드 확인
-                if (!"00".equals(response.getResultCode())) {
-                    log.error("주차장 실시간 정보 API 오류: {}", response.getResultMsg());
+                if (!"00".equals(getResultCodeFromResponse(response))) {
+                    logger.error("주차장 실시간 정보 API 오류: {}", getResultMsgFromResponse(response));
                     break;
                 }
 
-                log.info("주차장 실시간 정보 페이지 {}: {} 건", pageNo, response.getItems().size());
+                logger.info("주차장 실시간 정보 페이지 {}: {} 건", pageNo, items.size());
 
                 // 실시간 정보 업데이트
-                for (PrkRealtimeInfoResponse.PrkRealtimeInfo item : response.getItems()) {
+                for (PrkRealtimeInfoResponse.PrkRealtimeInfo item : items) {
                     try {
                         ParkingRealtime realtime = convertToParkingRealtime(item);
                         parkingRealtimeMapper.insertOrUpdateParkingRealtime(realtime);
                         totalProcessed++;
                     } catch (Exception e) {
-                        log.error("주차장 실시간 정보 처리 중 오류: {}", item.getPrkCenterId(), e);
+                        logger.error("주차장 실시간 정보 처리 중 오류: {}", item.getPrkCenterId(), e);
                     }
                 }
 
                 // 다음 페이지가 없으면 종료
-                if (response.getItems().size() < numOfRows) {
+                if (items.size() < numOfRows) {
                     break;
                 }
 
                 pageNo++;
             }
             
-            log.info("주차장 실시간 정보 동기화 완료: 총 {} 건 처리", totalProcessed);
+            logger.info("주차장 실시간 정보 동기화 완료: 총 {} 건 처리", totalProcessed);
         } catch (Exception e) {
-            log.error("주차장 실시간 정보 동기화 중 오류 발생", e);
+            logger.error("주차장 실시간 정보 동기화 중 오류 발생", e);
         }
+    }
+    
+    // 응답으로부터 결과 코드 추출 헬퍼 메서드
+    private String getResultCodeFromResponse(PrkSttusInfoResponse response) {
+        if (response != null && response.getResponse() != null && 
+            response.getResponse().getHeader() != null) {
+            return response.getResponse().getHeader().getResultCode();
+        }
+        return null;
+    }
+    
+    // 응답으로부터 결과 메시지 추출 헬퍼 메서드
+    private String getResultMsgFromResponse(PrkSttusInfoResponse response) {
+        if (response != null && response.getResponse() != null && 
+            response.getResponse().getHeader() != null) {
+            return response.getResponse().getHeader().getResultMsg();
+        }
+        return null;
+    }
+    
+    // 응답으로부터 아이템 목록 추출 헬퍼 메서드
+    private List<PrkSttusInfoResponse.PrkSttusInfo> getItemsFromResponse(PrkSttusInfoResponse response) {
+        if (response != null && response.getResponse() != null && 
+            response.getResponse().getBody() != null && 
+            response.getResponse().getBody().getItems() != null &&
+            response.getResponse().getBody().getItems().getItem() != null) {
+            return response.getResponse().getBody().getItems().getItem();
+        }
+        return Collections.emptyList();
+    }
+    
+    // 응답으로부터 결과 코드 추출 헬퍼 메서드
+    private String getResultCodeFromResponse(PrkOprInfoResponse response) {
+        if (response != null && response.getResponse() != null && 
+            response.getResponse().getHeader() != null) {
+            return response.getResponse().getHeader().getResultCode();
+        }
+        return null;
+    }
+    
+    // 응답으로부터 결과 메시지 추출 헬퍼 메서드
+    private String getResultMsgFromResponse(PrkOprInfoResponse response) {
+        if (response != null && response.getResponse() != null && 
+            response.getResponse().getHeader() != null) {
+            return response.getResponse().getHeader().getResultMsg();
+        }
+        return null;
+    }
+    
+    // 응답으로부터 아이템 목록 추출 헬퍼 메서드
+    private List<PrkOprInfoResponse.PrkOprInfo> getItemsFromResponse(PrkOprInfoResponse response) {
+        if (response != null && response.getResponse() != null && 
+            response.getResponse().getBody() != null && 
+            response.getResponse().getBody().getItems() != null &&
+            response.getResponse().getBody().getItems().getItem() != null) {
+            return response.getResponse().getBody().getItems().getItem();
+        }
+        return Collections.emptyList();
+    }
+    
+    // 응답으로부터 결과 코드 추출 헬퍼 메서드
+    private String getResultCodeFromResponse(PrkRealtimeInfoResponse response) {
+        if (response != null && response.getResponse() != null && 
+            response.getResponse().getHeader() != null) {
+            return response.getResponse().getHeader().getResultCode();
+        }
+        return null;
+    }
+    
+    // 응답으로부터 결과 메시지 추출 헬퍼 메서드
+    private String getResultMsgFromResponse(PrkRealtimeInfoResponse response) {
+        if (response != null && response.getResponse() != null && 
+            response.getResponse().getHeader() != null) {
+            return response.getResponse().getHeader().getResultMsg();
+        }
+        return null;
+    }
+    
+    // 응답으로부터 아이템 목록 추출 헬퍼 메서드
+    private List<PrkRealtimeInfoResponse.PrkRealtimeInfo> getItemsFromResponse(PrkRealtimeInfoResponse response) {
+        if (response != null && response.getResponse() != null && 
+            response.getResponse().getBody() != null && 
+            response.getResponse().getBody().getItems() != null &&
+            response.getResponse().getBody().getItems().getItem() != null) {
+            return response.getResponse().getBody().getItems().getItem();
+        }
+        return Collections.emptyList();
     }
 
     /**
@@ -241,7 +334,7 @@ public class ParkingDataSyncService {
                 parkingInfo.setPrkCmprtCo(info.getParkingLotCount());
             }
         } catch (Exception e) {
-            log.warn("주차장 기본정보 변환 중 오류: {}", info.getPrkCenterId(), e);
+            logger.warn("주차장 기본정보 변환 중 오류: {}", info.getPrkCenterId(), e);
         }
         
         return parkingInfo;
@@ -267,7 +360,7 @@ public class ParkingDataSyncService {
                 operation.setOpertnBsFreeTime(freeTime);
             }
         } catch (Exception e) {
-            log.warn("주차장 운영정보 변환 중 오류: {}", info.getPrkCenterId(), e);
+            logger.warn("주차장 운영정보 변환 중 오류: {}", info.getPrkCenterId(), e);
         }
         
         return operation;
@@ -289,7 +382,7 @@ public class ParkingDataSyncService {
                 realtime.setPkfcAvailableParkingLotsTotal(info.getPkfcAvailableParkingLotsTotal());
             }
         } catch (Exception e) {
-            log.warn("주차장 실시간정보 변환 중 오류: {}", info.getPrkCenterId(), e);
+            logger.warn("주차장 실시간정보 변환 중 오류: {}", info.getPrkCenterId(), e);
         }
         
         // 업데이트 시간 설정

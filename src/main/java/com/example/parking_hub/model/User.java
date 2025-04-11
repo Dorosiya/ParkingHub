@@ -3,7 +3,7 @@ package com.example.parking_hub.model;
 import java.time.LocalDateTime;
 
 public class User {
-    private Integer id;
+    private Long id;
     private String email;
     private String username;
     private String password;
@@ -12,11 +12,11 @@ public class User {
     private Role role;
     private LocalDateTime createdAt;
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
