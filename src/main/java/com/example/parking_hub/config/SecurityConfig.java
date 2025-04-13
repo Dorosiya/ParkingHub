@@ -57,7 +57,7 @@ public class SecurityConfig {
                 .and()
                 .authorizeRequests()
                     // 접근 허용할 URL 설정
-                    .antMatchers("/", "/home", "/login", "/register", "/mapSearch").permitAll()
+                    .antMatchers("/", "/home", "/login", "/register", "/mapSearch", "/search", "/parking/**").permitAll()
                     .antMatchers("/api/auth/**").permitAll()
                     .antMatchers("/api/parking/**").permitAll()
                     .antMatchers("/resources/**", "/static/**", "/css/**", "/js/**", "/images/**").permitAll()

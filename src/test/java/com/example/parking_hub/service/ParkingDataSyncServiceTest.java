@@ -50,71 +50,39 @@ public class ParkingDataSyncServiceTest {
 
     @BeforeEach
     void setUp() {
-        // 테스트 데이터 설정: 새 응답 구조 반영
+        // 테스트 데이터 설정 - 단순화된 JSON 응답 구조에 맞춤
+        // 주차장 기본정보 응답 설정
         PrkSttusInfoResponse.PrkSttusInfo sttusItem = createSttusInfoItem("TEST001", "테스트 주차장", 37.5665, 126.9780);
-        PrkSttusInfoResponse.Items sttusItems = new PrkSttusInfoResponse.Items();
-        sttusItems.setItem(Arrays.asList(sttusItem));
-        
-        PrkSttusInfoResponse.Body sttusBody = new PrkSttusInfoResponse.Body();
-        sttusBody.setItems(sttusItems);
-        sttusBody.setNumOfRows(10);
-        sttusBody.setPageNo(1);
-        sttusBody.setTotalCount(1);
-        
-        PrkSttusInfoResponse.Header sttusHeader = new PrkSttusInfoResponse.Header();
-        sttusHeader.setResultCode("00");
-        sttusHeader.setResultMsg("OK");
-        
-        PrkSttusInfoResponse.Response sttusResponse = new PrkSttusInfoResponse.Response();
-        sttusResponse.setHeader(sttusHeader);
-        sttusResponse.setBody(sttusBody);
         
         sttusInfoResponse = new PrkSttusInfoResponse();
-        sttusInfoResponse.setResponse(sttusResponse);
+        sttusInfoResponse.setResultCode("00");
+        sttusInfoResponse.setResultMsg("OK");
+        sttusInfoResponse.setNumOfRows("10");
+        sttusInfoResponse.setPageNo("1");
+        sttusInfoResponse.setTotalCount("1");
+        sttusInfoResponse.setPrkSttusInfo(Arrays.asList(sttusItem));
         
         // 운영정보 응답 설정
-        PrkOprInfoResponse.PrkOprInfo oprItem = createOprInfoItem("TEST001", "09:00", "18:00", "30분", "1000");
-        PrkOprInfoResponse.Items oprItems = new PrkOprInfoResponse.Items();
-        oprItems.setItem(Arrays.asList(oprItem));
-        
-        PrkOprInfoResponse.Body oprBody = new PrkOprInfoResponse.Body();
-        oprBody.setItems(oprItems);
-        oprBody.setNumOfRows(10);
-        oprBody.setPageNo(1);
-        oprBody.setTotalCount(1);
-        
-        PrkOprInfoResponse.Header oprHeader = new PrkOprInfoResponse.Header();
-        oprHeader.setResultCode("00");
-        oprHeader.setResultMsg("OK");
-        
-        PrkOprInfoResponse.Response oprResponse = new PrkOprInfoResponse.Response();
-        oprResponse.setHeader(oprHeader);
-        oprResponse.setBody(oprBody);
+        PrkOprInfoResponse.PrkOprInfo oprItem = createOprInfoItem("TEST001", "30", "60", "30분", "1000");
         
         oprInfoResponse = new PrkOprInfoResponse();
-        oprInfoResponse.setResponse(oprResponse);
+        oprInfoResponse.setResultCode("00");
+        oprInfoResponse.setResultMsg("OK");
+        oprInfoResponse.setNumOfRows("10");
+        oprInfoResponse.setPageNo("1");
+        oprInfoResponse.setTotalCount("1");
+        oprInfoResponse.setPrkOprInfo(Arrays.asList(oprItem));
         
         // 실시간 정보 응답 설정
-        PrkRealtimeInfoResponse.PrkRealtimeInfo realtimeItem = createRealtimeInfoItem("TEST001", 100, 50);
-        PrkRealtimeInfoResponse.Items realtimeItems = new PrkRealtimeInfoResponse.Items();
-        realtimeItems.setItem(Arrays.asList(realtimeItem));
-        
-        PrkRealtimeInfoResponse.Body realtimeBody = new PrkRealtimeInfoResponse.Body();
-        realtimeBody.setItems(realtimeItems);
-        realtimeBody.setNumOfRows(10);
-        realtimeBody.setPageNo(1);
-        realtimeBody.setTotalCount(1);
-        
-        PrkRealtimeInfoResponse.Header realtimeHeader = new PrkRealtimeInfoResponse.Header();
-        realtimeHeader.setResultCode("00");
-        realtimeHeader.setResultMsg("OK");
-        
-        PrkRealtimeInfoResponse.Response realtimeResponse = new PrkRealtimeInfoResponse.Response();
-        realtimeResponse.setHeader(realtimeHeader);
-        realtimeResponse.setBody(realtimeBody);
+        PrkRealtimeInfoResponse.PrkRealtimeItem realtimeItem = createRealtimeInfoItem("TEST001", 100, 50);
         
         realtimeInfoResponse = new PrkRealtimeInfoResponse();
-        realtimeInfoResponse.setResponse(realtimeResponse);
+        realtimeInfoResponse.setResultCode("00");
+        realtimeInfoResponse.setResultMsg("SUCCESS");
+        realtimeInfoResponse.setNumOfRows("10");
+        realtimeInfoResponse.setPageNo("1");
+        realtimeInfoResponse.setTotalCount("1");
+        realtimeInfoResponse.setPrkRealtimeInfo(Arrays.asList(realtimeItem));
     }
 
     @Test
@@ -149,6 +117,8 @@ public class ParkingDataSyncServiceTest {
         item.setPrkCenterNm(prkName);
         item.setLatitude(lat);
         item.setLongitude(lng);
+        item.setPrkCmprtCo(100); // 주차면 수 추가
+        item.setPrkPlceSe("노외"); // 주차장 구분 추가
         return item;
     }
 
@@ -159,12 +129,14 @@ public class ParkingDataSyncServiceTest {
         item.setPrkCenterId(prkCenterId);
         item.setOpertnBsFreeTime(opertnBsFreeTime);
         item.setParkingChrgeBsTime(parkingChrgeBsTime);
+        item.setParkingChrgeBsChrg(parkingChrge);
+        item.setOperationDayInfo("평일+주말");
         return item;
     }
 
-    private PrkRealtimeInfoResponse.PrkRealtimeInfo createRealtimeInfoItem(String prkCenterId, 
+    private PrkRealtimeInfoResponse.PrkRealtimeItem createRealtimeInfoItem(String prkCenterId, 
                                                                         int totalParkingLots, int availableParkingLots) {
-        PrkRealtimeInfoResponse.PrkRealtimeInfo item = new PrkRealtimeInfoResponse.PrkRealtimeInfo();
+        PrkRealtimeInfoResponse.PrkRealtimeItem item = new PrkRealtimeInfoResponse.PrkRealtimeItem();
         item.setPrkCenterId(prkCenterId);
         item.setPkfcParkingLotsTotal(totalParkingLots);
         item.setPkfcAvailableParkingLotsTotal(availableParkingLots);

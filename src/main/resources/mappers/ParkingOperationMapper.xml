@@ -12,7 +12,7 @@
     </select>
 
     <select id="selectParkingOperationById" resultMap="ParkingOperationResultMap">
-        SELECT * FROM PARKING_OPERATION WHERE prk_center_id = #{prkCenterId}
+        SELECT * FROM PARKING_OPERATION WHERE prk_center_id = #{id}
     </select>
 
     <insert id="insertParkingOperation">

@@ -9,6 +9,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -46,11 +47,22 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     }
 
     private String resolveToken(HttpServletRequest request) {
-        // 헤더에서 토큰 확인
+        // 1. 쿠키에서 토큰 확인
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("jwt_token".equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
+        }
+        
+        // 2. 헤더에서 토큰 확인 (이전 방식과의 호환성 유지)
         String bearerToken = request.getHeader(jwtUtil.getHeaderString());
         if (bearerToken != null && bearerToken.startsWith(jwtUtil.getTokenPrefix())) {
             return bearerToken.substring(jwtUtil.getTokenPrefix().length());
         }
+        
         return null;
     }
 } 

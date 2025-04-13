@@ -10,9 +10,9 @@ import com.example.parking_hub.mapper.ParkingRealtimeMapper;
 import com.example.parking_hub.model.ParkingInfo;
 import com.example.parking_hub.model.ParkingOperation;
 import com.example.parking_hub.model.ParkingRealtime;
-import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,7 +27,6 @@ import java.util.stream.Collectors;
  * 주차장 데이터 동기화 서비스
  */
 @Service
-@RequiredArgsConstructor
 public class ParkingDataSyncService {
 
     private static final Logger logger = LoggerFactory.getLogger(ParkingDataSyncService.class);
@@ -36,6 +35,17 @@ public class ParkingDataSyncService {
     private final ParkingInfoMapper parkingInfoMapper;
     private final ParkingOperationMapper parkingOperationMapper;
     private final ParkingRealtimeMapper parkingRealtimeMapper;
+
+    @Autowired
+    public ParkingDataSyncService(ParkingApiClient parkingApiClient,
+                                ParkingInfoMapper parkingInfoMapper,
+                                ParkingOperationMapper parkingOperationMapper,
+                                ParkingRealtimeMapper parkingRealtimeMapper) {
+        this.parkingApiClient = parkingApiClient;
+        this.parkingInfoMapper = parkingInfoMapper;
+        this.parkingOperationMapper = parkingOperationMapper;
+        this.parkingRealtimeMapper = parkingRealtimeMapper;
+    }
 
     /**
      * 주차장 데이터 동기화
@@ -172,35 +182,40 @@ public class ParkingDataSyncService {
      * 주차장 실시간 정보 동기화
      * 5분마다 실행
      */
-    @Scheduled(fixedRate = 300000) // 5분
+//    @Scheduled(fixedRate = 300000) // 5분
     @Transactional
     public void syncParkingRealtimeInfo() {
         logger.info("주차장 실시간 정보 동기화 시작");
         
         try {
             int pageNo = 1;
-            int numOfRows = 1000;
+            int numOfRows = 10;
             int totalProcessed = 0;
             
             while (true) {
                 PrkRealtimeInfoResponse response = parkingApiClient.getPrkRealtimeInfo(pageNo, numOfRows);
-                List<PrkRealtimeInfoResponse.PrkRealtimeInfo> items = getItemsFromResponse(response);
+                List<PrkRealtimeInfoResponse.PrkRealtimeItem> items = getItemsFromResponse(response);
                 
                 if (response == null || items == null || items.isEmpty()) {
                     logger.info("주차장 실시간 정보 더 이상 데이터 없음");
                     break;
                 }
                 
-                // API 응답 코드 확인
-                if (!"00".equals(getResultCodeFromResponse(response))) {
-                    logger.error("주차장 실시간 정보 API 오류: {}", getResultMsgFromResponse(response));
+                // API 응답 코드 확인 - SUCCESS 메시지는 정상 처리
+                String resultMsg = getResultMsgFromResponse(response);
+                if (resultMsg != null && "SUCCESS".equals(resultMsg)) {
+                    // 정상 응답이므로 처리 계속 진행
+                    logger.debug("주차장 실시간 정보 API 응답 정상: {}", resultMsg);
+                } else if (!"00".equals(getResultCodeFromResponse(response))) {
+                    // 실제 오류인 경우만 로깅
+                    logger.error("주차장 실시간 정보 API 오류: {}", resultMsg);
                     break;
                 }
 
                 logger.info("주차장 실시간 정보 페이지 {}: {} 건", pageNo, items.size());
 
                 // 실시간 정보 업데이트
-                for (PrkRealtimeInfoResponse.PrkRealtimeInfo item : items) {
+                for (PrkRealtimeInfoResponse.PrkRealtimeItem item : items) {
                     try {
                         ParkingRealtime realtime = convertToParkingRealtime(item);
                         parkingRealtimeMapper.insertOrUpdateParkingRealtime(realtime);
@@ -224,89 +239,55 @@ public class ParkingDataSyncService {
         }
     }
     
-    // 응답으로부터 결과 코드 추출 헬퍼 메서드
-    private String getResultCodeFromResponse(PrkSttusInfoResponse response) {
-        if (response != null && response.getResponse() != null && 
-            response.getResponse().getHeader() != null) {
-            return response.getResponse().getHeader().getResultCode();
+    // 응답으로부터 결과 코드 추출 헬퍼 메서드 (제네릭 변환)
+    private <T> String getResultCodeFromResponse(T response) {
+        if (response instanceof PrkSttusInfoResponse) {
+            PrkSttusInfoResponse r = (PrkSttusInfoResponse) response;
+            return r.getResultCode();
+        } else if (response instanceof PrkOprInfoResponse) {
+            PrkOprInfoResponse r = (PrkOprInfoResponse) response;
+            return r.getResultCode();
+        } else if (response instanceof PrkRealtimeInfoResponse) {
+            PrkRealtimeInfoResponse r = (PrkRealtimeInfoResponse) response;
+            return r.getResultCode();
         }
         return null;
     }
     
-    // 응답으로부터 결과 메시지 추출 헬퍼 메서드
-    private String getResultMsgFromResponse(PrkSttusInfoResponse response) {
-        if (response != null && response.getResponse() != null && 
-            response.getResponse().getHeader() != null) {
-            return response.getResponse().getHeader().getResultMsg();
+    // 응답으로부터 결과 메시지 추출 헬퍼 메서드 (제네릭 변환)
+    private <T> String getResultMsgFromResponse(T response) {
+        if (response instanceof PrkSttusInfoResponse) {
+            PrkSttusInfoResponse r = (PrkSttusInfoResponse) response;
+            return r.getResultMsg();
+        } else if (response instanceof PrkOprInfoResponse) {
+            PrkOprInfoResponse r = (PrkOprInfoResponse) response;
+            return r.getResultMsg();
+        } else if (response instanceof PrkRealtimeInfoResponse) {
+            PrkRealtimeInfoResponse r = (PrkRealtimeInfoResponse) response;
+            return r.getResultMsg();
         }
         return null;
     }
     
-    // 응답으로부터 아이템 목록 추출 헬퍼 메서드
-    private List<PrkSttusInfoResponse.PrkSttusInfo> getItemsFromResponse(PrkSttusInfoResponse response) {
-        if (response != null && response.getResponse() != null && 
-            response.getResponse().getBody() != null && 
-            response.getResponse().getBody().getItems() != null &&
-            response.getResponse().getBody().getItems().getItem() != null) {
-            return response.getResponse().getBody().getItems().getItem();
-        }
-        return Collections.emptyList();
-    }
-    
-    // 응답으로부터 결과 코드 추출 헬퍼 메서드
-    private String getResultCodeFromResponse(PrkOprInfoResponse response) {
-        if (response != null && response.getResponse() != null && 
-            response.getResponse().getHeader() != null) {
-            return response.getResponse().getHeader().getResultCode();
-        }
-        return null;
-    }
-    
-    // 응답으로부터 결과 메시지 추출 헬퍼 메서드
-    private String getResultMsgFromResponse(PrkOprInfoResponse response) {
-        if (response != null && response.getResponse() != null && 
-            response.getResponse().getHeader() != null) {
-            return response.getResponse().getHeader().getResultMsg();
-        }
-        return null;
-    }
-    
-    // 응답으로부터 아이템 목록 추출 헬퍼 메서드
-    private List<PrkOprInfoResponse.PrkOprInfo> getItemsFromResponse(PrkOprInfoResponse response) {
-        if (response != null && response.getResponse() != null && 
-            response.getResponse().getBody() != null && 
-            response.getResponse().getBody().getItems() != null &&
-            response.getResponse().getBody().getItems().getItem() != null) {
-            return response.getResponse().getBody().getItems().getItem();
-        }
-        return Collections.emptyList();
-    }
-    
-    // 응답으로부터 결과 코드 추출 헬퍼 메서드
-    private String getResultCodeFromResponse(PrkRealtimeInfoResponse response) {
-        if (response != null && response.getResponse() != null && 
-            response.getResponse().getHeader() != null) {
-            return response.getResponse().getHeader().getResultCode();
-        }
-        return null;
-    }
-    
-    // 응답으로부터 결과 메시지 추출 헬퍼 메서드
-    private String getResultMsgFromResponse(PrkRealtimeInfoResponse response) {
-        if (response != null && response.getResponse() != null && 
-            response.getResponse().getHeader() != null) {
-            return response.getResponse().getHeader().getResultMsg();
-        }
-        return null;
-    }
-    
-    // 응답으로부터 아이템 목록 추출 헬퍼 메서드
-    private List<PrkRealtimeInfoResponse.PrkRealtimeInfo> getItemsFromResponse(PrkRealtimeInfoResponse response) {
-        if (response != null && response.getResponse() != null && 
-            response.getResponse().getBody() != null && 
-            response.getResponse().getBody().getItems() != null &&
-            response.getResponse().getBody().getItems().getItem() != null) {
-            return response.getResponse().getBody().getItems().getItem();
+    // 응답으로부터 아이템 목록 추출 헬퍼 메서드 (제네릭 변환)
+    @SuppressWarnings("unchecked")
+    private <T, R> List<R> getItemsFromResponse(T response) {
+        if (response instanceof PrkSttusInfoResponse) {
+            PrkSttusInfoResponse r = (PrkSttusInfoResponse) response;
+            if (r.getItems() != null) {
+                return (List<R>) r.getItems();
+            }
+        } else if (response instanceof PrkOprInfoResponse) {
+            PrkOprInfoResponse r = (PrkOprInfoResponse) response;
+            if (r.getItems() != null) {
+                return (List<R>) r.getItems();
+            }
+        } else if (response instanceof PrkRealtimeInfoResponse) {
+            PrkRealtimeInfoResponse r = (PrkRealtimeInfoResponse) response;
+            if (r.getItems() != null) {
+                logger.debug("PrkRealtimeInfo 아이템 추출: {}", r.getItems().size());
+                return (List<R>) r.getItems();
+            }
         }
         return Collections.emptyList();
     }
@@ -314,27 +295,36 @@ public class ParkingDataSyncService {
     /**
      * API 응답을 ParkingInfo 엔티티로 변환
      */
-    private ParkingInfo convertToParkingInfo(PrkSttusInfoResponse.PrkSttusInfo info) {
+    private ParkingInfo convertToParkingInfo(PrkSttusInfoResponse.PrkSttusInfo item) {
         ParkingInfo parkingInfo = new ParkingInfo();
-        parkingInfo.setPrkCenterId(info.getPrkCenterId());
-        parkingInfo.setPrkPlceNm(info.getPrkCenterNm());
-        parkingInfo.setPrkPlceAdres(info.getRdnmadr() != null ? info.getRdnmadr() : info.getLnmadr());
+        parkingInfo.setPrkCenterId(item.getPrkCenterId());
+        parkingInfo.setPrkPlceNm(item.getPrkPlceNm());
+        parkingInfo.setPrkPlceAdres(item.getPrkPlceAdres());
         
+        // 위도/경도 값 설정 (Double 타입으로 변경됨)
         try {
-            // 위도, 경도 설정 (null 체크)
-            if (info.getLatitude() != null) {
-                parkingInfo.setPrkPlceEntrcLa(info.getLatitude());
-            }
-            if (info.getLongitude() != null) {
-                parkingInfo.setPrkPlceEntrcLo(info.getLongitude());
-            }
-            
-            // 주차 가능 대수
-            if (info.getParkingLotCount() != null) {
-                parkingInfo.setPrkCmprtCo(info.getParkingLotCount());
+            if (item.getLatitude() != null) {
+                parkingInfo.setPrkPlceEntrcLa(item.getLatitude());
             }
         } catch (Exception e) {
-            logger.warn("주차장 기본정보 변환 중 오류: {}", info.getPrkCenterId(), e);
+            logger.warn("위도 설정 오류: {}", item.getPrkCenterId(), e);
+        }
+        
+        try {
+            if (item.getLongitude() != null) {
+                parkingInfo.setPrkPlceEntrcLo(item.getLongitude());
+            }
+        } catch (Exception e) {
+            logger.warn("경도 설정 오류: {}", item.getPrkCenterId(), e);
+        }
+        
+        // 주차면수 설정 (Integer 타입으로 변경됨)
+        try {
+            if (item.getPrkCmprtCo() != null) {
+                parkingInfo.setPrkCmprtCo(item.getPrkCmprtCo());
+            }
+        } catch (Exception e) {
+            logger.warn("주차면수 설정 오류: {}", item.getPrkCenterId(), e);
         }
         
         return parkingInfo;
@@ -343,24 +333,30 @@ public class ParkingDataSyncService {
     /**
      * API 응답을 ParkingOperation 엔티티로 변환
      */
-    private ParkingOperation convertToParkingOperation(PrkOprInfoResponse.PrkOprInfo info) {
+    private ParkingOperation convertToParkingOperation(PrkOprInfoResponse.PrkOprInfo item) {
         ParkingOperation operation = new ParkingOperation();
-        operation.setPrkCenterId(info.getPrkCenterId());
+        operation.setPrkCenterId(item.getPrkCenterId());
         
+        // 무료 주차 시간 설정
         try {
-            // 무료 운영 시간 설정 (문자열 → 정수 변환)
-            if (info.getOpertnBsFreeTime() != null && !info.getOpertnBsFreeTime().trim().isEmpty()) {
-                int freeTime = 0;
-                try {
-                    freeTime = Integer.parseInt(info.getOpertnBsFreeTime().trim());
-                } catch (NumberFormatException e) {
-                    // 기본값 사용
-                    freeTime = 0;
-                }
-                operation.setOpertnBsFreeTime(freeTime);
+            if (item.getOpertnBsFreeTime() != null && !item.getOpertnBsFreeTime().isEmpty()) {
+                operation.setOpertnBsFreeTime(Integer.parseInt(item.getOpertnBsFreeTime()));
             }
-        } catch (Exception e) {
-            logger.warn("주차장 운영정보 변환 중 오류: {}", info.getPrkCenterId(), e);
+        } catch (NumberFormatException e) {
+            logger.warn("무료 주차 시간 변환 오류: {} - {}", item.getPrkCenterId(), item.getOpertnBsFreeTime());
+        }
+        
+        // 추가 필드 설정
+        if (item.getParkingChrgeBsTime() != null) {
+            operation.setParkingChrgeBsTime(item.getParkingChrgeBsTime());
+        }
+        
+        if (item.getParkingChrgeBsChrg() != null) {
+            operation.setParkingChrgeBsChrg(item.getParkingChrgeBsChrg());
+        }
+        
+        if (item.getOperationDayInfo() != null) {
+            operation.setOperationDayInfo(item.getOperationDayInfo());
         }
         
         return operation;
@@ -369,20 +365,26 @@ public class ParkingDataSyncService {
     /**
      * API 응답을 ParkingRealtime 엔티티로 변환
      */
-    private ParkingRealtime convertToParkingRealtime(PrkRealtimeInfoResponse.PrkRealtimeInfo info) {
+    private ParkingRealtime convertToParkingRealtime(PrkRealtimeInfoResponse.PrkRealtimeItem item) {
         ParkingRealtime realtime = new ParkingRealtime();
-        realtime.setPrkCenterId(info.getPrkCenterId());
+        realtime.setPrkCenterId(item.getPrkCenterId());
         
+        // 전체 주차면 수 (Integer 타입으로 변경됨)
         try {
-            // 총 주차면, 가용 주차면 설정
-            if (info.getPkfcParkingLotsTotal() != null) {
-                realtime.setPkfcParkingLotsTotal(info.getPkfcParkingLotsTotal());
-            }
-            if (info.getPkfcAvailableParkingLotsTotal() != null) {
-                realtime.setPkfcAvailableParkingLotsTotal(info.getPkfcAvailableParkingLotsTotal());
+            if (item.getPkfcParkingLotsTotal() != null) {
+                realtime.setPkfcParkingLotsTotal(item.getPkfcParkingLotsTotal());
             }
         } catch (Exception e) {
-            logger.warn("주차장 실시간정보 변환 중 오류: {}", info.getPrkCenterId(), e);
+            logger.warn("전체 주차면 수 설정 오류: {}", item.getPrkCenterId(), e);
+        }
+        
+        // 가용 주차면 수 (Integer 타입으로 변경됨)
+        try {
+            if (item.getPkfcAvailableParkingLotsTotal() != null) {
+                realtime.setPkfcAvailableParkingLotsTotal(item.getPkfcAvailableParkingLotsTotal());
+            }
+        } catch (Exception e) {
+            logger.warn("가용 주차면 수 설정 오류: {}", item.getPrkCenterId(), e);
         }
         
         // 업데이트 시간 설정

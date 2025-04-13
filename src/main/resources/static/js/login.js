@@ -16,8 +16,7 @@ $(document).ready(function() {
         // 로그인 요청
         AuthService.login(username, password)
             .done(function(response) {
-                // 로그인 성공
-                AuthService.setToken(response.token);
+                // 로그인 성공 - 쿠키는 서버에서 자동으로 설정됨
                 window.location.href = '/';
             })
             .fail(function(xhr, status, error) {

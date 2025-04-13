@@ -2,34 +2,18 @@
  * 인증 관련 기능을 담당하는 JavaScript 파일
  */
 
-// JWT 토큰 관리 함수들
+// 인증 관리 함수들
 const AuthService = {
-    // 로컬 스토리지에 토큰 저장
-    setToken: function(token) {
-        localStorage.setItem('jwt_token', token);
-    },
+    // 토큰은 이제 HTTP 전용 쿠키로 관리되므로 JavaScript에서 직접 관리하지 않음
     
-    // 토큰 가져오기
-    getToken: function() {
-        return localStorage.getItem('jwt_token');
-    },
-    
-    // 토큰 삭제 (로그아웃 시)
-    removeToken: function() {
-        localStorage.removeItem('jwt_token');
-    },
-    
-    // 토큰 유효성 확인 (간단한 체크)
+    // 로그인 여부 확인 (간접적으로 확인)
     isAuthenticated: function() {
-        const token = this.getToken();
-        return token !== null && token !== "";
+        return document.cookie.split(';').some(item => item.trim().startsWith('logged_in='));
     },
     
-    // API 요청 시 인증 헤더 추가
+    // API 요청 시 인증 헤더 추가 (쿠키가 자동으로 전송되므로 필요 없음)
     getAuthHeader: function() {
-        return {
-            'Authorization': 'Bearer ' + this.getToken()
-        };
+        return {};
     },
     
     // 로그인 요청
@@ -41,18 +25,39 @@ const AuthService = {
             data: JSON.stringify({
                 username: username,
                 password: password
-            })
+            }),
+            xhrFields: {
+                withCredentials: true  // 쿠키를 포함하도록 설정
+            }
+        }).done(function(response) {
+            // 로그인 성공 시 logged_in 쿠키 생성 (JavaScript에서 접근 가능)
+            document.cookie = "logged_in=true; path=/;";
         });
     },
     
     // 로그아웃
     logout: function() {
-        this.removeToken();
-        // 필요하다면 서버에도 로그아웃 요청을 보낼 수 있음
+        // 인증 상태 쿠키 제거
+        document.cookie = "logged_in=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+        
+        // 서버에 로그아웃 요청 (서버에서 jwt_token 쿠키 제거)
         return $.ajax({
             url: '/api/auth/logout',
             type: 'POST',
-            headers: this.getAuthHeader()
+            xhrFields: {
+                withCredentials: true
+            }
+        });
+    },
+    
+    // 현재 로그인 사용자 정보 가져오기
+    getCurrentUser: function() {
+        return $.ajax({
+            url: '/api/user/current',
+            type: 'GET',
+            xhrFields: {
+                withCredentials: true
+            }
         });
     }
 };
@@ -63,18 +68,20 @@ $(document).ready(function() {
     if (AuthService.isAuthenticated()) {
         $('.not-logged-in').hide();
         $('.logged-in').show();
+        
+        // 사용자 정보 가져오기
+        AuthService.getCurrentUser()
+            .done(function(user) {
+                $('.user-name').text(user.username);
+            })
+            .fail(function() {
+                // 사용자 정보를 가져오지 못한 경우 로그인 상태 초기화
+                document.cookie = "logged_in=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+                $('.not-logged-in').show();
+                $('.logged-in').hide();
+            });
     } else {
         $('.not-logged-in').show();
         $('.logged-in').hide();
     }
-    
-    // 모든 AJAX 요청에 인증 헤더 자동 추가
-    $.ajaxSetup({
-        beforeSend: function(xhr) {
-            if (AuthService.isAuthenticated()) {
-                const token = AuthService.getToken();
-                xhr.setRequestHeader('Authorization', 'Bearer ' + token);
-            }
-        }
-    });
 }); 

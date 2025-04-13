@@ -4,13 +4,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -23,7 +23,7 @@ public class RestTemplateConfig {
     public RestTemplate restTemplate() {
         SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
         factory.setConnectTimeout(10000); // 10초
-        factory.setReadTimeout(10000); // 10초
+        factory.setReadTimeout(60000); // 60초
         
         RestTemplate restTemplate = new RestTemplate(factory);
         
@@ -31,21 +31,21 @@ public class RestTemplateConfig {
         StringHttpMessageConverter stringConverter = new StringHttpMessageConverter(StandardCharsets.UTF_8);
         stringConverter.setWriteAcceptCharset(false);
         
-        // 다양한 응답 형식을 처리할 수 있도록 MappingJackson2HttpMessageConverter 확장
+        // JSON 응답 처리를 위한 MappingJackson2HttpMessageConverter 설정
         MappingJackson2HttpMessageConverter jacksonConverter = new MappingJackson2HttpMessageConverter();
+        List<MediaType> jsonMediaTypes = new ArrayList<>();
+        jsonMediaTypes.add(MediaType.APPLICATION_JSON);
+        jsonMediaTypes.add(MediaType.TEXT_PLAIN); // 일부 API는 text/plain으로 JSON을 반환하기도 함
+        jsonMediaTypes.add(new MediaType("application", "*+json"));
+        jsonMediaTypes.add(new MediaType("text", "json"));
+        jacksonConverter.setSupportedMediaTypes(jsonMediaTypes);
         
-        // 다양한 MediaType 지원 추가
-        List<MediaType> supportedMediaTypes = new ArrayList<>();
-        supportedMediaTypes.add(MediaType.APPLICATION_JSON);
-        supportedMediaTypes.add(MediaType.TEXT_PLAIN);
-        supportedMediaTypes.add(MediaType.TEXT_HTML);
-        supportedMediaTypes.add(new MediaType("application", "*+json"));
-        supportedMediaTypes.add(new MediaType("text", "json"));
-        // API에서 실제로 반환하는 타입이 있다면 여기에 추가
-        jacksonConverter.setSupportedMediaTypes(supportedMediaTypes);
+        // 컨버터 등록
+        List<HttpMessageConverter<?>> messageConverters = new ArrayList<>();
+        messageConverters.add(stringConverter);
+        messageConverters.add(jacksonConverter);
         
-        // 기존 MessageConverter 교체
-        restTemplate.setMessageConverters(Arrays.asList(stringConverter, jacksonConverter));
+        restTemplate.setMessageConverters(messageConverters);
         
         return restTemplate;
     }

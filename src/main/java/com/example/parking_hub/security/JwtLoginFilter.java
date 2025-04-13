@@ -14,6 +14,7 @@ import org.springframework.util.StreamUtils;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -73,12 +74,17 @@ public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
         // JWT 토큰 생성
         String token = jwtUtil.createToken(username);
         
-        // 토큰을 응답 헤더에 추가
-        response.addHeader(jwtUtil.getHeaderString(), jwtUtil.getTokenPrefix() + token);
+        // HTTP 전용 쿠키로 토큰 설정 (JavaScript에서 접근 불가)
+        Cookie jwtCookie = new Cookie("jwt_token", token);
+        jwtCookie.setHttpOnly(true);
+        jwtCookie.setPath("/");
+        jwtCookie.setMaxAge(86400); // 24시간 (초 단위)
+        jwtCookie.setSecure(request.isSecure()); // HTTPS인 경우 Secure 설정
+        response.addCookie(jwtCookie);
         
-        // 토큰을 응답 본문에도 포함
+        // 토큰을 응답 본문에는 포함하지 않고 성공 메시지만 반환
         Map<String, Object> responseBody = new HashMap<>();
-        responseBody.put("token", token);
+        responseBody.put("success", true);
         responseBody.put("username", username);
         
         response.setContentType("application/json");

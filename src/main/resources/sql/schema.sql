@@ -55,8 +55,7 @@ CREATE TABLE IF NOT EXISTS PARKING_REALTIME (
     prk_center_id VARCHAR(30) PRIMARY KEY,                -- 주차장 관리 ID
     pkfc_parking_lots_total INT DEFAULT 0,                -- 총 주차 면수
     pkfc_available_parking_lots_total INT DEFAULT 0,      -- 이용 가능 주차 면수
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,       -- 업데이트 시간
-    FOREIGN KEY (prk_center_id) REFERENCES PARKING_INFO(prk_center_id) ON DELETE CASCADE
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP       -- 업데이트 시간
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- 초기 역할 데이터 삽입

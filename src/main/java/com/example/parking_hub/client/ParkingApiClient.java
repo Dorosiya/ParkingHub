@@ -3,6 +3,7 @@ package com.example.parking_hub.client;
 import com.example.parking_hub.dto.api.PrkSttusInfoResponse;
 import com.example.parking_hub.dto.api.PrkOprInfoResponse;
 import com.example.parking_hub.dto.api.PrkRealtimeInfoResponse;
+import org.springframework.stereotype.Component;
 
 /**
  * 주차장 API 클라이언트 인터페이스
