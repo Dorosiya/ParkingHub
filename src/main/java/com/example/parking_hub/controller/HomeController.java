@@ -61,6 +61,29 @@ public class HomeController {
         
         // 서비스를 통해 주차장 검색
         List<ParkingInfo> parkingList = searchService.searchParking(keyword, region);
+        
+        // 요금 정보 임의 설정 (실제로는 DB에서 가져와야 함)
+        for (ParkingInfo parking : parkingList) {
+            // ID 기반으로 임의 요금 정보 설정 (실제 구현에서는 DB 데이터 사용)
+            if (parking.getPrkCenterId() != null) {
+                // 주차장 ID의 마지막 글자가 짝수이면 유료, 홀수이면 무료로 가정
+                String id = parking.getPrkCenterId();
+                char lastChar = id.charAt(id.length() - 1);
+                boolean isFree = Character.isDigit(lastChar) && 
+                                 (Character.getNumericValue(lastChar) % 2 != 0);
+                
+                parking.setFree(isFree);
+                if (isFree) {
+                    parking.setParkingFeeInfo("무료");
+                } else {
+                    parking.setParkingFeeInfo("시간당 1,000원");
+                }
+            } else {
+                parking.setFree(false);
+                parking.setParkingFeeInfo("정보 없음");
+            }
+        }
+        
         model.addAttribute("parkingList", parkingList);
         
         return "search";

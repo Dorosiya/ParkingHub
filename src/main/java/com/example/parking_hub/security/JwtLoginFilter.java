@@ -2,6 +2,7 @@ package com.example.parking_hub.security;
 
 import com.example.parking_hub.config.JwtUtil;
 import com.example.parking_hub.dto.LoginRequest;
+import com.example.parking_hub.util.CookieUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,6 +10,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.util.StreamUtils;
 
@@ -19,6 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,11 +35,15 @@ public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
     private static final Logger logger = LoggerFactory.getLogger(JwtLoginFilter.class);
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
+    private final CookieUtil cookieUtil;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public JwtLoginFilter(AuthenticationManager authenticationManager, JwtUtil jwtUtil) {
+    public JwtLoginFilter(AuthenticationManager authenticationManager, JwtUtil jwtUtil, CookieUtil cookieUtil) {
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
+        this.cookieUtil = cookieUtil;
+        // 로그인 URL 설정
+        setFilterProcessesUrl("/api/auth/login");
     }
 
     @Override
@@ -54,7 +61,8 @@ public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
             return authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             loginRequest.getUsername(),
-                            loginRequest.getPassword()
+                            loginRequest.getPassword(),
+                            new ArrayList<>()
                     )
             );
         } catch (IOException e) {
@@ -68,28 +76,32 @@ public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
                                            FilterChain chain, Authentication authResult) 
             throws IOException, ServletException {
         
-        String username = authResult.getName();
-        logger.info("로그인 성공: username={}", username);
-        
-        // JWT 토큰 생성
+        UserDetails user = (UserDetails) authResult.getPrincipal();
+        String username = user.getUsername();
         String token = jwtUtil.createToken(username);
         
-        // HTTP 전용 쿠키로 토큰 설정 (JavaScript에서 접근 불가)
-        Cookie jwtCookie = new Cookie("jwt_token", token);
-        jwtCookie.setHttpOnly(true);
-        jwtCookie.setPath("/");
-        jwtCookie.setMaxAge(86400); // 24시간 (초 단위)
-        jwtCookie.setSecure(request.isSecure()); // HTTPS인 경우 Secure 설정
-        response.addCookie(jwtCookie);
+        // CookieUtil을 사용하여 JWT 토큰 쿠키 설정
+        int maxAge = 86400; // 24시간 (초 단위) - JwtUtil에 정의된 것과 동일한 값
+        cookieUtil.createAuthCookie(request, response, token, maxAge);
         
-        // 토큰을 응답 본문에는 포함하지 않고 성공 메시지만 반환
-        Map<String, Object> responseBody = new HashMap<>();
-        responseBody.put("success", true);
-        responseBody.put("username", username);
-        
+        // 응답 본문에 토큰 및 사용자 정보 포함
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-        response.getWriter().write(objectMapper.writeValueAsString(responseBody));
+        
+        // 사용자 ID 추출 (CustomUserDetails로 캐스팅 가능한 경우)
+        Long userId = null;
+        if (user instanceof CustomUserDetails) {
+            userId = ((CustomUserDetails) user).getUser().getId();
+        }
+        
+        String responseJson = String.format(
+            "{\"success\":true,\"message\":\"로그인에 성공했습니다.\",\"token\":\"%s\",\"username\":\"%s\"%s}",
+            token, 
+            username,
+            userId != null ? String.format(",\"id\":%d", userId) : ""
+        );
+        
+        response.getWriter().write(responseJson);
     }
     
     @Override
@@ -99,13 +111,9 @@ public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
         
         logger.warn("로그인 실패: {}", failed.getMessage());
         
-        Map<String, Object> errorDetails = new HashMap<>();
-        errorDetails.put("message", "인증에 실패했습니다");
-        errorDetails.put("error", failed.getMessage());
-        
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-        response.getWriter().write(objectMapper.writeValueAsString(errorDetails));
+        response.getWriter().write("{\"success\":false,\"message\":\"아이디 또는 비밀번호가 올바르지 않습니다.\"}");
     }
 } 

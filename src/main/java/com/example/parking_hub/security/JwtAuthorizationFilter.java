@@ -1,6 +1,7 @@
 package com.example.parking_hub.security;
 
 import com.example.parking_hub.config.JwtUtil;
+import com.example.parking_hub.util.CookieUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
@@ -22,9 +23,11 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     private static final Logger logger = LoggerFactory.getLogger(JwtAuthorizationFilter.class);
     private final JwtUtil jwtUtil;
+    private final CookieUtil cookieUtil;
 
-    public JwtAuthorizationFilter(JwtUtil jwtUtil) {
+    public JwtAuthorizationFilter(JwtUtil jwtUtil, CookieUtil cookieUtil) {
         this.jwtUtil = jwtUtil;
+        this.cookieUtil = cookieUtil;
     }
 
     @Override
@@ -47,14 +50,10 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     }
 
     private String resolveToken(HttpServletRequest request) {
-        // 1. 쿠키에서 토큰 확인
-        Cookie[] cookies = request.getCookies();
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if ("jwt_token".equals(cookie.getName())) {
-                    return cookie.getValue();
-                }
-            }
+        // 1. 쿠키에서 토큰 확인 (CookieUtil 사용)
+        String token = cookieUtil.getCookieValue(request, "jwt_token");
+        if (token != null) {
+            return token;
         }
         
         // 2. 헤더에서 토큰 확인 (이전 방식과의 호환성 유지)

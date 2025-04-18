@@ -2,6 +2,8 @@ package com.example.parking_hub.controller;
 
 import com.example.parking_hub.dto.UserDto;
 import com.example.parking_hub.security.CustomUserDetails;
+import com.example.parking_hub.util.CookieUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,55 +20,60 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/auth")
 public class AuthController {
 
+    private final CookieUtil cookieUtil;
+
+    @Autowired
+    public AuthController(CookieUtil cookieUtil) {
+        this.cookieUtil = cookieUtil;
+    }
+
     /**
-     * 로그아웃 API
-     * JWT 토큰 쿠키를 제거합니다.
+     * 현재 로그인한 사용자 정보 조회
+     * @param authentication 인증 정보
+     * @return 사용자 정보
      */
-    @PostMapping("/auth/logout")
-    public ResponseEntity<Map<String, Object>> logout(HttpServletResponse response) {
-        // JWT 토큰 쿠키 제거
-        Cookie jwtCookie = new Cookie("jwt_token", null);
-        jwtCookie.setHttpOnly(true);
-        jwtCookie.setPath("/");
-        jwtCookie.setMaxAge(0); // 즉시 만료
-        response.addCookie(jwtCookie);
+    @GetMapping("/me")
+    public ResponseEntity<UserDto> getCurrentUser(Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated() || 
+            "anonymousUser".equals(authentication.getPrincipal())) {
+            return ResponseEntity.status(401).build();
+        }
+
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        UserDto userDto = new UserDto();
+        userDto.setId(userDetails.getUser().getId());
+        userDto.setUsername(userDetails.getUsername());
+        userDto.setEmail(userDetails.getUser().getEmail());
+        userDto.setRoles(userDetails.getAuthorities().stream()
+                .map(authority -> authority.getAuthority())
+                .collect(Collectors.toList()));
+
+        return ResponseEntity.ok(userDto);
+    }
+
+    /**
+     * 로그아웃 처리
+     * @param request HTTP 요청
+     * @param response HTTP 응답
+     * @return 로그아웃 결과
+     */
+    @PostMapping("/logout")
+    public ResponseEntity<Map<String, String>> logout(
+            HttpServletRequest request, HttpServletResponse response) {
         
-        // logged_in 쿠키도 제거 (클라이언트 측에서 확인용)
-        Cookie loggedInCookie = new Cookie("logged_in", null);
-        loggedInCookie.setPath("/");
-        loggedInCookie.setMaxAge(0);
-        response.addCookie(loggedInCookie);
+        // 쿠키 삭제
+        cookieUtil.clearAuthCookies(response);
         
-        Map<String, Object> result = new HashMap<>();
-        result.put("success", true);
+        // 인증 정보 제거
+        SecurityContextHolder.clearContext();
+        
+        // 응답 데이터
+        Map<String, String> result = new HashMap<>();
         result.put("message", "로그아웃 되었습니다.");
         
         return ResponseEntity.ok(result);
-    }
-    
-    /**
-     * 현재 로그인한 사용자 정보 API
-     */
-    @GetMapping("/user/current")
-    public ResponseEntity<?> getCurrentUser() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        
-        if (auth == null || auth.getPrincipal().equals("anonymousUser")) {
-            Map<String, String> errorResponse = new HashMap<>();
-            errorResponse.put("message", "인증되지 않은 사용자입니다.");
-            return ResponseEntity.status(401).body(errorResponse);
-        }
-        
-        CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
-        UserDto user = new UserDto();
-        user.setUsername(userDetails.getUsername());
-        user.setRoles(userDetails.getAuthorities().stream()
-                .map(authority -> authority.getAuthority())
-                .collect(Collectors.toList()));
-        
-        return ResponseEntity.ok(user);
     }
 } 

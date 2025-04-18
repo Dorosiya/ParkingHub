@@ -34,10 +34,10 @@
                 </ul>
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link active" href="/login">로그인</a>
+                        <a class="nav-link active" href="/login-page">로그인</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/register">회원가입</a>
+                        <a class="nav-link" href="/register-page">회원가입</a>
                     </li>
                 </ul>
             </div>
@@ -61,8 +61,8 @@
             
             <form id="loginForm">
                 <div class="mb-3">
-                    <label for="username" class="form-label">아이디</label>
-                    <input type="text" class="form-control" id="username" name="username" placeholder="아이디를 입력하세요" required>
+                    <label for="email" class="form-label">이메일</label>
+                    <input type="email" class="form-control" id="email" name="email" placeholder="이메일을 입력하세요" required>
                 </div>
                 <div class="mb-3">
                     <label for="password" class="form-label">비밀번호</label>
@@ -81,14 +81,14 @@
             </form>
             
             <div class="text-center mt-4">
-                <p class="mb-0">아직 회원이 아니신가요? <a href="/register" class="text-decoration-none" style="color: #4dabf7;">회원가입하기</a></p>
+                <p class="mb-0">아직 회원이 아니신가요? <a href="/register-page" class="text-decoration-none" style="color: #4dabf7;">회원가입하기</a></p>
             </div>
         </div>
     </div>
     
     <footer class="text-center">
         <div class="container">
-            <p class="mb-0 small">© 2023 Parking Hub. All rights reserved.</p>
+            <p class="mb-0 small">© 2025 Parking Hub. All rights reserved.</p>
             <p class="mb-0 small">
                 <a href="#" class="text-decoration-none text-muted">이용약관</a> | 
                 <a href="#" class="text-decoration-none text-muted">개인정보처리방침</a> | 
@@ -98,8 +98,47 @@
     </footer>
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="/js/auth.js"></script>
-    <script src="/js/login.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 로그인 버튼 클릭 이벤트
+            document.getElementById('loginButton').addEventListener('click', function() {
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                
+                // 입력 검증
+                if (!email || !password) {
+                    document.getElementById('error-message').textContent = '이메일과 비밀번호를 모두 입력해주세요.';
+                    document.getElementById('error-message').style.display = 'block';
+                    return;
+                }
+                
+                // 로그인 요청
+                login(email, password)
+                    .then(data => {
+                        // 로그인 성공 시 메인 페이지로 이동
+                        window.location.href = '/';
+                    })
+                    .catch(error => {
+                        // 로그인 실패 처리
+                        document.getElementById('error-message').textContent = 
+                            '이메일 또는 비밀번호가 올바르지 않습니다.';
+                        document.getElementById('error-message').style.display = 'block';
+                        console.error('로그인 오류:', error);
+                    });
+            });
+            
+            // 엔터키 처리
+            document.querySelectorAll('#loginForm input').forEach(input => {
+                input.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        document.getElementById('loginButton').click();
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html> 

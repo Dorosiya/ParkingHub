@@ -243,7 +243,7 @@
                     <p class="text-muted">더 쉽고 빠른 주차 경험을 제공하는 서비스</p>
                 </div>
                 <div class="col-md-6 text-md-end">
-                    <p>&copy; 2023 Parking Hub. All rights reserved.</p>
+                    <p>&copy; 2025 Parking Hub. All rights reserved.</p>
                 </div>
             </div>
         </div>

@@ -1,87 +1,164 @@
 /**
- * 인증 관련 기능을 담당하는 JavaScript 파일
+ * 인증 관련 공통 JavaScript 함수
  */
 
-// 인증 관리 함수들
-const AuthService = {
-    // 토큰은 이제 HTTP 전용 쿠키로 관리되므로 JavaScript에서 직접 관리하지 않음
-    
-    // 로그인 여부 확인 (간접적으로 확인)
-    isAuthenticated: function() {
-        return document.cookie.split(';').some(item => item.trim().startsWith('logged_in='));
-    },
-    
-    // API 요청 시 인증 헤더 추가 (쿠키가 자동으로 전송되므로 필요 없음)
-    getAuthHeader: function() {
-        return {};
-    },
-    
-    // 로그인 요청
-    login: function(username, password) {
-        return $.ajax({
-            url: '/api/auth/login',
-            type: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify({
-                username: username,
-                password: password
-            }),
-            xhrFields: {
-                withCredentials: true  // 쿠키를 포함하도록 설정
-            }
-        }).done(function(response) {
-            // 로그인 성공 시 logged_in 쿠키 생성 (JavaScript에서 접근 가능)
-            document.cookie = "logged_in=true; path=/;";
-        });
-    },
-    
-    // 로그아웃
-    logout: function() {
-        // 인증 상태 쿠키 제거
-        document.cookie = "logged_in=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
-        
-        // 서버에 로그아웃 요청 (서버에서 jwt_token 쿠키 제거)
-        return $.ajax({
-            url: '/api/auth/logout',
-            type: 'POST',
-            xhrFields: {
-                withCredentials: true
-            }
-        });
-    },
-    
-    // 현재 로그인 사용자 정보 가져오기
-    getCurrentUser: function() {
-        return $.ajax({
-            url: '/api/user/current',
-            type: 'GET',
-            xhrFields: {
-                withCredentials: true
-            }
-        });
-    }
-};
+/**
+ * 토큰이 저장되어 있는지 확인하여 로그인 상태를 판단합니다.
+ * @returns {boolean} 로그인 여부
+ */
+function isAuthenticated() {
+    // localStorage 또는 쿠키 기반 인증 확인
+    return localStorage.getItem('token') !== null || document.cookie.indexOf('logged_in=true') !== -1;
+}
 
-// 페이지 로드 시 실행되는 인증 초기화 코드
-$(document).ready(function() {
-    // 로그인 상태에 따라 UI 업데이트
-    if (AuthService.isAuthenticated()) {
-        $('.not-logged-in').hide();
-        $('.logged-in').show();
-        
-        // 사용자 정보 가져오기
-        AuthService.getCurrentUser()
-            .done(function(user) {
-                $('.user-name').text(user.username);
-            })
-            .fail(function() {
-                // 사용자 정보를 가져오지 못한 경우 로그인 상태 초기화
-                document.cookie = "logged_in=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
-                $('.not-logged-in').show();
-                $('.logged-in').hide();
-            });
-    } else {
-        $('.not-logged-in').show();
-        $('.logged-in').hide();
+/**
+ * 로컬 스토리지에서 인증 토큰을 가져옵니다.
+ * @returns {string|null} JWT 토큰 또는 null
+ */
+function getToken() {
+    return localStorage.getItem('token');
+}
+
+/**
+ * 인증 헤더를 생성합니다.
+ * @returns {object} 인증 헤더가 포함된 객체
+ */
+function getAuthHeaders() {
+    const token = getToken();
+    if (!token) {
+        return {};
     }
-}); 
+    return {
+        'Authorization': `Bearer ${token}`
+    };
+}
+
+/**
+ * 로그인을 처리합니다.
+ * @param {string} email 이메일
+ * @param {string} password 비밀번호
+ * @returns {Promise} 로그인 결과 프로미스
+ */
+function login(email, password) {
+    return fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ username: email, password })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('로그인에 실패했습니다');
+        }
+        return response.json();
+    })
+    .then(data => {
+        // 응답에 토큰이 있으면 로컬 스토리지에 저장
+        if (data && data.token) {
+            localStorage.setItem('token', data.token);
+            if (data.id && data.username) {
+                localStorage.setItem('user', JSON.stringify({
+                    id: data.id,
+                    username: data.username,
+                    email: data.email || data.username // email이 없으면 username 사용
+                }));
+            }
+        }
+        return data;
+    });
+}
+
+/**
+ * 로그아웃을 처리합니다.
+ */
+function logout() {
+    // 서버에 로그아웃 요청 보내기 (쿠키 삭제용)
+    fetch('/api/auth/logout', {
+        method: 'POST',
+        credentials: 'include'
+    })
+    .finally(() => {
+        // 로컬 스토리지에서 토큰 제거
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        // 로그인 페이지로 리다이렉트
+        window.location.href = '/login-page';
+    });
+}
+
+/**
+ * 현재 로그인한 사용자 정보를 가져옵니다.
+ * @returns {object|null} 사용자 정보 또는 null
+ */
+function getCurrentUser() {
+    const userJson = localStorage.getItem('user');
+    if (!userJson) {
+        return null;
+    }
+    try {
+        return JSON.parse(userJson);
+    } catch (e) {
+        console.error('사용자 정보 파싱 오류:', e);
+        return null;
+    }
+}
+
+/**
+ * API 요청을 보낼 때 사용할 기본 fetch 함수입니다.
+ * 인증 헤더가 자동으로 포함됩니다.
+ * 
+ * @param {string} url 요청 URL
+ * @param {object} options fetch 옵션
+ * @returns {Promise} fetch 결과 프로미스
+ */
+function authFetch(url, options = {}) {
+    const headers = {
+        ...options.headers,
+        ...getAuthHeaders()
+    };
+    
+    return fetch(url, {
+        ...options,
+        headers,
+        credentials: 'include'  // 쿠키도 함께 포함
+    })
+    .then(response => {
+        // 401 Unauthorized 응답이 오면 로그아웃 처리
+        if (response.status === 401) {
+            logout();
+            throw new Error('인증이 만료되었습니다. 다시 로그인해주세요.');
+        }
+        return response;
+    });
+}
+
+// 페이지 로드 시 인증 상태 확인
+document.addEventListener('DOMContentLoaded', function() {
+    if (isAuthenticated()) {
+        // 인증된 사용자인 경우
+        document.querySelectorAll('.auth-link').forEach(link => {
+            link.style.display = 'block';
+        });
+        
+        document.querySelectorAll('.no-auth-link').forEach(link => {
+            link.style.display = 'none';
+        });
+    } else {
+        // 인증되지 않은 사용자인 경우
+        document.querySelectorAll('.auth-link').forEach(link => {
+            link.style.display = 'none';
+        });
+        
+        document.querySelectorAll('.no-auth-link').forEach(link => {
+            link.style.display = 'block';
+        });
+    }
+});
+
+// 전역 스코프에 함수 등록
+window.isAuthenticated = isAuthenticated;
+window.login = login;
+window.logout = logout;
+window.getCurrentUser = getCurrentUser;
+window.authFetch = authFetch; 

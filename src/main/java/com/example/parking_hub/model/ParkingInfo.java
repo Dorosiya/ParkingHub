@@ -14,6 +14,10 @@ public class ParkingInfo {
     private Double prkPlceEntrcLo;
     private Integer prkCmprtCo;
     
+    // 요금 정보 (임시로 추가, 실제로는 ParkingOperation에서 관리)
+    private String parkingFeeInfo;
+    private boolean isFree = false;
+    
     // 명시적인 setter 메서드 추가
     public void setPrkCenterId(String prkCenterId) {
         this.prkCenterId = prkCenterId;
@@ -37,5 +41,13 @@ public class ParkingInfo {
     
     public void setPrkCmprtCo(Integer prkCmprtCo) {
         this.prkCmprtCo = prkCmprtCo;
+    }
+    
+    public void setParkingFeeInfo(String parkingFeeInfo) {
+        this.parkingFeeInfo = parkingFeeInfo;
+    }
+    
+    public void setFree(boolean isFree) {
+        this.isFree = isFree;
     }
 }

@@ -446,7 +446,7 @@
                 </div>
             </div>
             <div class="text-center footer-bottom">
-                <p>&copy; 2023 Parking Hub. All rights reserved.</p>
+                <p>&copy; 2025 Parking Hub. All rights reserved.</p>
             </div>
         </div>
     </footer>

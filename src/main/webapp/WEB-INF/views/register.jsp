@@ -112,7 +112,7 @@
     
     <footer class="text-center">
         <div class="container">
-            <p class="mb-0 small">© 2023 Parking Hub. All rights reserved.</p>
+            <p class="mb-0 small">© 2025 Parking Hub. All rights reserved.</p>
             <p class="mb-0 small">
                 <a href="#" class="text-decoration-none text-muted">이용약관</a> | 
                 <a href="#" class="text-decoration-none text-muted">개인정보처리방침</a> | 

@@ -60,7 +60,7 @@ public class UserController {
             logger.info("회원가입 성공: 사용자 ID={}", user.getId());
             
             // 회원가입 성공 시 로그인 페이지로 리다이렉트
-            return "redirect:/login?registered=true";
+            return "redirect:/login-page?registered=true";
         } catch (Exception e) {
             logger.error("회원가입 처리 중 예외 발생", e);
             model.addAttribute("error", "회원가입 중 오류가 발생했습니다: " + e.getMessage());

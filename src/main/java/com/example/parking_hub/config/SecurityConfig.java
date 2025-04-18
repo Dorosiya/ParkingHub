@@ -3,6 +3,7 @@ package com.example.parking_hub.config;
 import com.example.parking_hub.security.CustomUserDetailsService;
 import com.example.parking_hub.security.JwtAuthorizationFilter;
 import com.example.parking_hub.security.JwtLoginFilter;
+import com.example.parking_hub.util.CookieUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,11 +23,13 @@ public class SecurityConfig {
 
     private final JwtUtil jwtUtil;
     private final CustomUserDetailsService userDetailsService;
+    private final CookieUtil cookieUtil;
 
     @Autowired
-    public SecurityConfig(JwtUtil jwtUtil, CustomUserDetailsService userDetailsService) {
+    public SecurityConfig(JwtUtil jwtUtil, CustomUserDetailsService userDetailsService, CookieUtil cookieUtil) {
         this.jwtUtil = jwtUtil;
         this.userDetailsService = userDetailsService;
+        this.cookieUtil = cookieUtil;
     }
 
     @Bean
@@ -45,7 +48,7 @@ public class SecurityConfig {
         AuthenticationManager authManager = authenticationManager(http.getSharedObject(AuthenticationConfiguration.class));
         
         // JWT 로그인 필터 설정
-        JwtLoginFilter jwtLoginFilter = new JwtLoginFilter(authManager, jwtUtil);
+        JwtLoginFilter jwtLoginFilter = new JwtLoginFilter(authManager, jwtUtil, cookieUtil);
         jwtLoginFilter.setFilterProcessesUrl("/api/auth/login");
         
         http
@@ -57,7 +60,7 @@ public class SecurityConfig {
                 .and()
                 .authorizeRequests()
                     // 접근 허용할 URL 설정
-                    .antMatchers("/", "/home", "/login", "/register", "/mapSearch", "/search", "/parking/**").permitAll()
+                    .antMatchers("/", "/home", "/login", "/login-page", "/register", "/register-page", "/mapSearch", "/search", "/parking/**").permitAll()
                     .antMatchers("/api/auth/**").permitAll()
                     .antMatchers("/api/parking/**").permitAll()
                     .antMatchers("/resources/**", "/static/**", "/css/**", "/js/**", "/images/**").permitAll()
@@ -67,7 +70,7 @@ public class SecurityConfig {
                 // JWT 로그인 필터 추가 (UsernamePasswordAuthenticationFilter 위치에)
                 .addFilter(jwtLoginFilter)
                 // JWT 인증 확인 필터 추가
-                .addFilterBefore(new JwtAuthorizationFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JwtAuthorizationFilter(jwtUtil, cookieUtil), UsernamePasswordAuthenticationFilter.class);
         
         http
                 .logout()

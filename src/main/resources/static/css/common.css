@@ -1,9 +1,139 @@
+/**
+ * ParkingHub 공통 스타일
+ */
+
 body {
-    background-color: #f8f9fa;
+    font-family: 'Noto Sans KR', sans-serif;
+    color: #333;
+    background-color: #f5f5f5;
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
 }
 
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+a {
+    color: #2196F3;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+button {
+    cursor: pointer;
+}
+
+.loading {
+    text-align: center;
+    padding: 20px;
+    color: #777;
+    font-style: italic;
+}
+
+.error {
+    color: #f44336;
+    font-weight: bold;
+    padding: 10px;
+}
+
+/* 헤더 및 네비게이션 스타일 */
 .navbar {
-    background-color: #343a40;
+    background-color: #263238;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.navbar-nav .nav-link {
+    color: rgba(255, 255, 255, 0.8);
+    padding: 0.5rem 1rem;
+    margin: 0 0.25rem;
+}
+
+.navbar-nav .nav-link.active {
+    color: white;
+    font-weight: bold;
+}
+
+.navbar-nav .nav-link:hover {
+    color: white;
+    text-decoration: none;
+}
+
+/* 버튼 스타일 */
+.btn-primary {
+    background-color: #2196F3;
+    border-color: #2196F3;
+}
+
+.btn-primary:hover {
+    background-color: #1976D2;
+    border-color: #1976D2;
+}
+
+.btn-success {
+    background-color: #4CAF50;
+    border-color: #4CAF50;
+}
+
+.btn-success:hover {
+    background-color: #388E3C;
+    border-color: #388E3C;
+}
+
+.btn-danger {
+    background-color: #F44336;
+    border-color: #F44336;
+}
+
+.btn-danger:hover {
+    background-color: #D32F2F;
+    border-color: #D32F2F;
+}
+
+/* 카드 스타일 */
+.card {
+    background-color: white;
+    border-radius: 5px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #eee;
+    padding: 15px;
+    font-weight: bold;
+}
+
+.card-body {
+    padding: 15px;
+}
+
+/* 반응형 설정 */
+@media (max-width: 768px) {
+    .container {
+        padding: 0 10px;
+    }
+    
+    .navbar-brand {
+        font-size: 1.3rem;
+    }
+    
+    .navbar-toggler {
+        border: none;
+    }
 }
 
 .logo {
@@ -32,16 +162,6 @@ body {
 
 .form-label {
     font-weight: 500;
-}
-
-.btn-primary {
-    background-color: #4dabf7;
-    border-color: #339af0;
-}
-
-.btn-primary:hover {
-    background-color: #3c99e0;
-    border-color: #2a8bd9;
 }
 
 .form-text {

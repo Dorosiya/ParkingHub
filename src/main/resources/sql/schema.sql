@@ -7,6 +7,14 @@ CREATE DATABASE IF NOT EXISTS parking_hub DEFAULT CHARACTER SET utf8mb4 COLLATE 
 -- 데이터베이스 선택
 USE parking_hub;
 
+-- 기존 테이블 삭제 (역순으로 삭제)
+DROP TABLE IF EXISTS FAVORITE_PARKING;
+DROP TABLE IF EXISTS PARKING_REALTIME;
+DROP TABLE IF EXISTS PARKING_OPERATION;
+DROP TABLE IF EXISTS PARKING_INFO;
+DROP TABLE IF EXISTS USER;
+DROP TABLE IF EXISTS ROLE;
+
 -- 역할 테이블
 CREATE TABLE IF NOT EXISTS ROLE (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -55,7 +63,21 @@ CREATE TABLE IF NOT EXISTS PARKING_REALTIME (
     prk_center_id VARCHAR(30) PRIMARY KEY,                -- 주차장 관리 ID
     pkfc_parking_lots_total INT DEFAULT 0,                -- 총 주차 면수
     pkfc_available_parking_lots_total INT DEFAULT 0,      -- 이용 가능 주차 면수
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP       -- 업데이트 시간
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,      -- 업데이트 시간
+    FOREIGN KEY (prk_center_id) REFERENCES PARKING_INFO(prk_center_id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 즐겨찾기 주차장 테이블
+CREATE TABLE IF NOT EXISTS FAVORITE_PARKING (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT NOT NULL,                            -- 사용자 ID
+    prk_center_id VARCHAR(30) NOT NULL,                 -- 주차장 ID
+    memo VARCHAR(500),                                  -- 메모
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY uk_user_parking (user_id, prk_center_id),
+    FOREIGN KEY (user_id) REFERENCES USER(id) ON DELETE CASCADE,
+    FOREIGN KEY (prk_center_id) REFERENCES PARKING_INFO(prk_center_id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- 초기 역할 데이터 삽입

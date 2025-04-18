@@ -497,7 +497,7 @@ uri="http://java.sun.com/jsp/jstl/core" %>
           </div>
         </div>
         <div class="footer-bottom text-center">
-          <p>&copy; 2023 Parking Hub. All rights reserved.</p>
+          <p>&copy; 2025 Parking Hub. All rights reserved.</p>
         </div>
       </div>
     </footer>

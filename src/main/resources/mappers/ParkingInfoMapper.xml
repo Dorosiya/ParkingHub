@@ -11,21 +11,44 @@
         <result property="prkCmprtCo" column="prk_cmprt_co"/>
     </resultMap>
 
-    <select id="selectAllParkingInfos" resultMap="ParkingInfoResultMap">
+    <select id="selectAllParkingInfo" resultMap="ParkingInfoResultMap">
         SELECT * FROM PARKING_INFO
     </select>
 
     <select id="selectParkingInfoById" resultMap="ParkingInfoResultMap">
-        SELECT * FROM PARKING_INFO WHERE prk_center_id = #{prkCenterId}
+        SELECT * FROM PARKING_INFO WHERE prk_center_id = #{id}
     </select>
 
-    <!-- 위치 기반 주차장 검색 (Haversine 공식 사용) -->
-    <select id="selectParkingInfosByLocation" resultMap="ParkingInfoResultMap">
-        SELECT *,
-               (6371 * acos(cos(radians(#{latitude})) * cos(radians(prk_plce_entrc_la)) * cos(radians(prk_plce_entrc_lo) - radians(#{longitude})) + sin(radians(#{latitude})) * sin(radians(prk_plce_entrc_la)))) AS distance
+    <!-- 위치 기반 주차장 검색 (간소화된 Haversine 공식) -->
+    <select id="selectParkingNearby" resultMap="ParkingInfoResultMap">
+        SELECT *, 
+           (6371 * acos(cos(radians(#{latitude})) * 
+            cos(radians(prk_plce_entrc_la)) * 
+            cos(radians(prk_plce_entrc_lo) - radians(#{longitude})) + 
+            sin(radians(#{latitude})) * 
+            sin(radians(prk_plce_entrc_la)))) AS distance 
         FROM PARKING_INFO
-        HAVING distance &lt;= #{radius}
+        WHERE prk_plce_entrc_la IS NOT NULL 
+          AND prk_plce_entrc_lo IS NOT NULL
+        HAVING distance &lt;= #{radiusKm}
         ORDER BY distance
+        LIMIT 100
+    </select>
+
+    <select id="selectParkingByName" resultMap="ParkingInfoResultMap">
+        SELECT * FROM PARKING_INFO 
+        WHERE prk_plce_nm LIKE #{name}
+        LIMIT 100
+    </select>
+
+    <select id="selectParkingByAddress" resultMap="ParkingInfoResultMap">
+        SELECT * FROM PARKING_INFO 
+        WHERE prk_plce_adres LIKE #{address}
+        LIMIT 100
+    </select>
+
+    <select id="existsById" resultType="boolean">
+        SELECT EXISTS(SELECT 1 FROM PARKING_INFO WHERE prk_center_id = #{id})
     </select>
 
     <insert id="insertParkingInfo">
@@ -46,15 +69,15 @@
     <insert id="insertOrUpdateParkingInfo">
         INSERT INTO PARKING_INFO (prk_center_id, prk_plce_nm, prk_plce_adres, prk_plce_entrc_la, prk_plce_entrc_lo, prk_cmprt_co)
         VALUES (#{prkCenterId}, #{prkPlceNm}, #{prkPlceAdres}, #{prkPlceEntrcLa}, #{prkPlceEntrcLo}, #{prkCmprtCo})
-            ON DUPLICATE KEY UPDATE
-                                 prk_plce_nm = VALUES(prk_plce_nm),
-                                 prk_plce_adres = VALUES(prk_plce_adres),
-                                 prk_plce_entrc_la = VALUES(prk_plce_entrc_la),
-                                 prk_plce_entrc_lo = VALUES(prk_plce_entrc_lo),
-                                 prk_cmprt_co = VALUES(prk_cmprt_co)
+        ON DUPLICATE KEY UPDATE
+            prk_plce_nm = VALUES(prk_plce_nm),
+            prk_plce_adres = VALUES(prk_plce_adres),
+            prk_plce_entrc_la = VALUES(prk_plce_entrc_la),
+            prk_plce_entrc_lo = VALUES(prk_plce_entrc_lo),
+            prk_cmprt_co = VALUES(prk_cmprt_co)
     </insert>
 
     <delete id="deleteParkingInfo">
-        DELETE FROM PARKING_INFO WHERE prk_center_id = #{prkCenterId}
+        DELETE FROM PARKING_INFO WHERE prk_center_id = #{id}
     </delete>
 </mapper>

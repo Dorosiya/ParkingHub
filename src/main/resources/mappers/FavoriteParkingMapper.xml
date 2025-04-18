@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.parking_hub.mapper.FavoriteParkingMapper">
+    
+    <resultMap id="favoriteResult" type="com.example.parking_hub.model.FavoriteParking">
+        <id property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="prkCenterId" column="prk_center_id"/>
+        <result property="memo" column="memo"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+        <!-- 주차장 정보 관련 필드 (JOIN 시 사용) -->
+        <result property="prkPlceNm" column="prk_plce_nm"/>
+        <result property="prkPlceAdres" column="prk_plce_adres"/>
+        <result property="prkCmprtCo" column="prk_cmprt_co"/>
+    </resultMap>
+    
+    <!-- 사용자의 즐겨찾기 목록 조회 -->
+    <select id="findAllByUserId" resultMap="favoriteResult">
+        SELECT id, user_id, prk_center_id, memo, created_at, updated_at
+        FROM FAVORITE_PARKING
+        WHERE user_id = #{userId}
+        ORDER BY created_at DESC
+    </select>
+    
+    <!-- 즐겨찾기 목록 조회 (주차장 정보 포함) -->
+    <select id="findAllWithParkingInfoByUserId" resultMap="favoriteResult">
+        SELECT 
+            fp.id, 
+            fp.user_id, 
+            fp.prk_center_id, 
+            fp.memo, 
+            fp.created_at, 
+            fp.updated_at,
+            pi.prk_plce_nm,
+            pi.prk_plce_adres,
+            pi.prk_cmprt_co
+        FROM FAVORITE_PARKING fp
+        LEFT JOIN PARKING_INFO pi ON fp.prk_center_id = pi.prk_center_id
+        WHERE fp.user_id = #{userId}
+        ORDER BY fp.created_at DESC
+    </select>
+    
+    <!-- 특정 즐겨찾기 조회 -->
+    <select id="findById" resultMap="favoriteResult">
+        SELECT id, user_id, prk_center_id, memo, created_at, updated_at
+        FROM FAVORITE_PARKING
+        WHERE id = #{id}
+    </select>
+    
+    <!-- 사용자 및 주차장 ID로 즐겨찾기 조회 -->
+    <select id="findByUserIdAndPrkCenterId" resultMap="favoriteResult">
+        SELECT id, user_id, prk_center_id, memo, created_at, updated_at
+        FROM FAVORITE_PARKING
+        WHERE user_id = #{userId} AND prk_center_id = #{prkCenterId}
+    </select>
+    
+    <!-- 즐겨찾기 존재 여부 확인 -->
+    <select id="existsByUserAndParkingId" resultType="boolean">
+        SELECT EXISTS (
+            SELECT 1 FROM FAVORITE_PARKING 
+            WHERE user_id = #{userId} AND prk_center_id = #{prkCenterId}
+        )
+    </select>
+    
+    <!-- 즐겨찾기 추가 -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO FAVORITE_PARKING (user_id, prk_center_id, memo, created_at, updated_at)
+        VALUES (#{userId}, #{prkCenterId}, #{memo}, NOW(), NOW())
+    </insert>
+    
+    <!-- 즐겨찾기 수정 -->
+    <update id="update">
+        UPDATE FAVORITE_PARKING
+        SET memo = #{memo}, updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+    
+    <!-- 즐겨찾기 삭제 -->
+    <delete id="deleteById">
+        DELETE FROM FAVORITE_PARKING
+        WHERE id = #{id}
+    </delete>
+    
+    <!-- 사용자 ID와 주차장 ID로 즐겨찾기 삭제 -->
+    <delete id="deleteByUserIdAndPrkCenterId">
+        DELETE FROM FAVORITE_PARKING
+        WHERE user_id = #{userId} AND prk_center_id = #{prkCenterId}
+    </delete>
+    
+</mapper> 
