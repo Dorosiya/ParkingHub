@@ -143,7 +143,9 @@
                 </div>
             </c:if>
             
-            <form action="/login-process" method="post">
+            <div id="loginAlert" class="alert alert-danger text-center mb-3" style="display: none;"></div>
+            
+            <form id="loginForm">
                 <div class="mb-3">
                     <label for="username" class="form-label">아이디</label>
                     <input type="text" class="form-control" id="username" name="username" required>
@@ -199,12 +201,51 @@
                 </div>
             </div>
             <hr>
-            <p class="text-center mb-0">&copy; 2025 Parking Hub. All rights reserved.</p>
+            <p class="text-center mb-0">&copy; 2023 Parking Hub. All rights reserved.</p>
         </div>
     </footer>
 
     <!-- jQuery 및 Bootstrap JavaScript -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        $(document).ready(function() {
+            $('#loginForm').on('submit', function(e) {
+                e.preventDefault();
+                
+                var userData = {
+                    username: $('#username').val(),
+                    password: $('#password').val()
+                };
+                
+                $.ajax({
+                    url: '/api/auth/login',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(userData),
+                    success: function(response) {
+                        // 로그인 성공 시 홈페이지로 이동
+                        window.location.href = '/';
+                    },
+                    error: function(xhr, status, error) {
+                        // 로그인 실패 시 오류 메시지 표시
+                        var errorMessage = '로그인에 실패했습니다. 아이디와 비밀번호를 확인해주세요.';
+                        
+                        try {
+                            var response = JSON.parse(xhr.responseText);
+                            if (response && response.message) {
+                                errorMessage = response.message;
+                            }
+                        } catch (e) {
+                            console.error('Error parsing error response:', e);
+                        }
+                        
+                        $('#loginAlert').text(errorMessage).show();
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html> 

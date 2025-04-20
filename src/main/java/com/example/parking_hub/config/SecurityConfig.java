@@ -74,15 +74,6 @@ public class SecurityConfig {
                 // JWT 인증 확인 필터 추가
                 .addFilterBefore(new JwtAuthorizationFilter(jwtUtil, cookieUtil), UsernamePasswordAuthenticationFilter.class);
         
-        // 폼 로그인 설정 추가 (HTML 폼에서 로그인 처리를 위한 설정)
-        http.formLogin()
-                .loginPage("/login")                  // 로그인 페이지 URL
-                .loginProcessingUrl("/login-process") // 로그인 처리 URL
-                .defaultSuccessUrl("/")               // 로그인 성공 시 리다이렉트 URL
-                .failureUrl("/login?error=true")      // 로그인 실패 시 리다이렉트 URL
-                .usernameParameter("username")        // 아이디 파라미터명
-                .passwordParameter("password");       // 비밀번호 파라미터명
-        
         http
                 .logout()
                 .logoutUrl("/api/auth/logout")

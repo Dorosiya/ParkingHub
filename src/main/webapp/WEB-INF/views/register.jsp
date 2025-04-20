@@ -224,7 +224,7 @@
                 </div>
             </div>
             <hr>
-            <p class="text-center mb-0">&copy; 2025 Parking Hub. All rights reserved.</p>
+            <p class="text-center mb-0">&copy; 2023 Parking Hub. All rights reserved.</p>
         </div>
     </footer>
     
