@@ -1,12 +1,15 @@
 package com.example.parking_hub.security;
 
-import com.example.parking_hub.config.JwtUtil;
+import com.example.parking_hub.util.JwtUtil;
 import com.example.parking_hub.dto.LoginRequest;
 import com.example.parking_hub.util.CookieUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;

@@ -31,8 +31,10 @@ public class PageController {
     }
 
     /**
-     * 로그인 페이지 (충돌 방지를 위해 URL 변경)
+     * 로그인 페이지 (더 이상 사용되지 않음, 대신 UserController의 /login 사용)
+     * @deprecated 이 엔드포인트는 더 이상 사용되지 않습니다. 대신 UserController의 /login을 사용하세요.
      */
+    @Deprecated
     @GetMapping("/login-page")
     public String loginPage(Model model, HttpServletRequest request) {
         // 이미 로그인되어 있는 경우 메인 페이지로 리다이렉션
@@ -46,7 +48,7 @@ public class PageController {
             model.addAttribute("needLogin", true);
         }
         
-        return "login";
+        return "redirect:/login";
     }
 
     /**
@@ -61,13 +63,7 @@ public class PageController {
      * 마이페이지 - 메인
      */
     @GetMapping("/mypage")
-    public String myPage(HttpServletRequest request, Model model) {
-        String token = cookieUtil.getCookieValue(request, "jwt_token");
-
-        if (token == null || token.isEmpty()) {
-            return "redirect:/login-page?message=로그인이 필요합니다.";
-        }
-
+    public String myPage(Model model) {
         return "myPage";
     }
 
@@ -75,13 +71,7 @@ public class PageController {
      * 마이페이지 - 즐겨찾기
      */
     @GetMapping("/mypage/favorites")
-    public String myPageFavorites(HttpServletRequest request) {
-        String token = cookieUtil.getCookieValue(request, "jwt_token");
-
-        if (token == null || token.isEmpty()) {
-            return "redirect:/login-page?message=로그인이 필요합니다.";
-        }
-        
+    public String myPageFavorites() {
         return "favorites";
     }
 
@@ -110,13 +100,31 @@ public class PageController {
     }
 
     @GetMapping("/dashboard")
-    public String dashboard(HttpServletRequest request) {
-        String token = cookieUtil.getCookieValue(request, "jwt_token");
-
-        if (token == null || token.isEmpty()) {
-            return "redirect:/login-page?message=로그인이 필요합니다.";
-        }
-
+    public String dashboard() {
         return "redirect:/mypage";
+    }
+
+    /**
+     * 마이페이지 - 프로필 편집
+     */
+    @GetMapping("/mypage/edit")
+    public String myPageEdit() {
+        return "mypage/edit";
+    }
+    
+    /**
+     * 마이페이지 - 비밀번호 변경
+     */
+    @GetMapping("/mypage/password")
+    public String myPagePassword() {
+        return "mypage/password";
+    }
+    
+    /**
+     * 마이페이지 - 이용 내역
+     */
+    @GetMapping("/mypage/history")
+    public String myPageHistory() {
+        return "mypage/history";
     }
 } 

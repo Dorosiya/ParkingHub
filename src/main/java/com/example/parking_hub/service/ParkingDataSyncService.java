@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.annotation.Propagation;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -97,16 +98,9 @@ public class ParkingDataSyncService {
 
                 logger.info("주차장 기본정보 페이지 {}: {} 건", pageNo, items.size());
 
-                // 새로운 데이터 처리
-                for (PrkSttusInfoResponse.PrkSttusInfo item : items) {
-                    try {
-                        ParkingInfo parkingInfo = convertToParkingInfo(item);
-                        parkingInfoMapper.insertOrUpdateParkingInfo(parkingInfo);
-                        totalProcessed++;
-                    } catch (Exception e) {
-                        logger.error("주차장 기본정보 처리 중 오류: {}", item.getPrkCenterId(), e);
-                    }
-                }
+                // 페이지별로 별도 트랜잭션으로 처리
+                int processed = processBasicInfoPage(items);
+                totalProcessed += processed;
 
                 // 다음 페이지가 없으면 종료
                 if (items.size() < numOfRows) {
@@ -121,6 +115,25 @@ public class ParkingDataSyncService {
             logger.error("주차장 기본정보 동기화 중 오류 발생", e);
             throw e;
         }
+    }
+
+    /**
+     * 각 페이지의 기본정보 처리 (별도 트랜잭션)
+     */
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public int processBasicInfoPage(List<PrkSttusInfoResponse.PrkSttusInfo> items) {
+        int processed = 0;
+        for (PrkSttusInfoResponse.PrkSttusInfo item : items) {
+            try {
+                ParkingInfo parkingInfo = convertToParkingInfo(item);
+                parkingInfoMapper.insertOrUpdateParkingInfo(parkingInfo);
+                processed++;
+            } catch (Exception e) {
+                logger.error("주차장 기본정보 처리 중 오류: {}", item.getPrkCenterId(), e);
+                // 개별 항목 오류는 전체 처리에 영향 없음
+            }
+        }
+        return processed;
     }
 
     /**
@@ -152,16 +165,9 @@ public class ParkingDataSyncService {
 
                 logger.info("주차장 운영정보 페이지 {}: {} 건", pageNo, items.size());
 
-                // 새로운 데이터 처리
-                for (PrkOprInfoResponse.PrkOprInfo item : items) {
-                    try {
-                        ParkingOperation operation = convertToParkingOperation(item);
-                        parkingOperationMapper.insertOrUpdateParkingOperation(operation);
-                        totalProcessed++;
-                    } catch (Exception e) {
-                        logger.error("주차장 운영정보 처리 중 오류: {}", item.getPrkCenterId(), e);
-                    }
-                }
+                // 페이지별로 별도 트랜잭션으로 처리
+                int processed = processOperationInfoPage(items);
+                totalProcessed += processed;
 
                 // 다음 페이지가 없으면 종료
                 if (items.size() < numOfRows) {
@@ -179,64 +185,115 @@ public class ParkingDataSyncService {
     }
 
     /**
-     * 주차장 실시간 정보 동기화
-     * 5분마다 실행
+     * 각 페이지의 운영정보 처리 (별도 트랜잭션)
      */
-//    @Scheduled(fixedRate = 300000) // 5분
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public int processOperationInfoPage(List<PrkOprInfoResponse.PrkOprInfo> items) {
+        int processed = 0;
+        for (PrkOprInfoResponse.PrkOprInfo item : items) {
+            try {
+                ParkingOperation operation = convertToParkingOperation(item);
+                parkingOperationMapper.insertOrUpdateParkingOperation(operation);
+                processed++;
+            } catch (Exception e) {
+                logger.error("주차장 운영정보 처리 중 오류: {}", item.getPrkCenterId(), e);
+                // 개별 항목 오류는 전체 처리에 영향 없음
+            }
+        }
+        return processed;
+    }
+
+    /**
+     * 주차장 실시간 정보 동기화
+     * 주기적으로 실시간 주차장 정보를 가져와 DB에 갱신
+     */
+    @Scheduled(fixedRate = 1800000) // 30분마다 실행 (이전 5분에서 변경)
     @Transactional
     public void syncParkingRealtimeInfo() {
         logger.info("주차장 실시간 정보 동기화 시작");
         
         try {
             int pageNo = 1;
-            int numOfRows = 10;
+            int numOfRows = 500;
             int totalProcessed = 0;
+            int maxRetries = 3;
+            int retryCount = 0;
+            boolean success = false;
             
-            while (true) {
-                PrkRealtimeInfoResponse response = parkingApiClient.getPrkRealtimeInfo(pageNo, numOfRows);
-                List<PrkRealtimeInfoResponse.PrkRealtimeItem> items = getItemsFromResponse(response);
-                
-                if (response == null || items == null || items.isEmpty()) {
-                    logger.info("주차장 실시간 정보 더 이상 데이터 없음");
-                    break;
-                }
-                
-                // API 응답 코드 확인 - SUCCESS 메시지는 정상 처리
-                String resultMsg = getResultMsgFromResponse(response);
-                if (resultMsg != null && "SUCCESS".equals(resultMsg)) {
-                    // 정상 응답이므로 처리 계속 진행
-                    logger.debug("주차장 실시간 정보 API 응답 정상: {}", resultMsg);
-                } else if (!"00".equals(getResultCodeFromResponse(response))) {
-                    // 실제 오류인 경우만 로깅
-                    logger.error("주차장 실시간 정보 API 오류: {}", resultMsg);
-                    break;
-                }
+            while (!success && retryCount < maxRetries) {
+                try {
+                    PrkRealtimeInfoResponse response = parkingApiClient.getPrkRealtimeInfo(pageNo, numOfRows);
+                    List<PrkRealtimeInfoResponse.PrkRealtimeItem> items = getItemsFromResponse(response);
+                    
+                    if (response == null || items == null || items.isEmpty()) {
+                        logger.info("주차장 실시간 정보 더 이상 데이터 없음");
+                        break;
+                    }
+                    
+                    // API 응답 코드 확인 - SUCCESS 메시지는 정상 처리
+                    String resultMsg = getResultMsgFromResponse(response);
+                    if (resultMsg != null && "SUCCESS".equals(resultMsg)) {
+                        // 정상 응답이므로 처리 계속 진행
+                        logger.debug("주차장 실시간 정보 API 응답 정상: {}", resultMsg);
+                    } else if (!"00".equals(getResultCodeFromResponse(response))) {
+                        // 실제 오류인 경우만 로깅
+                        logger.error("주차장 실시간 정보 API 오류: {}", resultMsg);
+                        break;
+                    }
 
-                logger.info("주차장 실시간 정보 페이지 {}: {} 건", pageNo, items.size());
+                    logger.info("주차장 실시간 정보 페이지 {}: {} 건", pageNo, items.size());
 
-                // 실시간 정보 업데이트
-                for (PrkRealtimeInfoResponse.PrkRealtimeItem item : items) {
+                    // 페이지별로 별도 트랜잭션으로 처리
+                    int processed = processRealtimeInfoPage(items);
+                    totalProcessed += processed;
+
+                    // 다음 페이지가 없으면 종료
+                    if (items.size() < numOfRows) {
+                        break;
+                    }
+
+                    pageNo++;
+                    success = true;
+                } catch (Exception e) {
+                    retryCount++;
+                    logger.error("주차장 실시간 정보 동기화 시도 {} 중 오류 발생, 재시도 중...", retryCount, e);
+                    
+                    // 재시도 전 잠시 대기
                     try {
-                        ParkingRealtime realtime = convertToParkingRealtime(item);
-                        parkingRealtimeMapper.insertOrUpdateParkingRealtime(realtime);
-                        totalProcessed++;
-                    } catch (Exception e) {
-                        logger.error("주차장 실시간 정보 처리 중 오류: {}", item.getPrkCenterId(), e);
+                        Thread.sleep(5000); // 5초 대기
+                    } catch (InterruptedException ie) {
+                        Thread.currentThread().interrupt();
                     }
                 }
-
-                // 다음 페이지가 없으면 종료
-                if (items.size() < numOfRows) {
-                    break;
-                }
-
-                pageNo++;
             }
             
-            logger.info("주차장 실시간 정보 동기화 완료: 총 {} 건 처리", totalProcessed);
+            if (success || retryCount == 0) {
+                logger.info("주차장 실시간 정보 동기화 완료: 총 {} 건 처리", totalProcessed);
+            } else {
+                logger.warn("주차장 실시간 정보 동기화 실패: 최대 재시도 횟수({})를 초과했습니다.", maxRetries);
+            }
         } catch (Exception e) {
             logger.error("주차장 실시간 정보 동기화 중 오류 발생", e);
         }
+    }
+
+    /**
+     * 각 페이지의 실시간 정보 처리 (별도 트랜잭션)
+     */
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public int processRealtimeInfoPage(List<PrkRealtimeInfoResponse.PrkRealtimeItem> items) {
+        int processed = 0;
+        for (PrkRealtimeInfoResponse.PrkRealtimeItem item : items) {
+            try {
+                ParkingRealtime realtime = convertToParkingRealtime(item);
+                parkingRealtimeMapper.insertOrUpdateParkingRealtime(realtime);
+                processed++;
+            } catch (Exception e) {
+                logger.error("주차장 실시간 정보 처리 중 오류: {}", item.getPrkCenterId(), e);
+                // 개별 항목 오류는 전체 처리에 영향 없음
+            }
+        }
+        return processed;
     }
     
     // 응답으로부터 결과 코드 추출 헬퍼 메서드 (제네릭 변환)

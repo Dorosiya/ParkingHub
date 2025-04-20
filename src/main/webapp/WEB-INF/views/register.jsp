@@ -4,32 +4,120 @@
 <html>
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>회원가입 - Parking Hub</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="/css/common.css" rel="stylesheet">
     <link href="/css/register.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2980b9;
+            --accent-color: #f39c12;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+        }
+
+        body {
+            font-family: "Noto Sans KR", sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+
+        .navbar {
+            background-color: var(--primary-color) !important;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            color: white !important;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.85) !important;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .nav-link:hover {
+            color: white !important;
+        }
+
+        .nav-link.active {
+            color: white !important;
+            border-bottom: 2px solid white;
+        }
+
+        .register-container {
+            max-width: 550px;
+            margin: 50px auto;
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+        }
+
+        .error-message {
+            color: #dc3545;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            border-radius: 0.25rem;
+            padding: 0.75rem 1.25rem;
+            margin-bottom: 1rem;
+        }
+        
+        .footer {
+            background-color: var(--dark-color);
+            color: var(--light-color);
+            padding: 30px 0 20px;
+            margin-top: 50px;
+        }
+        
+        .footer-link {
+            color: var(--light-color);
+            opacity: 0.8;
+            text-decoration: none;
+        }
+        
+        .footer-link:hover {
+            opacity: 1;
+            color: white;
+        }
+    </style>
 </head>
 <body>
     <!-- 네비게이션 바 -->
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container">
-            <a class="navbar-brand logo" href="/">Parking Hub</a>
+            <a class="navbar-brand" href="/">Parking Hub</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav mx-auto">
+                <ul class="navbar-nav me-auto">
                     <li class="nav-item">
                         <a class="nav-link" href="/">홈</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/mapSearch">검색</a>
+                        <a class="nav-link" href="/search">주차장 찾기</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/dashboard">대시보드</a>
+                        <a class="nav-link" href="/mapSearch">지도로 찾기</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/community">커뮤니티</a>
+                        <a class="nav-link" href="/mypage">마이페이지</a>
                     </li>
                 </ul>
                 <ul class="navbar-nav">
@@ -110,14 +198,33 @@
         </div>
     </div>
     
-    <footer class="text-center">
+    <!-- 푸터 -->
+    <footer class="footer mt-5 py-3 bg-dark text-white">
         <div class="container">
-            <p class="mb-0 small">© 2025 Parking Hub. All rights reserved.</p>
-            <p class="mb-0 small">
-                <a href="#" class="text-decoration-none text-muted">이용약관</a> | 
-                <a href="#" class="text-decoration-none text-muted">개인정보처리방침</a> | 
-                <a href="#" class="text-decoration-none text-muted">문의하기</a>
-            </p>
+            <div class="row">
+                <div class="col-md-4">
+                    <h5>Parking Hub</h5>
+                    <p>쉽고 편리한 주차 정보 서비스</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>바로가기</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="/" class="text-white-50">홈</a></li>
+                        <li><a href="/search" class="text-white-50">주차장 찾기</a></li>
+                        <li><a href="/mapSearch" class="text-white-50">지도로 찾기</a></li>
+                        <li><a href="/mypage" class="text-white-50">마이페이지</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5>연락처</h5>
+                    <p class="text-white-50">
+                        <i class="fas fa-envelope"></i> contact@parkinghub.com<br>
+                        <i class="fas fa-phone"></i> 02-123-4567
+                    </p>
+                </div>
+            </div>
+            <hr>
+            <p class="text-center mb-0">&copy; 2025 Parking Hub. All rights reserved.</p>
         </div>
     </footer>
     
@@ -176,7 +283,15 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="/js/register.js"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Auth Service -->
+    <script src="/js/auth.js"></script>
+    
+    <script>
+        // ... existing code ...
+    </script>
 </body>
 </html> 

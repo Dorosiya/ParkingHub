@@ -12,11 +12,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.net.URLEncoder;
 import java.util.Arrays;
+import java.net.SocketTimeoutException;
 
 /**
  * 한국교통안전공단 주차장 API 클라이언트 구현체
@@ -65,7 +67,7 @@ public class KotsaParkingApiClient implements ParkingApiClient {
                     .queryParam("numOfRows", numOfRows)
                     .queryParam("pageNo", pageNo)
                     .queryParam("format", 2)
-                    .queryParam("serviceKey", encodedKey) // 디코딩 키 그대로 사용
+                    .queryParam("serviceKey", encodedKey) // 인코딩된 키 사용
                     .build(true)
                     .toUri();
 
@@ -75,8 +77,37 @@ public class KotsaParkingApiClient implements ParkingApiClient {
             headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
             HttpEntity<String> entity = new HttpEntity<>(headers);
 
-            ResponseEntity<String> rawResponse =
-                    restTemplate.exchange(uri, HttpMethod.GET, entity, String.class);
+            // 타임아웃 발생 시 재시도 로직
+            int maxRetries = 2; // 최대 2번까지 재시도
+            int retryCount = 0;
+            ResponseEntity<String> rawResponse = null;
+            
+            while (retryCount <= maxRetries) {
+                try {
+                    rawResponse = restTemplate.exchange(uri, HttpMethod.GET, entity, String.class);
+                    // 성공하면 재시도 루프 종료
+                    break;
+                } catch (ResourceAccessException e) {
+                    retryCount++;
+                    // 마지막 시도에서도 실패한 경우 예외 다시 던지기
+                    if (retryCount > maxRetries) {
+                        throw e;
+                    }
+                    
+                    logger.warn("{} API 호출 중 타임아웃 발생, 재시도 ({}/{})", logName, retryCount, maxRetries);
+                    
+                    // 지수 백오프로 재시도 전 대기 (1초, 2초, 4초...)
+                    try {
+                        Thread.sleep((long) Math.pow(2, retryCount - 1) * 1000);
+                    } catch (InterruptedException ie) {
+                        Thread.currentThread().interrupt();
+                    }
+                }
+            }
+
+            if (rawResponse == null) {
+                throw new RuntimeException(logName + " API 응답을 받지 못했습니다.");
+            }
 
             String rawBody = rawResponse.getBody();
             MediaType contentType = rawResponse.getHeaders().getContentType();
@@ -98,6 +129,12 @@ public class KotsaParkingApiClient implements ParkingApiClient {
 
         } catch (Exception e) {
             logger.error("{} API 호출 중 오류 발생", logName, e);
+            
+            // 타임아웃 관련 예외에 대한 더 자세한 메시지
+            if (e instanceof ResourceAccessException && e.getCause() instanceof SocketTimeoutException) {
+                throw new RuntimeException(logName + " API 호출 중 타임아웃 발생 - API 서버가 응답하지 않거나 네트워크 문제가 있습니다.", e);
+            }
+            
             throw new RuntimeException(logName + " API 호출 실패: " + e.getMessage(), e);
         }
     }

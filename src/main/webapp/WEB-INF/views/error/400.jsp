@@ -5,10 +5,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>로그인 - Parking Hub</title>
+    <title>잘못된 요청 - Parking Hub</title>
+    
+    <!-- 부트스트랩 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="/css/common.css" rel="stylesheet">
+    
+    <!-- 커스텀 CSS -->
+    <link rel="stylesheet" href="/css/common.css">
+    
     <style>
         :root {
             --primary-color: #3498db;
@@ -43,39 +50,31 @@
         .nav-link:hover {
             color: white !important;
         }
-
-        .nav-link.active {
-            color: white !important;
-            border-bottom: 2px solid white;
+        
+        .error-container {
+            text-align: center;
+            padding: 50px 20px;
         }
-
-        .login-container {
-            max-width: 450px;
-            margin: 80px auto;
-            background-color: white;
-            border-radius: 10px;
-            padding: 30px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        
+        .error-code {
+            font-size: 120px;
+            font-weight: 700;
+            color: var(--accent-color);
+            margin-bottom: 0;
         }
-
-        .btn-primary {
-            background-color: var(--primary-color);
-            border-color: var(--primary-color);
+        
+        .error-message {
+            font-size: 24px;
+            margin-bottom: 30px;
         }
-
-        .btn-primary:hover {
-            background-color: var(--secondary-color);
-            border-color: var(--secondary-color);
-        }
-
-        .text-primary {
-            color: var(--primary-color) !important;
-        }
-
-        .alert-success {
-            background-color: #d4edda;
-            border-color: #c3e6cb;
-            color: #155724;
+        
+        .error-field-list {
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px auto;
+            max-width: 500px;
+            text-align: left;
         }
         
         .footer {
@@ -83,6 +82,17 @@
             color: var(--light-color);
             padding: 30px 0 20px;
             margin-top: 50px;
+        }
+        
+        .footer-link {
+            color: var(--light-color);
+            opacity: 0.8;
+            text-decoration: none;
+        }
+        
+        .footer-link:hover {
+            opacity: 1;
+            color: white;
         }
     </style>
 </head>
@@ -109,66 +119,40 @@
                         <a class="nav-link" href="/mypage">마이페이지</a>
                     </li>
                 </ul>
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="/login">로그인</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/register">회원가입</a>
-                    </li>
-                </ul>
             </div>
         </div>
     </nav>
 
+    <!-- 오류 컨텐츠 -->
     <div class="container">
-        <div class="login-container">
-            <h2 class="text-center mb-4">로그인</h2>
+        <div class="error-container">
+            <h1 class="error-code">400</h1>
+            <h2 class="error-message">잘못된 요청</h2>
+            <p class="mb-4">
+                요청에 문제가 있습니다.<br>
+                입력 값을 확인하고 다시 시도해주세요.
+            </p>
+            <div>
+                <a href="/" class="btn btn-primary me-2">홈으로 이동</a>
+                <button onclick="history.back()" class="btn btn-outline-secondary">이전 페이지로</button>
+            </div>
             
-            <c:if test="${param.registered eq 'true'}">
-                <div class="alert alert-success text-center mb-3">
-                    회원가입이 완료되었습니다. 로그인해주세요.
-                </div>
-            </c:if>
-            
-            <c:if test="${param.error eq 'true'}">
-                <div class="alert alert-danger text-center mb-3">
-                    아이디 또는 비밀번호가 일치하지 않습니다.
-                </div>
-            </c:if>
-            
-            <c:if test="${param.logout eq 'true'}">
-                <div class="alert alert-success text-center mb-3">
-                    로그아웃되었습니다.
-                </div>
-            </c:if>
-            
-            <form action="/login-process" method="post">
-                <div class="mb-3">
-                    <label for="username" class="form-label">아이디</label>
-                    <input type="text" class="form-control" id="username" name="username" required>
-                </div>
-                <div class="mb-3">
-                    <label for="password" class="form-label">비밀번호</label>
-                    <input type="password" class="form-control" id="password" name="password" required>
-                </div>
-                <div class="mb-3 form-check">
-                    <input type="checkbox" class="form-check-input" id="rememberMe" name="remember-me">
-                    <label class="form-check-label" for="rememberMe">로그인 상태 유지</label>
-                </div>
-                <div class="d-grid gap-2">
-                    <button type="submit" class="btn btn-primary btn-lg">로그인</button>
-                </div>
-                <div class="text-center mt-3">
-                    <a href="#" class="text-decoration-none text-muted small">비밀번호를 잊으셨나요?</a>
-                </div>
-            </form>
-            
-            <hr class="my-4">
-            
-            <div class="text-center">
-                <p class="mb-3">아직 계정이 없으신가요?</p>
-                <a href="/register" class="btn btn-outline-primary">회원가입</a>
+            <div class="mt-5">
+                <p class="text-muted">오류 메시지: ${errorMessage}</p>
+                <div class="text-muted mb-2">요청 URL: ${url}</div>
+                
+                <c:if test="${not empty errors}">
+                    <div class="error-field-list">
+                        <h5>입력값 오류:</h5>
+                        <ul class="list-group list-group-flush">
+                            <c:forEach items="${errors}" var="error">
+                                <li class="list-group-item bg-light">
+                                    <span class="fw-bold">${error.key}:</span> ${error.value}
+                                </li>
+                            </c:forEach>
+                        </ul>
+                    </div>
+                </c:if>
             </div>
         </div>
     </div>
@@ -203,8 +187,7 @@
         </div>
     </footer>
 
-    <!-- jQuery 및 Bootstrap JavaScript -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- 부트스트랩 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html> 

@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -47,6 +49,16 @@ public class AuthController {
         userDto.setId(userDetails.getUser().getId());
         userDto.setUsername(userDetails.getUsername());
         userDto.setEmail(userDetails.getUser().getEmail());
+        userDto.setPhone(userDetails.getUser().getPhoneNumber()); // phoneNumber 필드 사용
+        
+        // LocalDateTime을 Date로 변환
+        if (userDetails.getUser().getCreatedAt() != null) {
+            Date createdAt = Date.from(userDetails.getUser().getCreatedAt()
+                    .atZone(ZoneId.systemDefault())
+                    .toInstant());
+            userDto.setCreatedAt(createdAt);
+        }
+        
         userDto.setRoles(userDetails.getAuthorities().stream()
                 .map(authority -> authority.getAuthority())
                 .collect(Collectors.toList()));

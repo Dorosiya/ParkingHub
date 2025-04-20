@@ -1,4 +1,4 @@
-package com.example.parking_hub.config;
+package com.example.parking_hub.util;
 
 import com.example.parking_hub.security.CustomUserDetailsService;
 import io.jsonwebtoken.Claims;
@@ -16,6 +16,7 @@ import javax.annotation.PostConstruct;
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.function.Function;
 
 @Component
 public class JwtUtil {
@@ -72,6 +73,43 @@ public class JwtUtil {
                 .getBody()
                 .getSubject();
     }
+    
+    // 토큰에서 사용자 ID 추출 (추가된 메서드)
+    public Long getUserIdFromToken(String token) {
+        try {
+            Claims claims = getAllClaimsFromToken(token);
+            // 토큰에 userId가 있으면 사용
+            if (claims.containsKey("userId")) {
+                return Long.parseLong(claims.get("userId").toString());
+            }
+            
+            // 없다면 username으로 사용자를 조회하여 ID를 반환
+            String username = getUsername(token);
+            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+            if (userDetails instanceof CustomUserDetail) {
+                return ((CustomUserDetail) userDetails).getId();
+            }
+            
+            throw new RuntimeException("토큰에서 사용자 ID를 추출할 수 없습니다.");
+        } catch (Exception e) {
+            throw new RuntimeException("토큰 처리 중 오류가 발생했습니다: " + e.getMessage(), e);
+        }
+    }
+    
+    // Claims 전체 추출
+    private Claims getAllClaimsFromToken(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(secretKey)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
+    
+    // Claims에서 특정 정보 추출
+    public <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
+        final Claims claims = getAllClaimsFromToken(token);
+        return claimsResolver.apply(claims);
+    }
 
     // 토큰 검증
     public boolean validateToken(String token) {
@@ -93,5 +131,10 @@ public class JwtUtil {
 
     public String getHeaderString() {
         return headerString;
+    }
+    
+    // 사용자 정의 인터페이스
+    public interface CustomUserDetail {
+        Long getId();
     }
 } 
