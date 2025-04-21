@@ -27,7 +27,7 @@ public class PageController {
      */
     @GetMapping("/main")
     public String index() {
-        return "index";
+        return "home/home";
     }
 
     /**
@@ -56,7 +56,7 @@ public class PageController {
      */
     @GetMapping("/register-page")
     public String registerPage() {
-        return "register";
+        return "register/register";
     }
 
     /**
@@ -64,7 +64,7 @@ public class PageController {
      */
     @GetMapping("/mypage")
     public String myPage(Model model) {
-        return "myPage";
+        return "mypage/index";
     }
 
     /**
@@ -72,7 +72,7 @@ public class PageController {
      */
     @GetMapping("/mypage/favorites")
     public String myPageFavorites() {
-        return "favorites";
+        return "mypage/favorites";
     }
 
     /**
@@ -80,7 +80,7 @@ public class PageController {
      */
     @GetMapping("/parking/search")
     public String parkingSearch() {
-        return "parking/search";
+        return "search/search";
     }
 
     /**
@@ -88,7 +88,7 @@ public class PageController {
      */
     @GetMapping("/parking/detail/{prkCenterId}")
     public String parkingDetail() {
-        return "parking/detail";
+        return "parking/parkingDetail";
     }
 
     /**
@@ -96,7 +96,7 @@ public class PageController {
      */
     @GetMapping("/map")
     public String map() {
-        return "map";
+        return "map/mapSearch";
     }
 
     @GetMapping("/dashboard")

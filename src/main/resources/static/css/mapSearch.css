@@ -1,0 +1,134 @@
+:root {
+  --primary-color: #3498db;
+  --secondary-color: #2980b9;
+  --accent-color: #f39c12;
+  --light-color: #ecf0f1;
+  --dark-color: #2c3e50;
+}
+
+body {
+  font-family: "Noto Sans KR", sans-serif;
+  background-color: #f8f9fa;
+  color: #333;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+.navbar {
+  background-color: var(--primary-color);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand {
+  font-weight: 700;
+  color: white !important;
+}
+
+.nav-link {
+  color: rgba(255, 255, 255, 0.85) !important;
+  font-weight: 500;
+  transition: all 0.3s;
+}
+
+.nav-link:hover {
+  color: white !important;
+}
+
+.nav-link.active {
+  color: white !important;
+  border-bottom: 2px solid white;
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: calc(
+    100vh - 150px
+  ); /* 푸터와 네비게이션 바 높이를 제외한 최소 높이 */
+  padding-bottom: 20px; /* 푸터와의 간격 추가 */
+}
+
+#map {
+  width: 100%;
+  flex: 1;
+  min-height: 600px; /* 기존 500px에서 600px로 늘림 */
+  height: calc(100vh - 250px); /* 화면 높이를 고려한 계산 */
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.search-panel {
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  padding: 20px;
+  margin: 20px 0;
+}
+
+.parking-info-window {
+  padding: 5px;
+  max-width: 300px;
+}
+
+.parking-info-window h5 {
+  margin-bottom: 5px;
+  font-size: 16px;
+}
+
+.parking-info-window p {
+  margin-bottom: 5px;
+  font-size: 13px;
+}
+
+.parking-list {
+  height: 300px;
+  overflow-y: auto;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.parking-item {
+  padding: 10px 15px;
+  border-bottom: 1px solid #f0f0f0;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.parking-item:hover {
+  background-color: #f8f9fa;
+}
+
+.parking-item h6 {
+  margin-bottom: 5px;
+  font-size: 15px;
+}
+
+.parking-item p {
+  margin-bottom: 0;
+  font-size: 12px;
+  color: #6c757d;
+}
+
+.footer {
+  background-color: var(--dark-color);
+  color: var(--light-color);
+  padding: 20px 0; /* 기존 30px에서 20px로 축소 */
+  margin-top: auto; /* 항상 아래에 위치하도록 설정 */
+}
+
+.footer-link {
+  color: var(--light-color);
+  opacity: 0.8;
+  transition: opacity 0.3s;
+}
+
+.footer-link:hover {
+  opacity: 1;
+  color: white;
+} 

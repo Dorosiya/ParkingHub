@@ -143,7 +143,7 @@
                 </div>
             </c:if>
             
-            <form action="/register" method="post" id="registerForm" onsubmit="return validateForm()">
+            <form action="/register" method="post" id="registerForm">
                 <div class="mb-3">
                     <label for="username" class="form-label">아이디</label>
                     <input type="text" class="form-control" id="username" name="username" placeholder="커뮤니티에서 사용할 아이디" required>
@@ -198,6 +198,62 @@
         </div>
     </div>
     
+    <!-- 이용약관 모달 -->
+    <div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="termsModalLabel">서비스 이용약관</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" style="max-height: 400px; overflow-y: auto;">
+                    <h5>제1조 (목적)</h5>
+                    <p>이 약관은 주차장 정보 서비스(이하 "서비스")를 제공하는 Parking Hub(이하 "회사")와 이를 이용하는 회원(이하 "회원") 간에 서비스 이용에 관한 권리, 의무 및 책임사항, 기타 필요한 사항을 규정함을 목적으로 합니다.</p>
+                    
+                    <h5>제2조 (정의)</h5>
+                    <p>"서비스"라 함은 구현되는 단말기와 상관없이 "회원"이 이용할 수 있는 주차장 정보 서비스 및 관련 부가 서비스를 의미합니다.</p>
+                    <p>"회원"이라 함은 "회사"의 "서비스"에 접속하여 이 약관에 따라 "회사"와 이용계약을 체결하고 "회사"가 제공하는 "서비스"를 이용하는 고객을 말합니다.</p>
+                    <p>"아이디(ID)"라 함은 "회원"의 식별과 "서비스" 이용을 위하여 "회원"이 정하고 "회사"가 승인하는 문자와 숫자의 조합을 의미합니다.</p>
+                    
+                    <h5>제3조 (약관의 게시와 개정)</h5>
+                    <p>"회사"는 이 약관의 내용을 "회원"이 쉽게 알 수 있도록 서비스 초기 화면에 게시합니다.</p>
+                    <p>"회사"는 "약관의 규제에 관한 법률", "정보통신망 이용촉진 및 정보보호 등에 관한 법률" 등 관련법을 위배하지 않는 범위에서 이 약관을 개정할 수 있습니다.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 개인정보 처리방침 모달 -->
+    <div class="modal fade" id="privacyModal" tabindex="-1" aria-labelledby="privacyModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="privacyModalLabel">개인정보 처리방침</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" style="max-height: 400px; overflow-y: auto;">
+                    <p>Parking Hub(이하 "회사")는 개인정보 보호법 제30조에 따라 정보주체의 개인정보를 보호하고 이와 관련한 고충을 신속하고 원활하게 처리할 수 있도록 하기 위하여 다음과 같이 개인정보 처리방침을 수립·공개합니다.</p>
+                    
+                    <h5>제1조 (개인정보의 처리 목적)</h5>
+                    <p>회사는 다음의 목적을 위하여 개인정보를 처리합니다. 처리하고 있는 개인정보는 다음의 목적 이외의 용도로는 이용되지 않으며, 이용 목적이 변경되는 경우에는 개인정보 보호법 제18조에 따라 별도의 동의를 받는 등 필요한 조치를 이행할 예정입니다.</p>
+                    <ol>
+                        <li>회원 가입 및 관리: 회원 가입의사 확인, 회원제 서비스 제공에 따른 본인 식별·인증, 회원자격 유지·관리, 서비스 부정이용 방지, 고충처리 등을 목적으로 개인정보를 처리합니다.</li>
+                        <li>서비스 제공: 주차장 정보 제공, 콘텐츠 제공, 맞춤형 서비스 제공 등을 목적으로 개인정보를 처리합니다.</li>
+                    </ol>
+                    
+                    <h5>제2조 (개인정보의 처리 및 보유 기간)</h5>
+                    <p>회사는 법령에 따른 개인정보 보유·이용기간 또는 정보주체로부터 개인정보를 수집 시에 동의 받은 개인정보 보유·이용기간 내에서 개인정보를 처리·보유합니다.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <!-- 푸터 -->
     <footer class="footer mt-5 py-3 bg-dark text-white">
         <div class="container">
@@ -209,10 +265,10 @@
                 <div class="col-md-4">
                     <h5>바로가기</h5>
                     <ul class="list-unstyled">
-                        <li><a href="/" class="text-white-50">홈</a></li>
-                        <li><a href="/search" class="text-white-50">주차장 찾기</a></li>
-                        <li><a href="/mapSearch" class="text-white-50">지도로 찾기</a></li>
-                        <li><a href="/mypage" class="text-white-50">마이페이지</a></li>
+                        <li><a href="/" class="footer-link">홈</a></li>
+                        <li><a href="/search" class="footer-link">주차장 찾기</a></li>
+                        <li><a href="/mapSearch" class="footer-link">지도로 찾기</a></li>
+                        <li><a href="/mypage" class="footer-link">마이페이지</a></li>
                     </ul>
                 </div>
                 <div class="col-md-4">
@@ -227,71 +283,10 @@
             <p class="text-center mb-0">&copy; 2023 Parking Hub. All rights reserved.</p>
         </div>
     </footer>
-    
-    <!-- 이용약관 모달 -->
-    <div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="termsModalLabel">서비스 이용약관</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <h6>제1조 (목적)</h6>
-                    <p>이 약관은 Parking Hub(이하 "회사")가 제공하는 주차장 정보 서비스(이하 "서비스")의 이용조건 및 절차, 회사와 회원 간의 권리, 의무 및 책임사항 등을 규정함을 목적으로 합니다.</p>
-                    
-                    <h6>제2조 (용어의 정의)</h6>
-                    <p>이 약관에서 사용하는 용어의 정의는 다음과 같습니다.</p>
-                    <ul>
-                        <li>"서비스"란 회사가 제공하는 모든 서비스를 의미합니다.</li>
-                        <li>"회원"이란 회사와 서비스 이용계약을 체결하고 회사가 제공하는 서비스를 이용하는 자를 의미합니다.</li>
-                        <li>"아이디(ID)"란 회원의 식별과 서비스 이용을 위하여 회원이 설정하고 회사가 승인하는 문자와 숫자의 조합을 의미합니다.</li>
-                    </ul>
-                    
-                    <h6>제3조 (약관의 효력 및 변경)</h6>
-                    <p>회사는 약관의 내용을 회원이 쉽게 알 수 있도록 서비스 초기 화면에 게시하거나 기타의 방법으로 공지합니다.</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <!-- 개인정보처리방침 모달 -->
-    <div class="modal fade" id="privacyModal" tabindex="-1" aria-labelledby="privacyModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="privacyModalLabel">개인정보 처리방침</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <h6>1. 개인정보의 수집 및 이용 목적</h6>
-                    <p>회사는 다음의 목적을 위하여 개인정보를 처리합니다. 처리하고 있는 개인정보는 다음의 목적 이외의 용도로는 이용되지 않으며, 이용 목적이 변경되는 경우에는 개인정보 보호법 제18조에 따라 별도의 동의를 받는 등 필요한 조치를 이행할 예정입니다.</p>
-                    
-                    <h6>2. 개인정보의 처리 및 보유기간</h6>
-                    <p>회사는 법령에 따른 개인정보 보유·이용기간 또는 정보주체로부터 개인정보를 수집 시에 동의받은 개인정보 보유·이용기간 내에서 개인정보를 처리·보유합니다.</p>
-                    
-                    <h6>3. 개인정보의 제3자 제공</h6>
-                    <p>회사는 정보주체의 개인정보를 제1조(개인정보의 처리 목적)에서 명시한 범위 내에서만 처리하며, 정보주체의 동의, 법률의 특별한 규정 등 개인정보 보호법 제17조에 해당하는 경우에만 개인정보를 제3자에게 제공합니다.</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- jQuery -->
+    <!-- jQuery 및 Bootstrap JavaScript -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Auth Service -->
-    <script src="/js/auth.js"></script>
-    
-    <script>
-        // ... existing code ...
-    </script>
+    <script src="/js/register.js"></script>
 </body>
 </html> 

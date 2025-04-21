@@ -9,82 +9,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="/css/common.css" rel="stylesheet">
-    <style>
-        :root {
-            --primary-color: #3498db;
-            --secondary-color: #2980b9;
-            --accent-color: #f39c12;
-            --light-color: #ecf0f1;
-            --dark-color: #2c3e50;
-        }
-
-        body {
-            font-family: "Noto Sans KR", sans-serif;
-            background-color: #f8f9fa;
-            color: #333;
-        }
-
-        .navbar {
-            background-color: var(--primary-color) !important;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .navbar-brand {
-            font-weight: 700;
-            color: white !important;
-        }
-
-        .nav-link {
-            color: rgba(255, 255, 255, 0.85) !important;
-            font-weight: 500;
-            transition: all 0.3s;
-        }
-
-        .nav-link:hover {
-            color: white !important;
-        }
-
-        .nav-link.active {
-            color: white !important;
-            border-bottom: 2px solid white;
-        }
-
-        .login-container {
-            max-width: 450px;
-            margin: 80px auto;
-            background-color: white;
-            border-radius: 10px;
-            padding: 30px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-        }
-
-        .btn-primary {
-            background-color: var(--primary-color);
-            border-color: var(--primary-color);
-        }
-
-        .btn-primary:hover {
-            background-color: var(--secondary-color);
-            border-color: var(--secondary-color);
-        }
-
-        .text-primary {
-            color: var(--primary-color) !important;
-        }
-
-        .alert-success {
-            background-color: #d4edda;
-            border-color: #c3e6cb;
-            color: #155724;
-        }
-        
-        .footer {
-            background-color: var(--dark-color);
-            color: var(--light-color);
-            padding: 30px 0 20px;
-            margin-top: 50px;
-        }
-    </style>
+    <link href="/css/login.css" rel="stylesheet">
 </head>
 <body>
     <!-- 네비게이션 바 -->
@@ -208,44 +133,6 @@
     <!-- jQuery 및 Bootstrap JavaScript -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <script>
-        $(document).ready(function() {
-            $('#loginForm').on('submit', function(e) {
-                e.preventDefault();
-                
-                var userData = {
-                    username: $('#username').val(),
-                    password: $('#password').val()
-                };
-                
-                $.ajax({
-                    url: '/api/auth/login',
-                    type: 'POST',
-                    contentType: 'application/json',
-                    data: JSON.stringify(userData),
-                    success: function(response) {
-                        // 로그인 성공 시 홈페이지로 이동
-                        window.location.href = '/';
-                    },
-                    error: function(xhr, status, error) {
-                        // 로그인 실패 시 오류 메시지 표시
-                        var errorMessage = '로그인에 실패했습니다. 아이디와 비밀번호를 확인해주세요.';
-                        
-                        try {
-                            var response = JSON.parse(xhr.responseText);
-                            if (response && response.message) {
-                                errorMessage = response.message;
-                            }
-                        } catch (e) {
-                            console.error('Error parsing error response:', e);
-                        }
-                        
-                        $('#loginAlert').text(errorMessage).show();
-                    }
-                });
-            });
-        });
-    </script>
+    <script src="/js/login.js"></script>
 </body>
 </html> 

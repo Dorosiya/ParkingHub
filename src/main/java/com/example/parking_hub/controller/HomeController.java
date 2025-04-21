@@ -43,13 +43,13 @@ public class HomeController {
     @GetMapping("/")
     public String home(Model model) {
         addAuthToModel(model);
-        return "home";
+        return "home/home";
     }
     
     @GetMapping("/mapSearch")
     public String mapSearch(Model model) {
         addAuthToModel(model);
-        return "mapSearch";
+        return "map/mapSearch";
     }
     
     @GetMapping("/search")
@@ -86,7 +86,7 @@ public class HomeController {
         
         model.addAttribute("parkingList", parkingList);
         
-        return "search";
+        return "search/search";
     }
     
     @GetMapping("/parking/{id}")
@@ -122,6 +122,6 @@ public class HomeController {
             model.addAttribute("longitude", "126.9780");
         }
         
-        return "parkingDetail";
+        return "parking/parkingDetail";
     }
 } 

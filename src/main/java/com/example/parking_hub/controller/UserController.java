@@ -24,12 +24,12 @@ public class UserController {
 
     @GetMapping("/login")
     public String login() {
-        return "login";
+        return "login/login";
     }
 
     @GetMapping("/register")
     public String register() {
-        return "register";
+        return "register/register";
     }
 
     @PostMapping("/register")
@@ -45,14 +45,14 @@ public class UserController {
             if (userService.findByEmail(email) != null) {
                 logger.warn("회원가입 실패: 이메일 중복 - {}", email);
                 model.addAttribute("error", "이미 사용 중인 이메일입니다.");
-                return "register";
+                return "register/register";
             }
             
             // 사용자명 중복 체크
             if (userService.findByUsername(username) != null) {
                 logger.warn("회원가입 실패: 사용자명 중복 - {}", username);
                 model.addAttribute("error", "이미 사용 중인 닉네임입니다.");
-                return "register";
+                return "register/register";
             }
             
             // 사용자 등록 서비스 호출
@@ -64,7 +64,7 @@ public class UserController {
         } catch (Exception e) {
             logger.error("회원가입 처리 중 예외 발생", e);
             model.addAttribute("error", "회원가입 중 오류가 발생했습니다: " + e.getMessage());
-            return "register";
+            return "register/register";
         }
     }
 } 
