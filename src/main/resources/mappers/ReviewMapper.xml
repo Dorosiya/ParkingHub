@@ -4,47 +4,79 @@
 
     <resultMap id="ReviewResultMap" type="com.example.parking_hub.model.Review">
         <id property="id" column="id"/>
+        <result property="prkCenterId" column="prk_center_id"/>
         <result property="userId" column="user_id"/>
-        <result property="parkingCode" column="parking_code"/>
+        <result property="username" column="username"/>
         <result property="rating" column="rating"/>
-        <result property="comment" column="comment"/>
+        <result property="content" column="content"/>
         <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
     </resultMap>
 
-    <select id="selectReviewsByParkingCode" resultMap="ReviewResultMap">
-        SELECT * FROM REVIEW WHERE parking_code = #{parkingCode}
+    <insert id="insertReview" parameterType="com.example.parking_hub.model.Review" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO reviews (
+            prk_center_id, 
+            user_id, 
+            username, 
+            rating, 
+            content, 
+            created_at, 
+            updated_at
+        ) VALUES (
+            #{prkCenterId}, 
+            #{userId}, 
+            #{username}, 
+            #{rating}, 
+            #{content}, 
+            #{createdAt}, 
+            #{updatedAt}
+        )
+    </insert>
+
+    <select id="selectReviewsByParkingId" resultMap="ReviewResultMap">
+        SELECT * FROM reviews 
+        WHERE prk_center_id = #{prkCenterId}
+        ORDER BY created_at DESC
     </select>
 
     <select id="selectReviewsByUserId" resultMap="ReviewResultMap">
-        SELECT * FROM REVIEW WHERE user_id = #{userId}
+        SELECT * FROM reviews 
+        WHERE user_id = #{userId}
+        ORDER BY created_at DESC
     </select>
 
     <select id="selectReviewById" resultMap="ReviewResultMap">
-        SELECT * FROM REVIEW WHERE id = #{id}
+        SELECT * FROM reviews 
+        WHERE id = #{id}
     </select>
 
-    <select id="selectReviewByUserIdAndParkingCode" resultMap="ReviewResultMap">
-        SELECT * FROM REVIEW
-        WHERE user_id = #{userId} AND parking_code = #{parkingCode}
-    </select>
-
-    <insert id="insertReview" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO REVIEW (user_id, parking_code, rating, comment)
-        VALUES (#{userId}, #{parkingCode}, #{rating}, #{comment})
-    </insert>
-
-    <update id="updateReview">
-        UPDATE REVIEW
-        SET rating = #{rating},
-            comment = #{comment}
+    <update id="updateReview" parameterType="com.example.parking_hub.model.Review">
+        UPDATE reviews
+        SET 
+            rating = #{rating},
+            content = #{content},
+            updated_at = #{updatedAt}
         WHERE id = #{id}
     </update>
 
     <delete id="deleteReview">
-        DELETE FROM REVIEW WHERE id = #{id}
+        DELETE FROM reviews 
+        WHERE id = #{id}
     </delete>
 
-    <select id="selectAverageRatingByParkingCode" resultType="double">
-        SELECT AVG(rating) FROM REVIEW WHERE parking_code = #{parkingCode}
+    <select id="countReviewsByParkingId" resultType="int">
+        SELECT COUNT(*) FROM reviews 
+        WHERE prk_center_id = #{prkCenterId}
+    </select>
+
+    <select id="selectAverageRatingByParkingId" resultType="double">
+        SELECT COALESCE(AVG(rating), 0) FROM reviews 
+        WHERE prk_center_id = #{prkCenterId}
+    </select>
+
+    <select id="selectReviewByParkingIdAndUserId" resultMap="ReviewResultMap">
+        SELECT * FROM reviews 
+        WHERE prk_center_id = #{prkCenterId} 
+        AND user_id = #{userId}
     </select>
 </mapper>

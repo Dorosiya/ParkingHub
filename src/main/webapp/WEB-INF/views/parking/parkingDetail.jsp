@@ -1,7 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 pageEncoding="UTF-8"%> <%@ taglib prefix="c"
 uri="http://java.sun.com/jsp/jstl/core" %> <%@ taglib prefix="fmt"
-uri="http://java.sun.com/jsp/jstl/fmt" %>
+uri="http://java.sun.com/jsp/jstl/fmt" %> <%@ taglib prefix="fn"
+uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
 <html lang="ko">
   <head>
@@ -16,141 +17,11 @@ uri="http://java.sun.com/jsp/jstl/fmt" %>
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css"
     />
+    <link rel="stylesheet" href="/css/parkingDetail.css" />
     <script
       type="text/javascript"
       src="//dapi.kakao.com/v2/maps/sdk.js?appkey=7de22b580589f48eae26aed074b09419"
     ></script>
-    <style>
-      :root {
-        --primary-color: #3498db;
-        --secondary-color: #2980b9;
-        --accent-color: #f39c12;
-        --light-color: #ecf0f1;
-        --dark-color: #2c3e50;
-      }
-
-      body {
-        font-family: "Noto Sans KR", sans-serif;
-        background-color: #f8f9fa;
-        color: #333;
-      }
-
-      .navbar {
-        background-color: var(--primary-color);
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      }
-
-      .navbar-brand {
-        font-weight: 700;
-        color: white !important;
-      }
-
-      .nav-link {
-        color: rgba(255, 255, 255, 0.85) !important;
-        font-weight: 500;
-        transition: all 0.3s;
-      }
-
-      .nav-link:hover {
-        color: white !important;
-      }
-
-      .parking-header {
-        background: linear-gradient(
-          135deg,
-          var(--primary-color),
-          var(--secondary-color)
-        );
-        color: white;
-        padding: 40px 0;
-        margin-bottom: 30px;
-      }
-
-      .detail-card {
-        background-color: white;
-        border-radius: 10px;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-        padding: 25px;
-        margin-bottom: 30px;
-      }
-
-      .status-badge {
-        font-size: 14px;
-        padding: 6px 12px;
-        border-radius: 50px;
-      }
-
-      .map-container {
-        height: 350px;
-        border-radius: 10px;
-        overflow: hidden;
-      }
-
-      #map {
-        width: 100%;
-        height: 100%;
-      }
-
-      .info-list {
-        margin-bottom: 0;
-      }
-
-      .info-list li {
-        padding: 10px 0;
-        border-bottom: 1px solid #eee;
-      }
-
-      .info-list li:last-child {
-        border-bottom: none;
-      }
-
-      .info-icon {
-        color: var(--primary-color);
-        width: 24px;
-        text-align: center;
-        margin-right: 10px;
-      }
-
-      .footer {
-        background-color: var(--dark-color);
-        color: var(--light-color);
-        padding: 50px 0 20px;
-        margin-top: 50px;
-      }
-
-      .footer-link {
-        color: var(--light-color);
-        opacity: 0.8;
-        transition: opacity 0.3s;
-      }
-
-      .footer-link:hover {
-        opacity: 1;
-        color: white;
-      }
-
-      .action-buttons {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        z-index: 1000;
-      }
-
-      .action-button {
-        width: 60px;
-        height: 60px;
-        border-radius: 50%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin-top: 10px;
-        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
-      }
-
-      .action-button i {
-        font-size: 24px;
-      }
-    </style>
   </head>
   <body>
     <!-- 네비게이션 바 -->
@@ -406,15 +277,18 @@ uri="http://java.sun.com/jsp/jstl/fmt" %>
                     전체 ${parking.info.parkingcapacity}대 중
                   </small>
                 </div>
-                <c:set
-                  var="occupancy"
-                  value="${(parking.info.parkingcapacity - parking.realtime.nrmlparkingcnt) * 100 / parking.info.parkingcapacity}"
-                />
+                <c:set var="occupancy" value="${(parking.info.parkingcapacity - parking.realtime.nrmlparkingcnt) * 100 / parking.info.parkingcapacity}" />
+                <c:set var="progressClass" value="${occupancy > 90 ? 'bg-danger' : (occupancy > 70 ? 'bg-warning' : 'bg-success')}" />
+                <%
+                  double progressWidth = (Double)pageContext.getAttribute("occupancy");
+                  String widthStyle = "width: " + progressWidth + "%";
+                  pageContext.setAttribute("widthStyle", widthStyle);
+                %>
                 <div class="progress mb-3" style="height: 25px">
                   <div
-                    class="progress-bar ${occupancy > 90 ? 'bg-danger' : (occupancy > 70 ? 'bg-warning' : 'bg-success')}"
+                    class="progress-bar ${progressClass}"
                     role="progressbar"
-                    style="width: ${occupancy}%;"
+                    style="${widthStyle}"
                     aria-valuenow="${occupancy}"
                     aria-valuemin="0"
                     aria-valuemax="100"
@@ -456,14 +330,90 @@ uri="http://java.sun.com/jsp/jstl/fmt" %>
                 class="btn btn-sm btn-outline-primary"
                 data-bs-toggle="modal"
                 data-bs-target="#reviewModal"
+                ${not isAuthenticated ? 'disabled' : ''}
               >
                 <i class="bi bi-pencil"></i> 리뷰 작성
               </button>
             </div>
-            <p class="text-muted text-center py-3">
-              <i class="bi bi-chat-dots"></i>
-              아직 작성된 리뷰가 없습니다.
-            </p>
+            
+            <c:choose>
+              <c:when test="${not empty reviews}">
+                <div class="review-summary mb-3">
+                  <div class="d-flex align-items-center">
+                    <div class="h2 mb-0 me-2">${avgRating}</div>
+                    <div>
+                      <div class="rating-stars fs-5">
+                        <c:forEach begin="1" end="5" var="star">
+                          <c:choose>
+                            <c:when test="${star <= avgRating}">
+                              <i class="bi bi-star-fill text-warning"></i>
+                            </c:when>
+                            <c:when test="${star <= avgRating + 0.5}">
+                              <i class="bi bi-star-half text-warning"></i>
+                            </c:when>
+                            <c:otherwise>
+                              <i class="bi bi-star text-warning"></i>
+                            </c:otherwise>
+                          </c:choose>
+                        </c:forEach>
+                      </div>
+                      <div class="text-muted small">${fn:length(reviews)}개의 리뷰</div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="review-list">
+                  <c:forEach items="${reviews}" var="review">
+                    <div class="review-item">
+                      <div class="d-flex justify-content-between align-items-center">
+                        <div class="fw-bold">${review.username}</div>
+                        <div class="text-muted small">
+                          <fmt:formatDate value="${review.createdAt}" pattern="yyyy-MM-dd" />
+                        </div>
+                      </div>
+                      <div class="rating-stars small mb-1">
+                        <c:forEach begin="1" end="5" var="star">
+                          <c:choose>
+                            <c:when test="${star <= review.rating}">
+                              <i class="bi bi-star-fill text-warning"></i>
+                            </c:when>
+                            <c:otherwise>
+                              <i class="bi bi-star text-warning"></i>
+                            </c:otherwise>
+                          </c:choose>
+                        </c:forEach>
+                      </div>
+                      <div class="review-content">${review.content}</div>
+                      <c:if test="${review.username eq username}">
+                        <div class="mt-2">
+                          <button class="btn btn-sm btn-outline-secondary edit-review-btn" 
+                                  data-review-id="${review.id}" 
+                                  data-review-rating="${review.rating}" 
+                                  data-review-content="${review.content}"
+                                  data-bs-toggle="modal" 
+                                  data-bs-target="#editReviewModal">
+                            수정
+                          </button>
+                          <button class="btn btn-sm btn-outline-danger delete-review-btn" 
+                                  data-review-id="${review.id}">
+                            삭제
+                          </button>
+                        </div>
+                      </c:if>
+                    </div>
+                  </c:forEach>
+                </div>
+              </c:when>
+              <c:otherwise>
+                <p class="text-muted text-center py-3">
+                  <i class="bi bi-chat-dots"></i>
+                  아직 작성된 리뷰가 없습니다.
+                  <c:if test="${not isAuthenticated}">
+                    <br><small class="mt-2 d-block">리뷰를 작성하려면 <a href="/login">로그인</a>이 필요합니다.</small>
+                  </c:if>
+                </p>
+              </c:otherwise>
+            </c:choose>
           </div>
         </div>
       </div>
@@ -552,25 +502,34 @@ uri="http://java.sun.com/jsp/jstl/fmt" %>
             ></button>
           </div>
           <div class="modal-body">
-            <form>
+            <form id="reviewForm" action="/api/review" method="POST">
+              <input type="hidden" name="parkingId" value="${parking.info.prkplaceId}" />
               <div class="mb-3">
                 <label for="reviewRating" class="form-label">평점</label>
-                <select class="form-select" id="reviewRating">
-                  <option value="5">★★★★★ 아주 좋음</option>
-                  <option value="4">★★★★☆ 좋음</option>
-                  <option value="3">★★★☆☆ 보통</option>
-                  <option value="2">★★☆☆☆ 별로</option>
-                  <option value="1">★☆☆☆☆ 나쁨</option>
-                </select>
+                <div class="rating-input mb-2">
+                  <i class="bi bi-star-fill fs-3 rating-star" data-value="1"></i>
+                  <i class="bi bi-star fs-3 rating-star" data-value="2"></i>
+                  <i class="bi bi-star fs-3 rating-star" data-value="3"></i>
+                  <i class="bi bi-star fs-3 rating-star" data-value="4"></i>
+                  <i class="bi bi-star fs-3 rating-star" data-value="5"></i>
+                  <input type="hidden" name="rating" id="ratingInput" value="1" />
+                </div>
               </div>
               <div class="mb-3">
                 <label for="reviewContent" class="form-label">내용</label>
                 <textarea
                   class="form-control"
                   id="reviewContent"
+                  name="content"
                   rows="4"
                   placeholder="주차장에 대한 경험을 공유해주세요."
+                  required
+                  minlength="5"
+                  maxlength="500"
                 ></textarea>
+                <div class="form-text text-end">
+                  <span id="contentLength">0</span>/500
+                </div>
               </div>
             </form>
           </div>
@@ -582,7 +541,72 @@ uri="http://java.sun.com/jsp/jstl/fmt" %>
             >
               취소
             </button>
-            <button type="button" class="btn btn-primary">등록하기</button>
+            <button type="button" id="submitReviewBtn" class="btn btn-primary">등록하기</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 리뷰 수정 모달 -->
+    <div
+      class="modal fade"
+      id="editReviewModal"
+      tabindex="-1"
+      aria-labelledby="editReviewModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="editReviewModalLabel">리뷰 수정</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <form id="editReviewForm" action="/api/review" method="PUT">
+              <input type="hidden" name="reviewId" id="editReviewId" />
+              <div class="mb-3">
+                <label for="editReviewRating" class="form-label">평점</label>
+                <div class="rating-input mb-2">
+                  <i class="bi bi-star-fill fs-3 edit-rating-star" data-value="1"></i>
+                  <i class="bi bi-star fs-3 edit-rating-star" data-value="2"></i>
+                  <i class="bi bi-star fs-3 edit-rating-star" data-value="3"></i>
+                  <i class="bi bi-star fs-3 edit-rating-star" data-value="4"></i>
+                  <i class="bi bi-star fs-3 edit-rating-star" data-value="5"></i>
+                  <input type="hidden" name="rating" id="editRatingInput" value="1" />
+                </div>
+              </div>
+              <div class="mb-3">
+                <label for="editReviewContent" class="form-label">내용</label>
+                <textarea
+                  class="form-control"
+                  id="editReviewContent"
+                  name="content"
+                  rows="4"
+                  placeholder="주차장에 대한 경험을 공유해주세요."
+                  required
+                  minlength="5"
+                  maxlength="500"
+                ></textarea>
+                <div class="form-text text-end">
+                  <span id="editContentLength">0</span>/500
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              취소
+            </button>
+            <button type="button" id="updateReviewBtn" class="btn btn-primary">수정하기</button>
           </div>
         </div>
       </div>
@@ -592,116 +616,14 @@ uri="http://java.sun.com/jsp/jstl/fmt" %>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="/js/auth.js"></script>
     <script>
-      // 지도 초기화
-      window.onload = function () {
-        // 지도 생성
-        const container = document.getElementById("map");
-        const options = {
-          center: new kakao.maps.LatLng("${latitude}", "${longitude}"),
-          level: 3,
-        };
-
-        const map = new kakao.maps.Map(container, options);
-
-        // 마커 생성
-        const marker = new kakao.maps.Marker({
-          position: new kakao.maps.LatLng("${latitude}", "${longitude}"),
-          map: map,
-        });
-
-        // 인포윈도우 생성
-        const infowindow = new kakao.maps.InfoWindow({
-          content:
-            '<div style="padding:5px;font-size:12px;width:150px;text-align:center;">${parking.info.prkingnm}</div>',
-        });
-
-        infowindow.open(map, marker);
-
-        // 주소 복사 버튼
-        document
-          .getElementById("copyAddressBtn")
-          .addEventListener("click", function () {
-            const address = "${parking.info.rdnmadr}";
-
-            // 클립보드에 복사
-            navigator.clipboard
-              .writeText(address)
-              .then(() => {
-                alert("주소가 클립보드에 복사되었습니다.");
-              })
-              .catch((err) => {
-                console.error("주소 복사 실패:", err);
-                alert("주소 복사에 실패했습니다.");
-              });
-          });
-      };
-
-      // 로그인 상태 처리
-      $(document).ready(function () {
-        // 서버 측 인증 상태 체크 (JSP 표현식을 문자열로 변환)
-        var isServerAuthenticated =
-          "<c:out value='${isAuthenticated}'/>" === "true";
-
-        // 서버 인증이 되지 않았지만 클라이언트에 로그인 쿠키가 있는 경우에만 처리
-        var isClientLoggedIn = document.cookie
-          .split(";")
-          .some((item) => item.trim().startsWith("logged_in="));
-
-        // 이미 서버에서 인증된 경우
-        if (isServerAuthenticated) {
-          // 서버가 제공한 정보로 UI 이미 업데이트되어 있음
-          // 아무 작업 필요 없음
-        }
-        // 클라이언트 측 쿠키로 로그인된 경우
-        else if (isClientLoggedIn) {
-          // 로그인/회원가입 버튼 숨기기
-          $("#navbarNav").find(".d-flex:not(.logged-in-menu)").hide();
-
-          // 이미 로그인 상태 UI가 있는지 확인
-          if ($(".logged-in-menu").length === 0) {
-            // 서버에 현재 사용자 정보 요청
-            $.ajax({
-              url: "/api/user/current",
-              type: "GET",
-              xhrFields: {
-                withCredentials: true,
-              },
-            })
-              .done(function (user) {
-                // 사용자 정보로 UI 업데이트
-                var userHtml =
-                  '<div class="d-flex logged-in-menu">' +
-                  '<span class="navbar-text me-3">' +
-                  '<i class="bi bi-person-circle"></i> ' +
-                  user.username +
-                  "님" +
-                  "</span>" +
-                  '<button id="logoutBtn" class="btn btn-outline-light btn-sm d-flex align-items-center justify-content-center" style="min-height: 31px;">로그아웃</button>' +
-                  "</div>";
-
-                $("#navbarNav .navbar-nav").after(userHtml);
-
-                // 로그아웃 버튼 이벤트
-                $("#logoutBtn").click(function () {
-                  $.ajax({
-                    url: "/api/auth/logout",
-                    type: "POST",
-                    xhrFields: {
-                      withCredentials: true,
-                    },
-                  }).always(function () {
-                    window.location.reload();
-                  });
-                });
-              })
-              .fail(function () {
-                // 토큰이 유효하지 않은 경우 쿠키 삭제
-                document.cookie =
-                  "logged_in=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
-              });
-          }
-        }
-      });
+      // JSP 변수를 JavaScript 변수로 변환
+      var latitude = "${latitude}";
+      var longitude = "${longitude}";
+      var parkingName = "${parking.info.prkingnm}";
+      var parkingAddress = "${parking.info.rdnmadr}";
+      var isAuthenticated = "${isAuthenticated}" === "true";
+      var parkingId = "${parking.info.prkplaceId}";
     </script>
+    <script src="/js/parkingDetail.js"></script>
   </body>
 </html>
