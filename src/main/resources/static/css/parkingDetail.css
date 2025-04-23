@@ -153,6 +153,38 @@ body {
   margin-right: 2px;
 }
 
+/* 주변 주차장 목록 스타일 */
+.nearby-parking-list {
+  max-height: 350px;
+  overflow-y: auto;
+}
+
+.nearby-parking-item {
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  transition: all 0.2s ease;
+}
+
+.nearby-parking-item:hover {
+  background-color: #f0f0f0;
+  transform: translateY(-2px);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+}
+
+.nearby-parking-item:last-child {
+  margin-bottom: 0;
+  border-bottom: none !important;
+}
+
+.nearby-parking-item h6 {
+  font-weight: 600;
+}
+
+.nearby-parking-item .badge {
+  padding: 5px 10px;
+}
+
 .modal-content {
   border-radius: 12px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);

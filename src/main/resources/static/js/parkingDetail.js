@@ -28,6 +28,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 리뷰 작성 이벤트 등록
     document.querySelector('#reviewModal .btn-primary').addEventListener('click', submitReview);
+    
+    // 주변 주차장 정보 로드
+    loadNearbyParkings();
 });
 
 // Kakao 지도 초기화
@@ -516,4 +519,153 @@ function formatDate(dateStr) {
     const day = String(date.getDate()).padStart(2, '0');
     
     return `${year}.${month}.${day}`;
+}
+
+// 주변 주차장 관련 코드 =============================================
+
+// 주변 주차장 정보 로드
+function loadNearbyParkings() {
+    // 현재 주차장 위치 정보 가져오기
+    const latitude = parseFloat(document.getElementById('latitude').value);
+    const longitude = parseFloat(document.getElementById('longitude').value);
+    
+    if (isNaN(latitude) || isNaN(longitude)) return;
+    
+    // API 호출 (2km 반경 내 주차장 검색)
+    fetch(`/api/parking/search/location?lat=${latitude}&lng=${longitude}&radius=2`)
+        .then(response => response.json())
+        .then(data => {
+            if (data && data.length > 0) {
+                // 현재 주차장을 제외한 주변 주차장만 표시
+                const nearbyParkings = data.filter(parking => parking.prkCenterId !== parkingId);
+                
+                // 최대 3개만 표시
+                const limitedParkings = nearbyParkings.slice(0, 3);
+                
+                if (limitedParkings.length > 0) {
+                    displayNearbyParkings(limitedParkings);
+                } else {
+                    showNoParkingsMessage();
+                }
+            } else {
+                showNoParkingsMessage();
+            }
+        })
+        .catch(error => {
+            console.error('주변 주차장 정보 로드 오류:', error);
+            showNoParkingsMessage();
+        });
+}
+
+// 주변 주차장 정보 표시
+function displayNearbyParkings(parkings) {
+    const container = document.querySelector('.detail-card:nth-child(2)');
+    if (!container) return;
+    
+    // 기존 로딩 메시지 제거
+    const loadingMessage = container.querySelector('p.text-muted.text-center');
+    if (loadingMessage) {
+        loadingMessage.remove();
+    }
+    
+    // 주변 주차장 목록 생성
+    const parkingListHtml = document.createElement('div');
+    parkingListHtml.className = 'nearby-parking-list';
+    
+    parkings.forEach(parking => {
+        // 거리 계산 (미터 단위로 표시)
+        const distance = calculateDistance(
+            parseFloat(document.getElementById('latitude').value),
+            parseFloat(document.getElementById('longitude').value),
+            parking.prkPlceEntrcLa,
+            parking.prkPlceEntrcLo
+        );
+        
+        const parkingItem = document.createElement('div');
+        parkingItem.className = 'nearby-parking-item p-3 border-bottom';
+        
+        // 주차 상태 클래스 (실시간 정보가 없으면 '정보 없음')
+        const statusClass = 
+            parking.realTimeInfo ? 
+            (parking.realTimeInfo.nrmlparkingcnt > 10 ? 'text-success' : 
+             (parking.realTimeInfo.nrmlparkingcnt > 0 ? 'text-warning' : 'text-danger')) : 
+            'text-secondary';
+        
+        // 주차 상태 텍스트
+        const statusText = 
+            parking.realTimeInfo ? 
+            (parking.realTimeInfo.nrmlparkingcnt > 10 ? '주차가능' : 
+             (parking.realTimeInfo.nrmlparkingcnt > 0 ? '주차공간 부족' : '만차')) : 
+            '정보 없음';
+        
+        parkingItem.innerHTML = `
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h6 class="mb-0">
+                    <a href="/parking/detail/${parking.prkCenterId}" class="text-decoration-none text-dark">
+                        ${parking.prkPlceNm}
+                    </a>
+                </h6>
+                <span class="badge ${statusClass} rounded-pill">${statusText}</span>
+            </div>
+            <div class="text-muted small mb-2">
+                <i class="bi bi-geo-alt"></i> ${parking.prkPlceAdres}
+            </div>
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="text-muted small">
+                    <i class="bi bi-rulers"></i> ${formatDistance(distance)}
+                </div>
+                <a href="/parking/detail/${parking.prkCenterId}" class="btn btn-sm btn-outline-primary">
+                    자세히 보기
+                </a>
+            </div>
+        `;
+        
+        parkingListHtml.appendChild(parkingItem);
+    });
+    
+    container.appendChild(parkingListHtml);
+}
+
+// 주변 주차장 정보가 없을 때 메시지 표시
+function showNoParkingsMessage() {
+    const container = document.querySelector('.detail-card:nth-child(2)');
+    if (!container) return;
+    
+    // 기존 로딩 메시지 제거
+    const loadingMessage = container.querySelector('p.text-muted.text-center');
+    if (loadingMessage) {
+        loadingMessage.innerHTML = `
+            <i class="bi bi-exclamation-circle"></i>
+            주변 2km 이내에 다른 주차장 정보가 없습니다.
+        `;
+    }
+}
+
+// 두 지점 간의 거리 계산 (Haversine 공식)
+function calculateDistance(lat1, lon1, lat2, lon2) {
+    const R = 6371000; // 지구 반지름 (미터)
+    const dLat = degToRad(lat2 - lat1);
+    const dLon = degToRad(lon2 - lon1);
+    
+    const a = 
+        Math.sin(dLat/2) * Math.sin(dLat/2) +
+        Math.cos(degToRad(lat1)) * Math.cos(degToRad(lat2)) * 
+        Math.sin(dLon/2) * Math.sin(dLon/2);
+    
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return R * c; // 미터 단위 거리
+}
+
+// 각도를 라디안으로 변환
+function degToRad(deg) {
+    return deg * (Math.PI/180);
+}
+
+// 거리 포맷팅
+function formatDistance(meters) {
+    if (meters < 1000) {
+        return `약 ${Math.round(meters)}m`;
+    } else {
+        return `약 ${(meters/1000).toFixed(1)}km`;
+    }
 } 
