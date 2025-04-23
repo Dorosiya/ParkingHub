@@ -15,6 +15,10 @@
         SELECT * FROM PARKING_OPERATION WHERE prk_center_id = #{id}
     </select>
 
+    <select id="countParkingOperation" resultType="int">
+        SELECT COUNT(*) FROM PARKING_OPERATION
+    </select>
+
     <insert id="insertParkingOperation">
         INSERT INTO PARKING_OPERATION (prk_center_id, opertn_bs_free_time)
         VALUES (#{prkCenterId}, #{opertnBsFreeTime})

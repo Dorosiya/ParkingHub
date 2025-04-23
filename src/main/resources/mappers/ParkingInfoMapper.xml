@@ -18,6 +18,14 @@
     <select id="selectParkingInfoById" resultMap="ParkingInfoResultMap">
         SELECT * FROM PARKING_INFO WHERE prk_center_id = #{id}
     </select>
+    
+    <select id="findParkingInfoById" resultMap="ParkingInfoResultMap">
+        SELECT * FROM PARKING_INFO WHERE prk_center_id = #{id}
+    </select>
+    
+    <select id="countParkingInfo" resultType="int">
+        SELECT COUNT(*) FROM PARKING_INFO
+    </select>
 
     <!-- 위치 기반 주차장 검색 (간소화된 Haversine 공식) -->
     <select id="selectParkingNearby" resultMap="ParkingInfoResultMap">

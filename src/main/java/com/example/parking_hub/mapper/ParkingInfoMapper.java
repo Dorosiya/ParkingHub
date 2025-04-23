@@ -61,4 +61,17 @@ public interface ParkingInfoMapper {
      * 이미 존재하는 경우 업데이트, 없는 경우 삽입
      */
     void insertOrUpdateParkingInfo(ParkingInfo parkingInfo);
+
+    /**
+     * 주차장 정보 총 개수 조회
+     * @return 주차장 정보 개수
+     */
+    int countParkingInfo();
+    
+    /**
+     * 주차장 정보 조회 - ID로 검색 (실시간 데이터 처리용)
+     * @param id 주차장 ID
+     * @return 주차장 기본 정보
+     */
+    ParkingInfo findParkingInfoById(@Param("id") String id);
 }

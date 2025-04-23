@@ -50,4 +50,10 @@ public interface ParkingOperationMapper {
      * 이미 존재하는 경우 업데이트, 없는 경우 삽입
      */
     void insertOrUpdateParkingOperation(ParkingOperation parkingOperation);
+    
+    /**
+     * 주차장 운영 정보 총 개수 조회
+     * @return 주차장 운영 정보 개수
+     */
+    int countParkingOperation();
 }

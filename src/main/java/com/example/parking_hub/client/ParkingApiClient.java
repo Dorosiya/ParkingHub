@@ -37,4 +37,12 @@ public interface ParkingApiClient {
      * @return 주차장 실시간 정보 응답
      */
     PrkRealtimeInfoResponse getPrkRealtimeInfo(int pageNo, int numOfRows);
+    
+    /**
+     * 특정 ID의 주차장 기본정보를 조회합니다.
+     * 
+     * @param prkCenterId 주차장 ID
+     * @return 주차장 기본정보 응답
+     */
+    PrkSttusInfoResponse getPrkSttusInfoById(String prkCenterId);
 } 
