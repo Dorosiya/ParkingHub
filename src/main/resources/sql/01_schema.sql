@@ -1,19 +1,5 @@
--- ParkingHub 스키마 및 테이블 정의
--- MySQL 데이터베이스 기준
-
--- 데이터베이스 생성 (없는 경우)
-CREATE DATABASE IF NOT EXISTS parking_hub DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- 데이터베이스 선택
-USE parking_hub;
-
--- 기존 테이블 삭제 (역순으로 삭제)
-DROP TABLE IF EXISTS FAVORITE_PARKING;
-DROP TABLE IF EXISTS PARKING_REALTIME;
-DROP TABLE IF EXISTS PARKING_OPERATION;
-DROP TABLE IF EXISTS PARKING_INFO;
-DROP TABLE IF EXISTS USER;
-DROP TABLE IF EXISTS ROLE;
+-- ParkingHub 기본 스키마 정의
+-- 테이블 구조 생성 스크립트
 
 -- 역할 테이블
 CREATE TABLE IF NOT EXISTS ROLE (
@@ -53,6 +39,9 @@ CREATE TABLE IF NOT EXISTS PARKING_INFO (
 CREATE TABLE IF NOT EXISTS PARKING_OPERATION (
     prk_center_id VARCHAR(30) PRIMARY KEY,     -- 주차장 관리 ID
     opertn_bs_free_time INT DEFAULT 0,         -- 주차장 기본 무료 시간 (분 단위)
+    parking_chrge_bs_time VARCHAR(50),         -- 주차 요금 기본 시간
+    parking_chrge_bs_chrg VARCHAR(50),         -- 주차 요금 기본 요금
+    operation_day_info TEXT,                   -- 운영 요일 정보
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (prk_center_id) REFERENCES PARKING_INFO(prk_center_id) ON DELETE CASCADE
@@ -78,14 +67,4 @@ CREATE TABLE IF NOT EXISTS FAVORITE_PARKING (
     UNIQUE KEY uk_user_parking (user_id, prk_center_id),
     FOREIGN KEY (user_id) REFERENCES USER(id) ON DELETE CASCADE,
     FOREIGN KEY (prk_center_id) REFERENCES PARKING_INFO(prk_center_id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- 초기 역할 데이터 삽입
-INSERT INTO ROLE (id, name, description) VALUES 
-(1, 'ROLE_USER', '일반 사용자'),
-(2, 'ROLE_ADMIN', '관리자'),
-(3, 'ROLE_MANAGER', '매니저');
-
--- 관리자 계정 생성 (비밀번호: admin1234 - BCrypt 암호화 적용)
-INSERT INTO USER (email, username, password, role_id) VALUES 
-('admin@parkinghub.com', 'admin', '$2a$10$8YaV9.a.dL5jLdxLYjClJuoJ7vYWcZ.WYq7WH8q7eRkONO.KDJFK6', 2); 
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4; 
