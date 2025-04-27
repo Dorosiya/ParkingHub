@@ -85,6 +85,38 @@ public class ParkingController {
         }
         return ResponseEntity.ok(parkingDetails);
     }
+    
+    /**
+     * 위치 기반 주차장 검색 (지도 연동용 API)
+     */
+    @GetMapping("/nearby")
+    public ResponseEntity<List<ParkingInfo>> findNearbyParking(
+            @RequestParam(value = "lat") Double latitude,
+            @RequestParam(value = "lng") Double longitude,
+            @RequestParam(value = "radius", defaultValue = "1.0") Double radiusKm) {
+        
+        logger.info("주변 주차장 검색 요청 - 위도: {}, 경도: {}, 반경: {}km", latitude, longitude, radiusKm);
+        
+        try {
+            // 좌표 검증
+            validationService.validateCoordinates(latitude, longitude);
+            
+            // 반경 검증 (기본값 1km, 최대 5km)
+            double validRadius = validationService.validateRadius(radiusKm);
+            if (validRadius > 5.0) {
+                validRadius = 5.0;
+            }
+            
+            // 서비스 호출
+            List<ParkingInfo> parkingInfoList = parkingService.findParkingNearby(latitude, longitude, validRadius);
+            
+            logger.info("주변 주차장 검색 완료 - {} 개 결과 반환", parkingInfoList.size());
+            return ResponseEntity.ok(parkingInfoList);
+        } catch (Exception e) {
+            logger.error("주변 주차장 검색 중 오류 발생: {}", e.getMessage(), e);
+            throw e;
+        }
+    }
 
     /**
      * 위치 기반 주차장 검색

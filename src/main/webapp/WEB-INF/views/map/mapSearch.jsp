@@ -42,10 +42,10 @@ uri="http://java.sun.com/jsp/jstl/core" %>
               <a class="nav-link" href="/">홈</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="/search">주차장 찾기</a>
+              <a class="nav-link" href="/parking/search">주차장 찾기</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link active" href="/mapSearch">지도로 찾기</a>
+              <a class="nav-link active" href="/map">지도로 찾기</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="/mypage">마이페이지</a>
@@ -176,5 +176,25 @@ uri="http://java.sun.com/jsp/jstl/core" %>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/js/auth.js"></script>
     <script src="/js/mapSearch.js"></script>
+    <script>
+      // 페이지 로드 후 지도 초기화
+      document.addEventListener("DOMContentLoaded", function() {
+        // Kakao 지도 API가 로드된 후에 초기화
+        if (typeof kakao !== 'undefined' && kakao.maps) {
+          initMap();
+        } else {
+          // Kakao 지도 API가 아직 로드되지 않은 경우
+          console.error("Kakao Maps API is not loaded yet");
+          
+          // API 로드 확인 인터벌 설정
+          let checkInterval = setInterval(function() {
+            if (typeof kakao !== 'undefined' && kakao.maps) {
+              clearInterval(checkInterval);
+              initMap();
+            }
+          }, 500);
+        }
+      });
+    </script>
   </body>
 </html>

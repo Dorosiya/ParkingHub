@@ -23,8 +23,8 @@
     </select>
 
     <insert id="insertParkingRealtime">
-        INSERT INTO PARKING_REALTIME (prk_center_id, pkfc_parking_lots_total, pkfc_available_parking_lots_total)
-        VALUES (#{prkCenterId}, #{pkfcParkingLotsTotal}, #{pkfcAvailableParkingLotsTotal})
+        INSERT INTO PARKING_REALTIME (prk_center_id, pkfc_parking_lots_total, pkfc_available_parking_lots_total, updated_at)
+        VALUES (#{prkCenterId}, #{pkfcParkingLotsTotal}, #{pkfcAvailableParkingLotsTotal}, CURRENT_TIMESTAMP)
     </insert>
 
     <update id="updateParkingRealtime">

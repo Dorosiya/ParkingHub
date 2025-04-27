@@ -93,11 +93,13 @@ public class PageController {
 
     /**
      * 지도 페이지
+     * 주의: 이 매핑은 HomeController의 /map 매핑과 충돌합니다.
+     * HomeController에서 처리하도록 이 매핑은 제거되었습니다.
      */
-    @GetMapping("/map")
-    public String map() {
-        return "map/mapSearch";
-    }
+    // 제거됨: @GetMapping("/map")
+    // 제거됨: public String map() {
+    // 제거됨:    return "map/mapSearch";
+    // 제거됨: }
 
     @GetMapping("/dashboard")
     public String dashboard() {

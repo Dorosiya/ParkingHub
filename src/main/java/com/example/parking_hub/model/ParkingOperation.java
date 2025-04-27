@@ -2,6 +2,7 @@ package com.example.parking_hub.model;
 
 import lombok.Getter;
 import lombok.Setter;
+import java.time.LocalDateTime;
 
 @Setter
 @Getter
@@ -11,7 +12,16 @@ public class ParkingOperation {
     private Integer opertnBsFreeTime;
     private String parkingChrgeBsTime;
     private String parkingChrgeBsChrg;
-    private String operationDayInfo;
+    private String parkingChrgeAditUnitTime;
+    private String parkingChrgeAditUnitChrge;
+    private String parkingChrgeOneDayChrge;
+    private String parkingChrgeMonUnitChrge;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    
+    // 기본 생성자
+    public ParkingOperation() {
+    }
     
     // 명시적인 setter 메서드 추가
     public void setPrkCenterId(String prkCenterId) {
@@ -35,7 +45,27 @@ public class ParkingOperation {
         this.parkingChrgeBsChrg = parkingChrgeBsChrg;
     }
     
-    public void setOperationDayInfo(String operationDayInfo) {
-        this.operationDayInfo = operationDayInfo;
+    public void setParkingChrgeAditUnitTime(String parkingChrgeAditUnitTime) {
+        this.parkingChrgeAditUnitTime = parkingChrgeAditUnitTime;
+    }
+    
+    public void setParkingChrgeAditUnitChrge(String parkingChrgeAditUnitChrge) {
+        this.parkingChrgeAditUnitChrge = parkingChrgeAditUnitChrge;
+    }
+    
+    public void setParkingChrgeOneDayChrge(String parkingChrgeOneDayChrge) {
+        this.parkingChrgeOneDayChrge = parkingChrgeOneDayChrge;
+    }
+    
+    public void setParkingChrgeMonUnitChrge(String parkingChrgeMonUnitChrge) {
+        this.parkingChrgeMonUnitChrge = parkingChrgeMonUnitChrge;
+    }
+    
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+    
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }

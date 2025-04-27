@@ -2,6 +2,7 @@ package com.example.parking_hub.model;
 
 import lombok.Getter;
 import lombok.Setter;
+import java.time.LocalDateTime;
 
 @Setter
 @Getter
@@ -13,10 +14,10 @@ public class ParkingInfo {
     private Double prkPlceEntrcLa;
     private Double prkPlceEntrcLo;
     private Integer prkCmprtCo;
-    
-    // 요금 정보 (임시로 추가, 실제로는 ParkingOperation에서 관리)
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    private Boolean isFree;
     private String parkingFeeInfo;
-    private boolean isFree = false;
     
     // 명시적인 setter 메서드 추가
     public void setPrkCenterId(String prkCenterId) {
@@ -43,11 +44,27 @@ public class ParkingInfo {
         this.prkCmprtCo = prkCmprtCo;
     }
     
-    public void setParkingFeeInfo(String parkingFeeInfo) {
-        this.parkingFeeInfo = parkingFeeInfo;
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
     
-    public void setFree(boolean isFree) {
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+    
+    public Boolean getIsFree() {
+        return isFree;
+    }
+    
+    public void setFree(Boolean isFree) {
         this.isFree = isFree;
+    }
+    
+    public String getParkingFeeInfo() {
+        return parkingFeeInfo;
+    }
+    
+    public void setParkingFeeInfo(String parkingFeeInfo) {
+        this.parkingFeeInfo = parkingFeeInfo;
     }
 }

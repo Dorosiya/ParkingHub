@@ -9,6 +9,8 @@
         <result property="prkPlceEntrcLa" column="prk_plce_entrc_la"/>
         <result property="prkPlceEntrcLo" column="prk_plce_entrc_lo"/>
         <result property="prkCmprtCo" column="prk_cmprt_co"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
     </resultMap>
 
     <select id="selectAllParkingInfo" resultMap="ParkingInfoResultMap">
@@ -60,8 +62,8 @@
     </select>
 
     <insert id="insertParkingInfo">
-        INSERT INTO PARKING_INFO (prk_center_id, prk_plce_nm, prk_plce_adres, prk_plce_entrc_la, prk_plce_entrc_lo, prk_cmprt_co)
-        VALUES (#{prkCenterId}, #{prkPlceNm}, #{prkPlceAdres}, #{prkPlceEntrcLa}, #{prkPlceEntrcLo}, #{prkCmprtCo})
+        INSERT INTO PARKING_INFO (prk_center_id, prk_plce_nm, prk_plce_adres, prk_plce_entrc_la, prk_plce_entrc_lo, prk_cmprt_co, created_at, updated_at)
+        VALUES (#{prkCenterId}, #{prkPlceNm}, #{prkPlceAdres}, #{prkPlceEntrcLa}, #{prkPlceEntrcLo}, #{prkCmprtCo}, #{createdAt}, #{updatedAt})
     </insert>
 
     <update id="updateParkingInfo">
@@ -70,19 +72,21 @@
             prk_plce_adres = #{prkPlceAdres},
             prk_plce_entrc_la = #{prkPlceEntrcLa},
             prk_plce_entrc_lo = #{prkPlceEntrcLo},
-            prk_cmprt_co = #{prkCmprtCo}
+            prk_cmprt_co = #{prkCmprtCo},
+            updated_at = #{updatedAt}
         WHERE prk_center_id = #{prkCenterId}
     </update>
 
     <insert id="insertOrUpdateParkingInfo">
-        INSERT INTO PARKING_INFO (prk_center_id, prk_plce_nm, prk_plce_adres, prk_plce_entrc_la, prk_plce_entrc_lo, prk_cmprt_co)
-        VALUES (#{prkCenterId}, #{prkPlceNm}, #{prkPlceAdres}, #{prkPlceEntrcLa}, #{prkPlceEntrcLo}, #{prkCmprtCo})
+        INSERT INTO PARKING_INFO (prk_center_id, prk_plce_nm, prk_plce_adres, prk_plce_entrc_la, prk_plce_entrc_lo, prk_cmprt_co, created_at, updated_at)
+        VALUES (#{prkCenterId}, #{prkPlceNm}, #{prkPlceAdres}, #{prkPlceEntrcLa}, #{prkPlceEntrcLo}, #{prkCmprtCo}, #{createdAt}, #{updatedAt})
         ON DUPLICATE KEY UPDATE
             prk_plce_nm = VALUES(prk_plce_nm),
             prk_plce_adres = VALUES(prk_plce_adres),
             prk_plce_entrc_la = VALUES(prk_plce_entrc_la),
             prk_plce_entrc_lo = VALUES(prk_plce_entrc_lo),
-            prk_cmprt_co = VALUES(prk_cmprt_co)
+            prk_cmprt_co = VALUES(prk_cmprt_co),
+            updated_at = VALUES(updated_at)
     </insert>
 
     <delete id="deleteParkingInfo">
@@ -96,4 +100,9 @@
     <delete id="deleteParkingInfoByIdPattern">
         DELETE FROM PARKING_INFO WHERE prk_center_id LIKE #{idPattern}
     </delete>
+
+    <select id="selectParkingByIdPattern" resultMap="ParkingInfoResultMap">
+        SELECT * FROM PARKING_INFO 
+        WHERE prk_center_id LIKE #{idPattern}
+    </select>
 </mapper>

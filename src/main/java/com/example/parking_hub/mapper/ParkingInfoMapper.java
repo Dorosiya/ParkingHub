@@ -84,4 +84,9 @@ public interface ParkingInfoMapper {
      * ID 패턴으로 주차장 기본 정보 삭제
      */
     int deleteParkingInfoByIdPattern(@Param("idPattern") String idPattern);
+
+    /**
+     * ID 패턴으로 주차장 정보 조회
+     */
+    List<ParkingInfo> selectParkingByIdPattern(@Param("idPattern") String idPattern);
 }

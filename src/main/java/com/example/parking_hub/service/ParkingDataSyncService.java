@@ -7,9 +7,11 @@ import com.example.parking_hub.dto.api.PrkRealtimeInfoResponse;
 import com.example.parking_hub.mapper.ParkingInfoMapper;
 import com.example.parking_hub.mapper.ParkingOperationMapper;
 import com.example.parking_hub.mapper.ParkingRealtimeMapper;
+import com.example.parking_hub.mapper.ParkingOperationTimeMapper;
 import com.example.parking_hub.model.ParkingInfo;
 import com.example.parking_hub.model.ParkingOperation;
 import com.example.parking_hub.model.ParkingRealtime;
+import com.example.parking_hub.model.ParkingOperationTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +29,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * 주차장 데이터 동기화 서비스
@@ -40,16 +43,19 @@ public class ParkingDataSyncService implements ApplicationListener<ApplicationRe
     private final ParkingInfoMapper parkingInfoMapper;
     private final ParkingOperationMapper parkingOperationMapper;
     private final ParkingRealtimeMapper parkingRealtimeMapper;
+    private final ParkingOperationTimeMapper parkingOperationTimeMapper;
 
     @Autowired
     public ParkingDataSyncService(ParkingApiClient parkingApiClient,
                                 ParkingInfoMapper parkingInfoMapper,
                                 ParkingOperationMapper parkingOperationMapper,
-                                ParkingRealtimeMapper parkingRealtimeMapper) {
+                                ParkingRealtimeMapper parkingRealtimeMapper,
+                                ParkingOperationTimeMapper parkingOperationTimeMapper) {
         this.parkingApiClient = parkingApiClient;
         this.parkingInfoMapper = parkingInfoMapper;
         this.parkingOperationMapper = parkingOperationMapper;
         this.parkingRealtimeMapper = parkingRealtimeMapper;
+        this.parkingOperationTimeMapper = parkingOperationTimeMapper;
     }
 
     /**
@@ -182,7 +188,7 @@ public class ParkingDataSyncService implements ApplicationListener<ApplicationRe
         int maxRetries = 3; // 최대 재시도 횟수
         int retryCount = 0;
         int pageNo = 1;
-        int numOfRows = 200; // 500에서 200으로 변경
+        int numOfRows = 2000; // 500에서 500 원복 변경
         int totalProcessed = 0;
         boolean isConnectionError = false;
         
@@ -323,11 +329,34 @@ public class ParkingDataSyncService implements ApplicationListener<ApplicationRe
         
         for (PrkSttusInfoResponse.PrkSttusInfo item : batchItems) {
             try {
-                ParkingInfo parkingInfo = convertToParkingInfo(item);
+                // 필수 필드 검증
+                if (item.getPrkCenterId() == null || item.getPrkCenterId().trim().isEmpty()) {
+                    logger.warn("주차장 기본 정보 처리 건너뜀 - 주차장 ID가 없음");
+                    continue;
+                }
+                if (item.getPrkPlceNm() == null || item.getPrkPlceNm().trim().isEmpty()) {
+                    logger.warn("주차장 기본 정보 처리 건너뜀 (ID: {}) - 주차장명이 없음", item.getPrkCenterId());
+                    continue;
+                }
+                if (item.getPrkPlceAdres() == null || item.getPrkPlceAdres().trim().isEmpty()) {
+                    logger.warn("주차장 기본 정보 처리 건너뜀 (ID: {}) - 주소가 없음", item.getPrkCenterId());
+                    continue;
+                }
+                if (item.getLatitude() == null || item.getLongitude() == null) {
+                    logger.warn("주차장 기본 정보 처리 건너뜀 (ID: {}) - 위도 또는 경도 정보 없음", item.getPrkCenterId());
+                    continue;
+                }
+                if (item.getPrkCmprtCo() == null) {
+                    logger.warn("주차장 기본 정보 처리 건너뜀 (ID: {}) - 주차면수 정보 없음", item.getPrkCenterId());
+                    continue;
+                }
                 
-                // ID 정규화
-                String normalizedId = normalizeId(parkingInfo.getPrkCenterId());
-                logger.debug("주차장 기본 정보 처리 시작 - ID: {}", normalizedId);
+                // API에서 제공하는 ID 정규화
+                String normalizedId = normalizeId(item.getPrkCenterId());
+                logger.debug("주차장 기본 정보 처리 시작 - API ID: {}, 정규화 ID: {}", item.getPrkCenterId(), normalizedId);
+                
+                // 객체 변환
+                ParkingInfo parkingInfo = convertToParkingInfo(item);
                 
                 // 명시적으로 정규화된 ID 설정
                 parkingInfo.setPrkCenterId(normalizedId);
@@ -356,7 +385,7 @@ public class ParkingDataSyncService implements ApplicationListener<ApplicationRe
                     logger.error("주차장 기본 정보 처리 실패 (ID: {}): {}", normalizedId, e.getMessage());
                 }
             } catch (Exception e) {
-                logger.error("주차장 기본 정보 변환 중 오류: {}", item.getPrkCenterId(), e);
+                logger.error("주차장 기본 정보 변환 중 오류: {}, 내용: {}", item.getPrkCenterId(), e.getMessage(), e);
                 // 개별 항목 오류는 전체 처리에 영향 없음
             }
         }
@@ -366,29 +395,45 @@ public class ParkingDataSyncService implements ApplicationListener<ApplicationRe
     
     // 비-트랜잭션 메서드: 트랜잭션이 분리된 다른 메서드를 호출하기 위한 메서드
     public void fetchAndProcessBasicInfoNonTransactional(String parkingId, PrkRealtimeInfoResponse.PrkRealtimeItem item) {
-        // 정규화된 ID 사용
-        String normalizedId = normalizeId(parkingId);
-        
         try {
-            // 단일 주차장 정보 조회 API 호출
-            PrkSttusInfoResponse response = parkingApiClient.getPrkSttusInfoById(normalizedId);
-            List<PrkSttusInfoResponse.PrkSttusInfo> infoItems = getItemsFromResponse(response);
+            logger.info("기본정보 조회 시작 (ID: {})", parkingId);
+            PrkSttusInfoResponse basicResponse = parkingApiClient.getPrkSttusInfoById(parkingId);
             
-            if (infoItems != null && !infoItems.isEmpty()) {
-                // 기본 정보 저장 및 실시간 정보 처리 (이미 트랜잭션 분리되어 있는 메서드 호출)
-                saveBasicInfoAndProcessRealtime(infoItems.get(0), item, normalizedId);
-                
-                // 성공적으로 처리되었는지 확인
-                if (!parkingInfoMapper.existsById(normalizedId)) {
-                    throw new RuntimeException("기본 정보 저장 후에도 ID가 존재하지 않음: " + normalizedId);
-                }
-            } else {
-                logger.warn("주차장 기본 정보 조회 결과 없음 (ID: {})", normalizedId);
-                throw new RuntimeException("API에서 주차장 정보를 찾을 수 없음: " + normalizedId);
+            if (basicResponse == null || getItemsFromResponse(basicResponse) == null || getItemsFromResponse(basicResponse).isEmpty()) {
+                logger.warn("API에서 기본정보를 찾을 수 없습니다 (ID: {})", parkingId);
+                return;
             }
+            
+            PrkSttusInfoResponse.PrkSttusInfo basicInfo = (PrkSttusInfoResponse.PrkSttusInfo) getItemsFromResponse(basicResponse).get(0);
+            
+            // 필수 필드 검증
+            if (basicInfo.getPrkCenterId() == null || basicInfo.getPrkCenterId().trim().isEmpty()) {
+                logger.warn("주차장 기본 정보 저장 건너뜀 (ID: {}) - 주차장 ID가 없음", parkingId);
+                return;
+            }
+            if (basicInfo.getPrkPlceNm() == null || basicInfo.getPrkPlceNm().trim().isEmpty()) {
+                logger.warn("주차장 기본 정보 저장 건너뜀 (ID: {}) - 주차장명이 없음", parkingId);
+                return;
+            }
+            if (basicInfo.getPrkPlceAdres() == null || basicInfo.getPrkPlceAdres().trim().isEmpty()) {
+                logger.warn("주차장 기본 정보 저장 건너뜀 (ID: {}) - 주소가 없음", parkingId);
+                return;
+            }
+            // 위도 또는 경도가 null인 경우 저장하지 않음
+            if (basicInfo.getLatitude() == null || basicInfo.getLongitude() == null) {
+                logger.warn("주차장 기본 정보 저장 건너뜀 (ID: {}) - 위도 또는 경도 정보 없음", parkingId);
+                return;
+            }
+            if (basicInfo.getPrkCmprtCo() == null) {
+                logger.warn("주차장 기본 정보 저장 건너뜀 (ID: {}) - 주차면수 정보 없음", parkingId);
+                return;
+            }
+            
+            // 기본정보와 실시간정보 함께 저장
+            saveBasicInfoAndProcessRealtime(basicInfo, item, parkingId);
+            
         } catch (Exception e) {
-            logger.error("주차장 기본 정보 조회 실패 (ID: {}): {}", normalizedId, e.getMessage());
-            throw e; // 호출자에게 예외 전파
+            logger.error("기본정보 조회 및 처리 중 오류 발생 (ID: {}): {}", parkingId, e.getMessage(), e);
         }
     }
 
@@ -398,21 +443,53 @@ public class ParkingDataSyncService implements ApplicationListener<ApplicationRe
                                              PrkRealtimeInfoResponse.PrkRealtimeItem realtimeItem,
                                              String parkingId) {
         try {
-            // ID 확인 및 정규화
-            String normalizedId = normalizeId(parkingId);
+            // 필수 필드 검증
+            if (infoItem.getPrkCenterId() == null || infoItem.getPrkCenterId().trim().isEmpty()) {
+                logger.warn("주차장 기본 정보 저장 건너뜀 (ID: {}) - 주차장 ID가 없음", parkingId);
+                processSingleRealtimeInfo(realtimeItem, parkingId);
+                return;
+            }
+            if (infoItem.getPrkPlceNm() == null || infoItem.getPrkPlceNm().trim().isEmpty()) {
+                logger.warn("주차장 기본 정보 저장 건너뜀 (ID: {}) - 주차장명이 없음", parkingId);
+                processSingleRealtimeInfo(realtimeItem, parkingId);
+                return;
+            }
+            if (infoItem.getPrkPlceAdres() == null || infoItem.getPrkPlceAdres().trim().isEmpty()) {
+                logger.warn("주차장 기본 정보 저장 건너뜀 (ID: {}) - 주소가 없음", parkingId);
+                processSingleRealtimeInfo(realtimeItem, parkingId);
+                return;
+            }
+            // 위도 또는 경도가 null인 경우 위치 정보 저장 건너뜀
+            if (infoItem.getLatitude() == null || infoItem.getLongitude() == null) {
+                logger.warn("주차장 기본 정보 저장 건너뜀 (ID: {}) - 위도 또는 경도 정보 없음", parkingId);
+                processSingleRealtimeInfo(realtimeItem, parkingId);
+                return;
+            }
+            if (infoItem.getPrkCmprtCo() == null) {
+                logger.warn("주차장 기본 정보 저장 건너뜀 (ID: {}) - 주차면수 정보 없음", parkingId);
+                processSingleRealtimeInfo(realtimeItem, parkingId);
+                return;
+            }
             
-            // API 응답의 ID도 정규화
+            // API 응답의 ID 정규화 - API에서 제공하는 ID를 우선 사용
             String apiParkingId = normalizeId(infoItem.getPrkCenterId());
             
-            // ID 불일치 확인 및 로깅
-            if (!normalizedId.equals(apiParkingId)) {
-                logger.warn("주차장 ID 불일치 감지: 요청 ID={}, API ID={}, 요청 ID를 사용합니다.", normalizedId, apiParkingId);
+            // 요청 ID 정규화
+            String requestId = normalizeId(parkingId);
+            
+            // ID 선택 - API ID를 우선 사용
+            String normalizedId = apiParkingId;
+            
+            // API ID와 요청 ID가 다를 경우 로깅
+            if (!apiParkingId.equals(requestId)) {
+                logger.warn("주차장 ID 불일치 감지: 요청 ID={}, API ID={}, API ID를 사용합니다.", 
+                          requestId, apiParkingId);
             }
             
             // 트랜잭션 내에서 바로 처리
             ParkingInfo parkingInfo = convertToParkingInfo(infoItem);
             
-            // ID 명시적 설정
+            // ID 명시적 설정 - API ID 사용
             parkingInfo.setPrkCenterId(normalizedId);
             
             // 락 경쟁을 줄이기 위해 먼저 존재하는지 확인 (트랜잭션 내에서)
@@ -443,7 +520,7 @@ public class ParkingDataSyncService implements ApplicationListener<ApplicationRe
             if (parkingInfoMapper.existsById(normalizedId)) {
                 // 실시간 정보도 같은 트랜잭션 내에서 바로 처리
                 ParkingRealtime realtime = convertToParkingRealtime(realtimeItem);
-                realtime.setPrkCenterId(normalizedId); // 정규화된 ID 사용
+                realtime.setPrkCenterId(normalizedId); // API ID 사용
                 parkingRealtimeMapper.insertOrUpdateParkingRealtime(realtime);
                 logger.debug("주차장 실시간 정보 처리 완료 (ID: {})", normalizedId);
             } else {
@@ -452,7 +529,7 @@ public class ParkingDataSyncService implements ApplicationListener<ApplicationRe
             
             logger.info("주차장 기본 정보 및 실시간 정보 처리 완료 (ID: {})", normalizedId);
         } catch (Exception e) {
-            logger.error("주차장 정보 저장 실패 (ID: {}): {}", parkingId, e.getMessage());
+            logger.error("주차장 정보 저장 실패 (ID: {}): {}", parkingId, e.getMessage(), e);
             throw e;
         }
     }
@@ -466,37 +543,106 @@ public class ParkingDataSyncService implements ApplicationListener<ApplicationRe
         }
         
         // ID 형식 전처리 (예: 00000-19199-00001-00-1 -> 00000-19199-00001-00-1)
-        // 필요에 따라 ID 형식을 조정하는 로직 추가
-        return id.trim();
+        String normalizedId = id.trim();
+        
+        // 기본 포맷 검사 (5개 숫자 그룹, 각각 5-5-5-2-1 자리수)
+        if (normalizedId.matches("^\\d{5}-\\d{5}-\\d{5}-\\d{2}-\\d{1}$")) {
+            return normalizedId;
+        }
+        
+        // 불완전한 형식의 ID 정규화 시도
+        // 하이픈 없이 숫자만 있는 경우 (예: 00000191990000100-1 → 00000-19199-00001-00-1)
+        if (normalizedId.matches("^\\d{18}$")) {
+            return normalizedId.substring(0, 5) + "-" +
+                   normalizedId.substring(5, 10) + "-" +
+                   normalizedId.substring(10, 15) + "-" +
+                   normalizedId.substring(15, 17) + "-" +
+                   normalizedId.substring(17);
+        }
+        
+        // 기타 형식은 원본 반환
+        return normalizedId;
+    }
+    
+    /**
+     * ID 기반 중복 체크
+     * 정규화된 ID가 이미 데이터베이스에 존재하는지 확인
+     * @return 이미 존재하는 경우 true, 없으면 false 반환
+     */
+    private boolean existsById(String normalizedId) {
+        if (normalizedId == null) {
+            return false;
+        }
+        
+        try {
+            return parkingInfoMapper.existsById(normalizedId);
+        } catch (Exception e) {
+            logger.warn("ID 기반 중복 검사 중 오류: {}", e.getMessage());
+            return false;
+        }
     }
     
     // 기본 정보만 저장 (별도 트랜잭션)
     @Transactional(propagation = Propagation.REQUIRES_NEW, timeout = 45) // 타임아웃 45초로 수정
     public void saveBasicInfo(PrkSttusInfoResponse.PrkSttusInfo infoItem) {
         try {
+            // 필수 필드 검증
+            if (infoItem.getPrkCenterId() == null || infoItem.getPrkCenterId().trim().isEmpty()) {
+                logger.warn("주차장 기본 정보 저장 건너뜀 - 주차장 ID가 없음");
+                return;
+            }
+            if (infoItem.getPrkPlceNm() == null || infoItem.getPrkPlceNm().trim().isEmpty()) {
+                logger.warn("주차장 기본 정보 저장 건너뜀 (ID: {}) - 주차장명이 없음", infoItem.getPrkCenterId());
+                return;
+            }
+            if (infoItem.getPrkPlceAdres() == null || infoItem.getPrkPlceAdres().trim().isEmpty()) {
+                logger.warn("주차장 기본 정보 저장 건너뜀 (ID: {}) - 주소가 없음", infoItem.getPrkCenterId());
+                return;
+            }
+            if (infoItem.getLatitude() == null || infoItem.getLongitude() == null) {
+                logger.warn("주차장 기본 정보 저장 건너뜀 (ID: {}) - 위도 또는 경도 정보 없음", infoItem.getPrkCenterId());
+                return;
+            }
+            if (infoItem.getPrkCmprtCo() == null) {
+                logger.warn("주차장 기본 정보 저장 건너뜀 (ID: {}) - 주차면수 정보 없음", infoItem.getPrkCenterId());
+                return;
+            }
+            
+            // API에서 제공하는 ID를 정규화하여 사용
+            String normalizedId = normalizeId(infoItem.getPrkCenterId());
+            
+            // 객체 변환
             ParkingInfo parkingInfo = convertToParkingInfo(infoItem);
             
+            // 정규화된 ID 명시적 설정
+            parkingInfo.setPrkCenterId(normalizedId);
+            
             // 가능한 락 경쟁을 줄이기 위해 먼저 존재하는지 확인
-            String parkingId = parkingInfo.getPrkCenterId();
-            boolean exists = parkingInfoMapper.existsById(parkingId);
+            boolean exists = parkingInfoMapper.existsById(normalizedId);
             
             if (exists) {
                 // 기존에 존재하면 업데이트
                 parkingInfoMapper.updateParkingInfo(parkingInfo);
+                logger.info("주차장 기본 정보 업데이트 성공 (ID: {})", normalizedId);
             } else {
                 // 존재하지 않으면 새로 삽입
-                parkingInfoMapper.insertParkingInfo(parkingInfo);
+                try {
+                    parkingInfoMapper.insertParkingInfo(parkingInfo);
+                    logger.info("주차장 기본 정보 추가 성공 (ID: {})", normalizedId);
+                } catch (org.springframework.dao.DuplicateKeyException e) {
+                    // 동시성 문제로 다른 스레드가 이미 삽입했을 경우 업데이트로 전환
+                    logger.warn("동시성으로 인한 중복 삽입 시도, 업데이트로 전환 (ID: {})", normalizedId);
+                    parkingInfoMapper.updateParkingInfo(parkingInfo);
+                }
             }
-            
-            logger.info("주차장 기본 정보 {} 성공 (ID: {})", (exists ? "업데이트" : "추가"), infoItem.getPrkCenterId());
         } catch (Exception e) {
-            logger.error("주차장 기본 정보 저장 실패 (ID: {})", infoItem.getPrkCenterId(), e);
+            logger.error("주차장 기본 정보 저장 실패 (ID: {}): {}", infoItem.getPrkCenterId(), e.getMessage(), e);
             throw e;
         }
     }
     
     // 실시간 정보만 저장 (별도 트랜잭션)
-    @Transactional(propagation = Propagation.REQUIRES_NEW, timeout = 90) // 1.5분 타임아웃
+    @Transactional(propagation = Propagation.REQUIRES_NEW, timeout = 90) // 1.5분으로 타임아웃
     public void saveRealtimeInfo(PrkRealtimeInfoResponse.PrkRealtimeItem item, String parkingId) {
         try {
             ParkingRealtime realtime = convertToParkingRealtime(item);
@@ -667,9 +813,27 @@ public class ParkingDataSyncService implements ApplicationListener<ApplicationRe
             parkingOperation.setOpertnBsFreeTime(0);
         }
         
+        // 기본 주차 시간
         parkingOperation.setParkingChrgeBsTime(item.getParkingChrgeBsTime());
+        
+        // 기본 주차 요금
         parkingOperation.setParkingChrgeBsChrg(item.getParkingChrgeBsChrg());
-        parkingOperation.setOperationDayInfo(item.getOperationDayInfo());
+        
+        // 추가 단위 시간
+        parkingOperation.setParkingChrgeAditUnitTime(item.getParkingChrgeAditUnitTime());
+        
+        // 추가 단위 요금
+        parkingOperation.setParkingChrgeAditUnitChrge(item.getParkingChrgeAditUnitChrge());
+        
+        // 1일 주차 요금
+        parkingOperation.setParkingChrgeOneDayChrge(item.getParkingChrgeOneDayChrge());
+        
+        // 월 정기권 요금
+        parkingOperation.setParkingChrgeMonUnitChrge(item.getParkingChrgeMonUnitChrge());
+        
+        // 현재 시간 설정
+        parkingOperation.setCreatedAt(LocalDateTime.now());
+        parkingOperation.setUpdatedAt(LocalDateTime.now());
         
         return parkingOperation;
     }
@@ -728,6 +892,10 @@ public class ParkingDataSyncService implements ApplicationListener<ApplicationRe
             int realtimeCount = parkingRealtimeMapper.deleteAllParkingRealtime();
             logger.info("주차장 실시간 정보 {} 건 삭제 완료", realtimeCount);
             
+            // 운영 시간 정보 삭제
+            int operationTimeCount = parkingOperationTimeMapper.deleteAllParkingOperationTimes();
+            logger.info("주차장 운영 시간 정보 {} 건 삭제 완료", operationTimeCount);
+            
             // 운영 정보 삭제
             int operationCount = parkingOperationMapper.deleteAllParkingOperation();
             logger.info("주차장 운영 정보 {} 건 삭제 완료", operationCount);
@@ -752,16 +920,27 @@ public class ParkingDataSyncService implements ApplicationListener<ApplicationRe
         logger.warn("ID 패턴 '{}' 으로 시작하는 주차장 데이터 삭제 시작", idPattern);
         
         try {
+            // 문자열 패턴 미리 생성
+            String pattern = idPattern + "%";
+            
             // 실시간 정보 삭제
-            int realtimeCount = parkingRealtimeMapper.deleteParkingRealtimeByIdPattern(idPattern + "%");
+            int realtimeCount = parkingRealtimeMapper.deleteParkingRealtimeByIdPattern(pattern);
             logger.info("주차장 실시간 정보 {} 건 삭제 완료", realtimeCount);
             
+            // 운영 시간 정보는 개별적으로 삭제해야 함 (패턴 매치 기능이 없으므로)
+            List<ParkingInfo> infoList = parkingInfoMapper.selectParkingByIdPattern(pattern);
+            int operationTimeCount = 0;
+            for (ParkingInfo info : infoList) {
+                operationTimeCount += parkingOperationTimeMapper.deleteParkingOperationTimesByParkingId(info.getPrkCenterId());
+            }
+            logger.info("주차장 운영 시간 정보 {} 건 삭제 완료", operationTimeCount);
+            
             // 운영 정보 삭제
-            int operationCount = parkingOperationMapper.deleteParkingOperationByIdPattern(idPattern + "%");
+            int operationCount = parkingOperationMapper.deleteParkingOperationByIdPattern(pattern);
             logger.info("주차장 운영 정보 {} 건 삭제 완료", operationCount);
             
             // 기본 정보 삭제 (가장 마지막에 삭제, 외래키 제약조건)
-            int infoCount = parkingInfoMapper.deleteParkingInfoByIdPattern(idPattern + "%");
+            int infoCount = parkingInfoMapper.deleteParkingInfoByIdPattern(pattern);
             logger.info("주차장 기본 정보 {} 건 삭제 완료", infoCount);
             
             logger.info("ID 패턴 '{}' 으로 시작하는 주차장 데이터 삭제 완료", idPattern);
@@ -778,6 +957,11 @@ public class ParkingDataSyncService implements ApplicationListener<ApplicationRe
     public void forceReloadAllParkingData() {
         logger.info("모든 주차장 데이터 강제 리로드 시작");
         try {
+            // 기존 데이터 정리
+            parkingRealtimeMapper.deleteAllParkingRealtime();
+            parkingOperationTimeMapper.deleteAllParkingOperationTimes();
+            parkingOperationMapper.deleteAllParkingOperation();
+            
             // 1. 기본정보 조회 및 저장
             logger.info("주차장 기본 정보 강제 리로드 시작");
             syncParkingBasicInfo();
@@ -819,7 +1003,7 @@ public class ParkingDataSyncService implements ApplicationListener<ApplicationRe
         int maxRetries = 3; // 최대 재시도 횟수
         int retryCount = 0;
         int pageNo = 1;
-        int numOfRows = 200; // 한 번에 가져올 데이터 수
+        int numOfRows = 2000; // 한 번에 가져올 데이터 수
         int totalProcessed = 0;
         boolean isConnectionError = false;
         
@@ -904,7 +1088,7 @@ public class ParkingDataSyncService implements ApplicationListener<ApplicationRe
                     logger.error("데이터베이스 연결 오류 발생: {}", e.getMessage());
                     continue; // 재시도 로직으로 이동
                 } else {
-                    logger.error("주차장 운영정보 동기화 중 오류 발생", e);
+                    logger.error("주차장 운영정보 동기화 중 오류 발생: {}", e.getMessage());
                     break;
                 }
             }
@@ -913,36 +1097,6 @@ public class ParkingDataSyncService implements ApplicationListener<ApplicationRe
         logger.info("주차장 운영정보 동기화 완료: 총 {} 건 처리", totalProcessed);
     }
     
-    /**
-     * 연결 관련 오류인지 확인
-     */
-    private boolean isConnectionError(Exception e) {
-        String message = e.getMessage();
-        Throwable cause = e.getCause();
-        
-        // 직접적인 연결 오류 메시지 확인
-        if (message != null && (
-                message.contains("HikariDataSource has been closed") ||
-                message.contains("Failed to obtain JDBC Connection") ||
-                message.contains("Connection refused") ||
-                message.contains("Connection reset") ||
-                message.contains("Connection timed out"))) {
-            return true;
-        }
-        
-        // 연결 관련 예외 클래스 확인
-        while (cause != null) {
-            if (cause instanceof java.sql.SQLException || 
-                cause instanceof org.springframework.jdbc.CannotGetJdbcConnectionException ||
-                cause instanceof java.net.ConnectException) {
-                return true;
-            }
-            cause = cause.getCause();
-        }
-        
-        return false;
-    }
-
     /**
      * 주차장 운영정보 배치 처리
      */
@@ -986,6 +1140,18 @@ public class ParkingDataSyncService implements ApplicationListener<ApplicationRe
                         
                         if (basicItems == null || basicItems.isEmpty()) {
                             logger.warn("API에서 해당 ID의 기본 정보를 찾을 수 없습니다: {}", normalizedId);
+                            failCount++;
+                            continue;
+                        }
+                        
+                        // 필수 필드 검증
+                        PrkSttusInfoResponse.PrkSttusInfo basicInfo = basicItems.get(0);
+                        if (basicInfo.getPrkCenterId() == null || basicInfo.getPrkCenterId().trim().isEmpty() ||
+                            basicInfo.getPrkPlceNm() == null || basicInfo.getPrkPlceNm().trim().isEmpty() ||
+                            basicInfo.getPrkPlceAdres() == null || basicInfo.getPrkPlceAdres().trim().isEmpty() ||
+                            basicInfo.getLatitude() == null || basicInfo.getLongitude() == null ||
+                            basicInfo.getPrkCmprtCo() == null) {
+                            logger.warn("API에서 가져온 기본 정보에 필수 필드가 누락되었습니다 (ID: {})", normalizedId);
                             failCount++;
                             continue;
                         }
@@ -1045,23 +1211,112 @@ public class ParkingDataSyncService implements ApplicationListener<ApplicationRe
                 parkingOperation.setPrkCenterId(normalizedId);
                 
                 try {
-                    // 운영 정보 저장 (insertOrUpdate 메서드 사용)
-                    parkingOperationMapper.insertOrUpdateParkingOperation(parkingOperation);
-                    logger.debug("주차장 운영 정보 저장 성공: {}", normalizedId);
+                    // 이미 존재하는지 확인
+                    boolean operationExists = parkingOperationMapper.existsById(normalizedId);
+                    
+                    if (operationExists) {
+                        parkingOperationMapper.updateParkingOperation(parkingOperation);
+                        logger.debug("주차장 운영 정보 업데이트 성공: {}", normalizedId);
+                    } else {
+                        parkingOperationMapper.insertParkingOperation(parkingOperation);
+                        logger.debug("주차장 운영 정보 삽입 성공: {}", normalizedId);
+                    }
+                    
+                    // 운영 시간 정보 처리
+                    processParkingOperationTimes(normalizedId, item);
+                    
                     successCount++;
                 } catch (Exception e) {
-                    logger.error("주차장 운영 정보 저장 실패: {} ({})", normalizedId, e.getMessage());
+                    logger.error("주차장 운영 정보 저장 중 오류 발생: {} ({})", normalizedId, e.getMessage());
                     failCount++;
                 }
             } catch (Exception e) {
-                logger.error("주차장 운영 정보 처리 중 오류 발생: {} ({})", 
-                    item.getPrkCenterId() != null ? item.getPrkCenterId() : "null ID", e.getMessage());
+                logger.error("운영 정보 처리 중 오류 발생: {}", e.getMessage());
                 failCount++;
             }
         }
         
-        logger.info("운영 정보 배치 처리 결과 - 성공: {}, 실패: {}", successCount, failCount);
-        return new int[]{successCount, failCount};
+        return new int[] { successCount, failCount };
+    }
+    
+    /**
+     * 주차장 운영 시간 정보 처리
+     */
+    private void processParkingOperationTimes(String parkingId, PrkOprInfoResponse.PrkOprInfo item) {
+        try {
+            // 기존 운영 시간 정보 삭제
+            parkingOperationTimeMapper.deleteParkingOperationTimesByParkingId(parkingId);
+            
+            LocalDateTime now = LocalDateTime.now();
+            
+            // 평일 운영 시간 처리 (운영 요일 정보에서 월-금 추출)
+            String operationDayInfo = item.getOperationDayInfo();
+            if (operationDayInfo != null && !operationDayInfo.isEmpty()) {
+                // 월~금 여부 확인
+                if (operationDayInfo.contains("월") || operationDayInfo.contains("화") || 
+                    operationDayInfo.contains("수") || operationDayInfo.contains("목") || 
+                    operationDayInfo.contains("금")) {
+                    // 평일 - 월요일부터 금요일까지 동일한 운영 시간 설정
+                    String[] weekdays = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday"};
+                    for (String day : weekdays) {
+                        ParkingOperationTime opTime = new ParkingOperationTime();
+                        opTime.setPrkCenterId(parkingId);
+                        opTime.setDayOfWeek(day);
+                        // 기본값으로 0800-2200 설정 (실제로는 API 데이터에서 가져와야 함)
+                        opTime.setOpertnStartTime("080000");
+                        opTime.setOpertnEndTime("220000");
+                        opTime.setCreatedAt(now);
+                        opTime.setUpdatedAt(now);
+                        parkingOperationTimeMapper.insertParkingOperationTime(opTime);
+                    }
+                }
+            }
+            
+            // 토요일 운영 시간 처리
+            String satOpenTime = item.getSatOperOpenHhmm();
+            String satCloseTime = item.getSatOperCloseHhmm();
+            if (satOpenTime != null && !satOpenTime.isEmpty() && 
+                satCloseTime != null && !satCloseTime.isEmpty()) {
+                ParkingOperationTime satOpTime = new ParkingOperationTime();
+                satOpTime.setPrkCenterId(parkingId);
+                satOpTime.setDayOfWeek("Saturday");
+                satOpTime.setOpertnStartTime(satOpenTime.replace(":", ""));
+                satOpTime.setOpertnEndTime(satCloseTime.replace(":", ""));
+                satOpTime.setCreatedAt(now);
+                satOpTime.setUpdatedAt(now);
+                parkingOperationTimeMapper.insertParkingOperationTime(satOpTime);
+            }
+            
+            // 공휴일 운영 시간 처리
+            String holidayOpenTime = item.getHolidayOperOpenHhmm();
+            String holidayCloseTime = item.getHolidayOperCloseHhmm();
+            if (holidayOpenTime != null && !holidayOpenTime.isEmpty() && 
+                holidayCloseTime != null && !holidayCloseTime.isEmpty()) {
+                // 일요일 설정
+                ParkingOperationTime sunOpTime = new ParkingOperationTime();
+                sunOpTime.setPrkCenterId(parkingId);
+                sunOpTime.setDayOfWeek("Sunday");
+                sunOpTime.setOpertnStartTime(holidayOpenTime.replace(":", ""));
+                sunOpTime.setOpertnEndTime(holidayCloseTime.replace(":", ""));
+                sunOpTime.setCreatedAt(now);
+                sunOpTime.setUpdatedAt(now);
+                parkingOperationTimeMapper.insertParkingOperationTime(sunOpTime);
+                
+                // 공휴일 설정
+                ParkingOperationTime holidayOpTime = new ParkingOperationTime();
+                holidayOpTime.setPrkCenterId(parkingId);
+                holidayOpTime.setDayOfWeek("Holiday");
+                holidayOpTime.setOpertnStartTime(holidayOpenTime.replace(":", ""));
+                holidayOpTime.setOpertnEndTime(holidayCloseTime.replace(":", ""));
+                holidayOpTime.setCreatedAt(now);
+                holidayOpTime.setUpdatedAt(now);
+                parkingOperationTimeMapper.insertParkingOperationTime(holidayOpTime);
+            }
+            
+            logger.debug("주차장 운영 시간 정보 처리 완료: {}", parkingId);
+        } catch (Exception e) {
+            logger.error("주차장 운영 시간 정보 처리 중 오류 발생: {} ({})", parkingId, e.getMessage());
+        }
     }
 
     /**
@@ -1081,9 +1336,9 @@ public class ParkingDataSyncService implements ApplicationListener<ApplicationRe
                     continue;
                 }
                 
-                // ID 정규화
+                // API ID 정규화
                 String normalizedId = normalizeId(item.getPrkCenterId());
-                logger.debug("실시간 정보 처리 시작 - ID: {}", normalizedId);
+                logger.debug("실시간 정보 처리 시작 - API ID: {}, 정규화 ID: {}", item.getPrkCenterId(), normalizedId);
                 
                 // 기본 정보가 존재하는지 확인
                 boolean exists = parkingInfoMapper.existsById(normalizedId);
@@ -1111,16 +1366,31 @@ public class ParkingDataSyncService implements ApplicationListener<ApplicationRe
                             continue;
                         }
                         
-                        ParkingInfo parkingInfo = convertToParkingInfo(basicItems.get(0));
-                        
-                        // API 응답 ID 확인 및 로깅
-                        String apiResponseId = parkingInfo.getPrkCenterId();
-                        if (!normalizedId.equals(apiResponseId)) {
-                            logger.warn("API 응답 ID({})가 요청 ID({})와 다릅니다. 요청한 ID를 사용합니다.", apiResponseId, normalizedId);
+                        // 필수 필드 검증
+                        PrkSttusInfoResponse.PrkSttusInfo basicInfo = basicItems.get(0);
+                        if (basicInfo.getPrkCenterId() == null || basicInfo.getPrkCenterId().trim().isEmpty() ||
+                            basicInfo.getPrkPlceNm() == null || basicInfo.getPrkPlceNm().trim().isEmpty() ||
+                            basicInfo.getPrkPlceAdres() == null || basicInfo.getPrkPlceAdres().trim().isEmpty() ||
+                            basicInfo.getLatitude() == null || basicInfo.getLongitude() == null ||
+                            basicInfo.getPrkCmprtCo() == null) {
+                            logger.warn("API에서 가져온 기본 정보에 필수 필드가 누락되었습니다 (ID: {})", normalizedId);
+                            failCount++;
+                            continue;
                         }
                         
-                        // 명시적으로 ID 설정 (API 응답 ID가 아닌 요청한 ID 사용)
-                        parkingInfo.setPrkCenterId(normalizedId);
+                        ParkingInfo parkingInfo = convertToParkingInfo(basicItems.get(0));
+                        
+                        // API 응답 ID 정규화 및 명시적 설정
+                        String apiResponseId = normalizeId(parkingInfo.getPrkCenterId());
+                        parkingInfo.setPrkCenterId(apiResponseId);
+                        
+                        // API 응답 ID와 정규화된 요청 ID가 다른 경우 로깅
+                        if (!apiResponseId.equals(normalizedId)) {
+                            logger.warn("API 응답 ID({})가 요청 ID({})와 다릅니다. API 응답 ID를 사용합니다.", 
+                                      apiResponseId, normalizedId);
+                            // API 응답 ID로 업데이트
+                            normalizedId = apiResponseId;
+                        }
                         
                         // 다른 스레드에서 이미 삽입했을 수 있으므로 존재 여부 다시 확인
                         exists = parkingInfoMapper.existsById(normalizedId);
@@ -1233,7 +1503,7 @@ public class ParkingDataSyncService implements ApplicationListener<ApplicationRe
         int maxRetries = 3; // 최대 재시도 횟수
         int retryCount = 0;
         int pageNo = 1;
-        int numOfRows = 200; // 한 번에 가져올 데이터 수
+        int numOfRows = 2000; // 한 번에 가져올 데이터 수
         int totalProcessed = 0;
         boolean isConnectionError = false;
         
@@ -1325,5 +1595,35 @@ public class ParkingDataSyncService implements ApplicationListener<ApplicationRe
         }
         
         logger.info("주차장 실시간 정보 동기화 완료: 총 {} 건 처리", totalProcessed);
+    }
+
+    /**
+     * 연결 관련 오류인지 확인
+     */
+    private boolean isConnectionError(Exception e) {
+        String message = e.getMessage();
+        Throwable cause = e.getCause();
+        
+        // 직접적인 연결 오류 메시지 확인
+        if (message != null && (
+                message.contains("HikariDataSource has been closed") ||
+                message.contains("Failed to obtain JDBC Connection") ||
+                message.contains("Connection refused") ||
+                message.contains("Connection reset") ||
+                message.contains("Connection timed out"))) {
+            return true;
+        }
+        
+        // 연결 관련 예외 클래스 확인
+        while (cause != null) {
+            if (cause instanceof java.sql.SQLException || 
+                cause instanceof org.springframework.jdbc.CannotGetJdbcConnectionException ||
+                cause instanceof java.net.ConnectException) {
+                return true;
+            }
+            cause = cause.getCause();
+        }
+        
+        return false;
     }
 } 

@@ -28,7 +28,7 @@
                         <a class="nav-link active" href="/search">주차장 찾기</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/mapSearch">지도로 찾기</a>
+                        <a class="nav-link" href="/map">지도로 찾기</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/dashboard">마이페이지</a>
@@ -68,29 +68,29 @@
                     <div class="col-md-6">
                         <div class="input-group">
                             <span class="input-group-text"><i class="bi bi-search"></i></span>
-                            <input type="text" class="form-control" name="keyword" placeholder="주차장 이름 또는 주소" value="${param.keyword}">
+                            <input type="text" class="form-control" name="keyword" placeholder="주차장 이름 또는 주소" value="${keyword}">
                         </div>
                     </div>
                     <div class="col-md-4">
                         <select class="form-select" name="region">
                             <option value="">지역 선택</option>
-                            <option value="서울" ${param.region == '서울' ? 'selected' : ''}>서울특별시</option>
-                            <option value="부산" ${param.region == '부산' ? 'selected' : ''}>부산광역시</option>
-                            <option value="대구" ${param.region == '대구' ? 'selected' : ''}>대구광역시</option>
-                            <option value="인천" ${param.region == '인천' ? 'selected' : ''}>인천광역시</option>
-                            <option value="광주" ${param.region == '광주' ? 'selected' : ''}>광주광역시</option>
-                            <option value="대전" ${param.region == '대전' ? 'selected' : ''}>대전광역시</option>
-                            <option value="울산" ${param.region == '울산' ? 'selected' : ''}>울산광역시</option>
-                            <option value="세종" ${param.region == '세종' ? 'selected' : ''}>세종특별자치시</option>
-                            <option value="경기" ${param.region == '경기' ? 'selected' : ''}>경기도</option>
-                            <option value="강원" ${param.region == '강원' ? 'selected' : ''}>강원도</option>
-                            <option value="충북" ${param.region == '충북' ? 'selected' : ''}>충청북도</option>
-                            <option value="충남" ${param.region == '충남' ? 'selected' : ''}>충청남도</option>
-                            <option value="전북" ${param.region == '전북' ? 'selected' : ''}>전라북도</option>
-                            <option value="전남" ${param.region == '전남' ? 'selected' : ''}>전라남도</option>
-                            <option value="경북" ${param.region == '경북' ? 'selected' : ''}>경상북도</option>
-                            <option value="경남" ${param.region == '경남' ? 'selected' : ''}>경상남도</option>
-                            <option value="제주" ${param.region == '제주' ? 'selected' : ''}>제주특별자치도</option>
+                            <option value="서울" ${region == '서울' ? 'selected' : ''}>서울특별시</option>
+                            <option value="부산" ${region == '부산' ? 'selected' : ''}>부산광역시</option>
+                            <option value="대구" ${region == '대구' ? 'selected' : ''}>대구광역시</option>
+                            <option value="인천" ${region == '인천' ? 'selected' : ''}>인천광역시</option>
+                            <option value="광주" ${region == '광주' ? 'selected' : ''}>광주광역시</option>
+                            <option value="대전" ${region == '대전' ? 'selected' : ''}>대전광역시</option>
+                            <option value="울산" ${region == '울산' ? 'selected' : ''}>울산광역시</option>
+                            <option value="세종" ${region == '세종' ? 'selected' : ''}>세종특별자치시</option>
+                            <option value="경기" ${region == '경기' ? 'selected' : ''}>경기도</option>
+                            <option value="강원" ${region == '강원' ? 'selected' : ''}>강원도</option>
+                            <option value="충북" ${region == '충북' ? 'selected' : ''}>충청북도</option>
+                            <option value="충남" ${region == '충남' ? 'selected' : ''}>충청남도</option>
+                            <option value="전북" ${region == '전북' ? 'selected' : ''}>전라북도</option>
+                            <option value="전남" ${region == '전남' ? 'selected' : ''}>전라남도</option>
+                            <option value="경북" ${region == '경북' ? 'selected' : ''}>경상북도</option>
+                            <option value="경남" ${region == '경남' ? 'selected' : ''}>경상남도</option>
+                            <option value="제주" ${region == '제주' ? 'selected' : ''}>제주특별자치도</option>
                         </select>
                     </div>
                     <div class="col-md-2">
@@ -99,6 +99,13 @@
                 </div>
             </form>
         </div>
+
+        <!-- 오류 메시지 표시 -->
+        <c:if test="${not empty errorMessage}">
+            <div class="alert alert-danger mt-3" role="alert">
+                ${errorMessage}
+            </div>
+        </c:if>
 
         <!-- 검색 결과 -->
         <div class="row">

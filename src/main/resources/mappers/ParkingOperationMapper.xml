@@ -5,6 +5,14 @@
     <resultMap id="ParkingOperationResultMap" type="com.example.parking_hub.model.ParkingOperation">
         <id property="prkCenterId" column="prk_center_id"/>
         <result property="opertnBsFreeTime" column="opertn_bs_free_time"/>
+        <result property="parkingChrgeBsTime" column="parking_chrge_bs_time"/>
+        <result property="parkingChrgeBsChrg" column="parking_chrge_bs_chrg"/>
+        <result property="parkingChrgeAditUnitTime" column="parking_chrge_adit_unit_time"/>
+        <result property="parkingChrgeAditUnitChrge" column="parking_chrge_adit_unit_chrge"/>
+        <result property="parkingChrgeOneDayChrge" column="parking_chrge_one_day_chrge"/>
+        <result property="parkingChrgeMonUnitChrge" column="parking_chrge_mon_unit_chrge"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
     </resultMap>
 
     <select id="selectAllParkingOperations" resultMap="ParkingOperationResultMap">
@@ -24,21 +32,76 @@
     </select>
 
     <insert id="insertParkingOperation">
-        INSERT INTO PARKING_OPERATION (prk_center_id, opertn_bs_free_time)
-        VALUES (#{prkCenterId}, #{opertnBsFreeTime})
+        INSERT INTO PARKING_OPERATION (
+            prk_center_id, 
+            opertn_bs_free_time, 
+            parking_chrge_bs_time, 
+            parking_chrge_bs_chrg,
+            parking_chrge_adit_unit_time,
+            parking_chrge_adit_unit_chrge,
+            parking_chrge_one_day_chrge,
+            parking_chrge_mon_unit_chrge,
+            created_at,
+            updated_at
+        ) VALUES (
+            #{prkCenterId}, 
+            #{opertnBsFreeTime}, 
+            #{parkingChrgeBsTime}, 
+            #{parkingChrgeBsChrg},
+            #{parkingChrgeAditUnitTime},
+            #{parkingChrgeAditUnitChrge},
+            #{parkingChrgeOneDayChrge},
+            #{parkingChrgeMonUnitChrge},
+            #{createdAt},
+            #{updatedAt}
+        )
     </insert>
 
     <update id="updateParkingOperation">
         UPDATE PARKING_OPERATION
-        SET opertn_bs_free_time = #{opertnBsFreeTime}
+        SET opertn_bs_free_time = #{opertnBsFreeTime},
+            parking_chrge_bs_time = #{parkingChrgeBsTime},
+            parking_chrge_bs_chrg = #{parkingChrgeBsChrg},
+            parking_chrge_adit_unit_time = #{parkingChrgeAditUnitTime},
+            parking_chrge_adit_unit_chrge = #{parkingChrgeAditUnitChrge},
+            parking_chrge_one_day_chrge = #{parkingChrgeOneDayChrge},
+            parking_chrge_mon_unit_chrge = #{parkingChrgeMonUnitChrge},
+            updated_at = #{updatedAt}
         WHERE prk_center_id = #{prkCenterId}
     </update>
 
     <insert id="insertOrUpdateParkingOperation">
-        INSERT INTO PARKING_OPERATION (prk_center_id, opertn_bs_free_time)
-        VALUES (#{prkCenterId}, #{opertnBsFreeTime})
-            ON DUPLICATE KEY UPDATE
-                                 opertn_bs_free_time = VALUES(opertn_bs_free_time)
+        INSERT INTO PARKING_OPERATION (
+            prk_center_id, 
+            opertn_bs_free_time, 
+            parking_chrge_bs_time, 
+            parking_chrge_bs_chrg,
+            parking_chrge_adit_unit_time,
+            parking_chrge_adit_unit_chrge,
+            parking_chrge_one_day_chrge,
+            parking_chrge_mon_unit_chrge,
+            created_at,
+            updated_at
+        ) VALUES (
+            #{prkCenterId}, 
+            #{opertnBsFreeTime}, 
+            #{parkingChrgeBsTime}, 
+            #{parkingChrgeBsChrg},
+            #{parkingChrgeAditUnitTime},
+            #{parkingChrgeAditUnitChrge},
+            #{parkingChrgeOneDayChrge},
+            #{parkingChrgeMonUnitChrge},
+            #{createdAt},
+            #{updatedAt}
+        ) ON DUPLICATE KEY UPDATE
+            opertn_bs_free_time = VALUES(opertn_bs_free_time),
+            parking_chrge_bs_time = VALUES(parking_chrge_bs_time),
+            parking_chrge_bs_chrg = VALUES(parking_chrge_bs_chrg),
+            parking_chrge_adit_unit_time = VALUES(parking_chrge_adit_unit_time),
+            parking_chrge_adit_unit_chrge = VALUES(parking_chrge_adit_unit_chrge),
+            parking_chrge_one_day_chrge = VALUES(parking_chrge_one_day_chrge),
+            parking_chrge_mon_unit_chrge = VALUES(parking_chrge_mon_unit_chrge),
+            updated_at = VALUES(updated_at)
     </insert>
 
     <delete id="deleteParkingOperation">

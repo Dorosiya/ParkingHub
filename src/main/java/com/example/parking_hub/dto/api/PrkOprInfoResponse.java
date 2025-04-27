@@ -35,6 +35,18 @@ public class PrkOprInfoResponse {
         @JsonProperty("parking_chrge_bs_chrg")
         private String parkingChrgeBsChrg;
         
+        @JsonProperty("parking_chrge_adit_unit_time")
+        private String parkingChrgeAditUnitTime;
+        
+        @JsonProperty("parking_chrge_adit_unit_chrge")
+        private String parkingChrgeAditUnitChrge;
+        
+        @JsonProperty("parking_chrge_one_day_chrge")
+        private String parkingChrgeOneDayChrge;
+        
+        @JsonProperty("parking_chrge_mon_unit_chrge")
+        private String parkingChrgeMonUnitChrge;
+        
         @JsonProperty("operation_day_info")
         private String operationDayInfo;
         
@@ -65,6 +77,22 @@ public class PrkOprInfoResponse {
         
         public String getParkingChrgeBsChrg() {
             return parkingChrgeBsChrg;
+        }
+        
+        public String getParkingChrgeAditUnitTime() {
+            return parkingChrgeAditUnitTime;
+        }
+        
+        public String getParkingChrgeAditUnitChrge() {
+            return parkingChrgeAditUnitChrge;
+        }
+        
+        public String getParkingChrgeOneDayChrge() {
+            return parkingChrgeOneDayChrge;
+        }
+        
+        public String getParkingChrgeMonUnitChrge() {
+            return parkingChrgeMonUnitChrge;
         }
         
         public String getOperationDayInfo() {
