@@ -60,4 +60,16 @@
             #{id}
         </foreach>
     </select>
+
+    <select id="countParkingRealtime" resultType="int">
+        SELECT COUNT(*) FROM PARKING_REALTIME
+    </select>
+
+    <delete id="deleteAllParkingRealtime">
+        DELETE FROM PARKING_REALTIME
+    </delete>
+    
+    <delete id="deleteParkingRealtimeByIdPattern">
+        DELETE FROM PARKING_REALTIME WHERE prk_center_id LIKE #{idPattern}
+    </delete>
 </mapper>

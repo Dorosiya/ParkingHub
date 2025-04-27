@@ -54,4 +54,19 @@ public interface ParkingRealtimeMapper {
      * 이미 존재하는 경우 업데이트, 없는 경우 삽입
      */
     void insertOrUpdateParkingRealtime(ParkingRealtime parkingRealtime);
+    
+    /**
+     * 주차장 실시간 정보 개수 조회
+     */
+    int countParkingRealtime();
+    
+    /**
+     * 모든 주차장 실시간 정보 삭제
+     */
+    int deleteAllParkingRealtime();
+    
+    /**
+     * ID 패턴으로 주차장 실시간 정보 삭제
+     */
+    int deleteParkingRealtimeByIdPattern(@Param("idPattern") String idPattern);
 }

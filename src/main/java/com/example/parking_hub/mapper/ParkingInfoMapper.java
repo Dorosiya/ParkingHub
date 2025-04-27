@@ -74,4 +74,14 @@ public interface ParkingInfoMapper {
      * @return 주차장 기본 정보
      */
     ParkingInfo findParkingInfoById(@Param("id") String id);
+
+    /**
+     * 모든 주차장 기본 정보 삭제
+     */
+    int deleteAllParkingInfo();
+    
+    /**
+     * ID 패턴으로 주차장 기본 정보 삭제
+     */
+    int deleteParkingInfoByIdPattern(@Param("idPattern") String idPattern);
 }

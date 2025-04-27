@@ -88,4 +88,12 @@
     <delete id="deleteParkingInfo">
         DELETE FROM PARKING_INFO WHERE prk_center_id = #{id}
     </delete>
+
+    <delete id="deleteAllParkingInfo">
+        DELETE FROM PARKING_INFO
+    </delete>
+    
+    <delete id="deleteParkingInfoByIdPattern">
+        DELETE FROM PARKING_INFO WHERE prk_center_id LIKE #{idPattern}
+    </delete>
 </mapper>

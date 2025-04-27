@@ -15,6 +15,10 @@
         SELECT * FROM PARKING_OPERATION WHERE prk_center_id = #{id}
     </select>
 
+    <select id="existsById" resultType="boolean">
+        SELECT CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END FROM PARKING_OPERATION WHERE prk_center_id = #{id}
+    </select>
+
     <select id="countParkingOperation" resultType="int">
         SELECT COUNT(*) FROM PARKING_OPERATION
     </select>
@@ -39,5 +43,13 @@
 
     <delete id="deleteParkingOperation">
         DELETE FROM PARKING_OPERATION WHERE prk_center_id = #{prkCenterId}
+    </delete>
+
+    <delete id="deleteAllParkingOperation">
+        DELETE FROM PARKING_OPERATION
+    </delete>
+    
+    <delete id="deleteParkingOperationByIdPattern">
+        DELETE FROM PARKING_OPERATION WHERE prk_center_id LIKE #{idPattern}
     </delete>
 </mapper>

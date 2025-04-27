@@ -25,6 +25,11 @@ public interface ParkingOperationMapper {
     ParkingOperation selectParkingOperationById(@Param("id") String id);
     
     /**
+     * 특정 ID 존재 여부 확인
+     */
+    boolean existsById(@Param("id") String id);
+    
+    /**
      * 주차장 운영 정보 수정
      */
     void updateParkingOperation(ParkingOperation parkingOperation);
@@ -56,4 +61,14 @@ public interface ParkingOperationMapper {
      * @return 주차장 운영 정보 개수
      */
     int countParkingOperation();
+    
+    /**
+     * 모든 주차장 운영 정보 삭제
+     */
+    int deleteAllParkingOperation();
+    
+    /**
+     * ID 패턴으로 주차장 운영 정보 삭제
+     */
+    int deleteParkingOperationByIdPattern(@Param("idPattern") String idPattern);
 }
